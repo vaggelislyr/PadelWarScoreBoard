@@ -2,224 +2,306 @@
 <html lang="el">
 <head>
 <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Padel Scoreboard</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-:root {
-  --bg: #0e1b2a;
-  --blue: #1f5fa8;
-  --white: #ffffff;
-  --accent: #00c2ff;
-  --radius: 10px;
-  --transition: 0.5s cubic-bezier(.4,0,.2,1);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+:root{
+  --bg:#0c1b1f;
+  --panel:#12292f;
+  --accent:#00ff9c;
+  --text:#ffffff;
 }
 
-body {
-  margin: 0;
-  background: transparent;
-  color: var(--white);
+body{
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:#000;
+  color:var(--text);
 }
 
-/* ================= OVERLAY ================= */
+.hidden{display:none}
 
-#overlay {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  display: none;
-  animation: slideIn 0.6s ease forwards;
+/* ================= OBS SCOREBOARD ================= */
+
+#scoreboard{
+  position:fixed;
+  top:20px;
+  left:20px;
+  background:var(--panel);
+  border-radius:12px;
+  padding:12px;
+  min-width:520px;
+  animation:slideIn .6s ease-out;
 }
 
-.scoreboard {
-  background: var(--bg);
-  border-radius: var(--radius);
-  padding: 10px 14px;
-  display: inline-flex;
-  flex-direction: column;
-  gap: 6px;
+@keyframes slideIn{
+  from{transform:translateX(-40px);opacity:0}
+  to{transform:translateX(0);opacity:1}
 }
 
-.team {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.team{
+  display:flex;
+  align-items:center;
+  margin:6px 0;
 }
 
-.names {
-  background: var(--blue);
-  padding: 8px 12px;
-  border-radius: var(--radius);
-  white-space: nowrap;
+.serve{
+  width:16px;
+  margin-right:6px;
+  font-size:14px;
 }
 
-.scores {
-  display: flex;
-  gap: 6px;
-  font-weight: bold;
+.names{
+  flex:1;
+  font-weight:bold;
 }
 
-.box {
-  background: #fff;
-  color: #000;
-  min-width: 36px;
-  text-align: center;
-  border-radius: 6px;
-  padding: 6px 8px;
+.col{
+  width:60px;
+  text-align:center;
 }
 
-/* TIMER */
-#timer {
-  margin-top: 8px;
-  background: #000;
-  border-radius: var(--radius);
-  padding: 6px 14px;
-  font-weight: bold;
-  text-align: center;
-  display: none;
-  animation: fadeSlide 0.4s ease forwards;
+.score{
+  font-size:20px;
+  font-weight:bold;
 }
 
-/* ================= CONTROL ================= */
-
-#control {
-  padding: 14px;
-  display: none;
+#golden{
+  position:absolute;
+  top:-40px;
+  left:0;
+  right:0;
+  margin:auto;
+  width:180px;
+  background:gold;
+  color:#000;
+  font-weight:bold;
+  text-align:center;
+  padding:6px;
+  border-radius:6px;
+  animation:goldenSlide .5s ease-out;
 }
 
-button {
-  padding: 10px 14px;
-  border: none;
-  border-radius: 8px;
-  background: var(--blue);
-  color: white;
-  font-weight: bold;
-  margin: 4px 0;
+@keyframes goldenSlide{
+  from{transform:translateY(-20px);opacity:0}
+  to{transform:translateY(0);opacity:1}
 }
 
-input {
-  padding: 8px;
-  width: 100%;
-  margin-bottom: 6px;
+/* ================= TIMER ================= */
+
+#bottomBar{
+  margin-top:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:14px;
+  opacity:.9;
 }
 
-/* ================= ANIMATIONS ================= */
-
-@keyframes slideIn {
-  from { transform: translateX(-120%); opacity: 0; }
-  to   { transform: translateX(0); opacity: 1; }
+#timer{
+  font-weight:bold;
 }
 
-@keyframes fadeSlide {
-  from { opacity: 0; transform: translateY(-6px); }
-  to   { opacity: 1; transform: translateY(0); }
+/* ================= CONTROLLER ================= */
+
+#controller{
+  padding:20px;
+}
+
+.section{
+  background:#111;
+  padding:15px;
+  border-radius:10px;
+  margin-bottom:15px;
+}
+
+button{
+  padding:10px 14px;
+  margin:4px;
+  border:none;
+  border-radius:6px;
+  font-weight:bold;
+}
+
+.primary{background:var(--accent)}
+.danger{background:#ff4d4d}
+.gray{background:#444;color:#fff}
+
+input{
+  padding:8px;
+  border-radius:6px;
+  border:none;
+  width:100%;
+  margin-top:6px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- OVERLAY -->
-<div id="overlay">
-  <div class="scoreboard">
-    <div class="team">
-      <div class="names" id="teamA">Player A1 / Player A2</div>
-      <div class="scores">
-        <div class="box" id="aPoints">0</div>
-        <div class="box" id="aGames">0</div>
-      </div>
-    </div>
-    <div class="team">
-      <div class="names" id="teamB">Player B1 / Player B2</div>
-      <div class="scores">
-        <div class="box" id="bPoints">0</div>
-        <div class="box" id="bGames">0</div>
-      </div>
-    </div>
+<!-- ================= OBS VIEW ================= -->
+<div id="scoreboard" class="hidden">
+
+  <div id="golden" class="hidden">GOLDEN POINT</div>
+
+  <div class="team">
+    <div class="serve" id="serveA">🎾</div>
+    <div class="names" id="namesA">Player A1 / Player A2</div>
+    <div class="col" id="tbA">0</div>
+    <div class="col" id="setA">0</div>
+    <div class="col" id="gameA">0</div>
+    <div class="col score" id="scoreA">0</div>
   </div>
-  <div id="timer">00:00</div>
+
+  <div class="team">
+    <div class="serve" id="serveB"></div>
+    <div class="names" id="namesB">Player B1 / Player B2</div>
+    <div class="col" id="tbB">0</div>
+    <div class="col" id="setB">0</div>
+    <div class="col" id="gameB">0</div>
+    <div class="col score" id="scoreB">0</div>
+  </div>
+
+  <div id="bottomBar">
+    <div id="eventTag">@padel.tournament</div>
+    <div id="timer">00:00</div>
+  </div>
 </div>
 
-<!-- CONTROL -->
-<div id="control">
-  <h3>Teams</h3>
-  <input id="tA" placeholder="Team A names" />
-  <input id="tB" placeholder="Team B names" />
+<!-- ================= CONTROLLER VIEW ================= -->
+<div id="controller" class="hidden">
 
-  <button onclick="point('A')">Point Team A</button>
-  <button onclick="point('B')">Point Team B</button>
+  <div class="section">
+    <b>Ονόματα</b>
+    <input id="nA" placeholder="Ομάδα A – 2 παίκτες">
+    <input id="nB" placeholder="Ομάδα B – 2 παίκτες">
+  </div>
 
-  <h3>Timer</h3>
-  <input id="timeInput" placeholder="mm:ss" />
-  <button onclick="startTimer()">Start</button>
-  <button onclick="stopTimer()">Stop</button>
-  <button onclick="resetTimer()">Reset</button>
-  <button onclick="toggleTimer()">Show / Hide</button>
+  <div class="section">
+    <b>Σκορ</b><br>
+    <button class="primary" onclick="point('A')">Πόντος A</button>
+    <button class="primary" onclick="point('B')">Πόντος B</button>
+  </div>
+
+  <div class="section">
+    <b>Σέρβις</b><br>
+    <button class="gray" onclick="toggleServe()">Αλλαγή Σέρβις</button>
+  </div>
+
+  <div class="section">
+    <b>Timer (λεπτά)</b>
+    <input id="timeInput" placeholder="π.χ. 10">
+    <br>
+    <button onclick="startTimer()">Start</button>
+    <button onclick="stopTimer()">Stop</button>
+    <button onclick="resetTimer()">Reset</button>
+  </div>
+
 </div>
 
 <script>
-const mode = new URLSearchParams(location.search).get('mode');
-const points = ["0","15","30","40","AD"];
+const q = new URLSearchParams(location.search);
+const view = q.get("view");
 
-let state = JSON.parse(localStorage.getItem("padel")) || {
-  aP:0,bP:0,aG:0,bG:0,
-  tA:"Player A1 / Player A2",
-  tB:"Player B1 / Player B2",
-  timer:"00:00",
-  timerVisible:false
-};
+if(view==="obs") document.getElementById("scoreboard").classList.remove("hidden");
+if(view==="controller") document.getElementById("controller").classList.remove("hidden");
 
-function save(){ localStorage.setItem("padel",JSON.stringify(state)); }
+/* ================= GAME LOGIC ================= */
 
-function point(team){
-  let p = team==="A" ? "aP":"bP";
-  let o = team==="A" ? "bP":"aP";
-  if(state[p]===3 && state[o]===3){ state[p]=4; }
-  else if(state[p]===4){ state[p]=0; state[o]=0; state[team==="A"?"aG":"bG"]++; }
-  else state[p]++;
-  save();
+const points=[0,15,30,40];
+let score={A:0,B:0};
+let games={A:0,B:0};
+let sets={A:0,B:0};
+let adCount=0;
+let golden=false;
+let serve="A";
+
+function update(){
+  scoreA.textContent = score.A===45?"AD":score.A;
+  scoreB.textContent = score.B===45?"AD":score.B;
+  gameA.textContent = games.A;
+  gameB.textContent = games.B;
+  setA.textContent = sets.A;
+  setB.textContent = sets.B;
+
+  serveA.textContent = serve==="A"?"🎾":"";
+  serveB.textContent = serve==="B"?"🎾":"";
+
+  namesA.textContent = nA.value || namesA.textContent;
+  namesB.textContent = nB.value || namesB.textContent;
 }
 
-function render(){
-  if(mode==="overlay"){
-    overlay.style.display="block";
-    teamA.textContent=state.tA;
-    teamB.textContent=state.tB;
-    aPoints.textContent=points[state.aP];
-    bPoints.textContent=points[state.bP];
-    aGames.textContent=state.aG;
-    bGames.textContent=state.bG;
-    timer.textContent=state.timer;
-    timer.style.display = state.timerVisible ? "block":"none";
+function resetScore(){
+  score.A=0;score.B=0;
+  adCount=0;golden=false;
+  goldenBox(false);
+}
+
+function goldenBox(show){
+  const g=document.getElementById("golden");
+  g.classList.toggle("hidden",!show);
+}
+
+function point(t){
+  const o = t==="A"?"B":"A";
+
+  if(golden){
+    games[t]++;
+    resetScore();
+    update();
+    return;
   }
+
+  if(score[t]===40 && score[o]===40){
+    adCount++;
+    if(adCount>=3){
+      golden=true;
+      goldenBox(true);
+    }else{
+      score[t]=45;
+    }
+  }
+  else if(score[t]===45){
+    games[t]++;
+    resetScore();
+  }
+  else if(score[t]===40){
+    games[t]++;
+    resetScore();
+  }
+  else{
+    score[t]=points[points.indexOf(score[t])+1];
+  }
+  update();
 }
 
-if(mode==="control"){
-  control.style.display="block";
-  tA.value=state.tA;
-  tB.value=state.tB;
-  tA.oninput=()=>{state.tA=tA.value;save();}
-  tB.oninput=()=>{state.tB=tB.value;save();}
+function toggleServe(){
+  serve = serve==="A"?"B":"A";
+  update();
 }
 
-function toggleTimer(){ state.timerVisible=!state.timerVisible; save(); }
+/* ================= TIMER ================= */
+
+let timer=null,seconds=0;
+
 function startTimer(){
-  let [m,s]=timeInput.value.split(":").map(Number);
-  let total=m*60+s;
-  clearInterval(window.t);
-  window.t=setInterval(()=>{
-    if(total<=0){clearInterval(t);return;}
-    total--;
-    state.timer=`${String(Math.floor(total/60)).padStart(2,"0")}:${String(total%60).padStart(2,"0")}`;
-    save();
+  if(timer) return;
+  seconds = (parseInt(timeInput.value)||0)*60;
+  timer=setInterval(()=>{
+    if(seconds<=0){stopTimer();return;}
+    seconds--;
+    timerEl();
   },1000);
 }
-function stopTimer(){ clearInterval(window.t); }
-function resetTimer(){ state.timer="00:00"; save(); }
 
-setInterval(()=>{ state=JSON.parse(localStorage.getItem("padel"))||state; render(); },200);
+function stopTimer(){clearInterval(timer);timer=null;}
+function resetTimer(){stopTimer();seconds=0;timerEl();}
+function timerEl(){
+  timer.textContent =
+    String(Math.floor(seconds/60)).padStart(2,"0")+":"+
+    String(seconds%60).padStart(2,"0");
+}
 </script>
-
 </body>
 </html>
