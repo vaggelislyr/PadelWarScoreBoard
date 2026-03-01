@@ -1,70 +1,225 @@
 <!DOCTYPE html>
 <html lang="el">
 <head>
-    <meta charset="UTF-8">
-    <title>Scoreboard για Πάντελ</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-        input { margin: 5px; padding: 5px; width: 150px; }
-        .score { font-size: 60px; margin: 20px; }
-        button { padding: 10px 20px; font-size: 20px; margin: 10px; }
-        .timer { font-size: 40px; margin: 30px; }
-    </style>
+<meta charset="UTF-8" />
+<title>Padel Scoreboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root {
+  --bg: #0e1b2a;
+  --blue: #1f5fa8;
+  --white: #ffffff;
+  --accent: #00c2ff;
+  --radius: 10px;
+  --transition: 0.5s cubic-bezier(.4,0,.2,1);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: transparent;
+  color: var(--white);
+}
+
+/* ================= OVERLAY ================= */
+
+#overlay {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  display: none;
+  animation: slideIn 0.6s ease forwards;
+}
+
+.scoreboard {
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.team {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.names {
+  background: var(--blue);
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  white-space: nowrap;
+}
+
+.scores {
+  display: flex;
+  gap: 6px;
+  font-weight: bold;
+}
+
+.box {
+  background: #fff;
+  color: #000;
+  min-width: 36px;
+  text-align: center;
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+/* TIMER */
+#timer {
+  margin-top: 8px;
+  background: #000;
+  border-radius: var(--radius);
+  padding: 6px 14px;
+  font-weight: bold;
+  text-align: center;
+  display: none;
+  animation: fadeSlide 0.4s ease forwards;
+}
+
+/* ================= CONTROL ================= */
+
+#control {
+  padding: 14px;
+  display: none;
+}
+
+button {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  background: var(--blue);
+  color: white;
+  font-weight: bold;
+  margin: 4px 0;
+}
+
+input {
+  padding: 8px;
+  width: 100%;
+  margin-bottom: 6px;
+}
+
+/* ================= ANIMATIONS ================= */
+
+@keyframes slideIn {
+  from { transform: translateX(-120%); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+</style>
 </head>
+
 <body>
-    <h1>Scoreboard Πάντελ</h1>
-    <div>
-        <input id="team1" type="text" placeholder="Όνομα Ομάδας 1" value="Ομάδα 1">
-        <input id="team2" type="text" placeholder="Όνομα Ομάδας 2" value="Ομάδα 2">
+
+<!-- OVERLAY -->
+<div id="overlay">
+  <div class="scoreboard">
+    <div class="team">
+      <div class="names" id="teamA">Player A1 / Player A2</div>
+      <div class="scores">
+        <div class="box" id="aPoints">0</div>
+        <div class="box" id="aGames">0</div>
+      </div>
     </div>
-    <div class="score">
-        <span id="score1">0</span> - <span id="score2">0</span>
+    <div class="team">
+      <div class="names" id="teamB">Player B1 / Player B2</div>
+      <div class="scores">
+        <div class="box" id="bPoints">0</div>
+        <div class="box" id="bGames">0</div>
+      </div>
     </div>
-    <div>
-        <button onclick="increaseScore(1)">+15</button>
-        <button onclick="increaseScore(2)">+15</button>
-    </div>
-    <div class="timer">
-        Χρόνος: <span id="timer">00:00</span>
-        <br>
-        <button onclick="startTimer()">Ξεκίνα</button>
-        <button onclick="stopTimer()">Σταμάτα</button>
-    </div>
+  </div>
+  <div id="timer">00:00</div>
+</div>
 
-    <script>
-        let score1 = 0;
-        let score2 = 0;
+<!-- CONTROL -->
+<div id="control">
+  <h3>Teams</h3>
+  <input id="tA" placeholder="Team A names" />
+  <input id="tB" placeholder="Team B names" />
 
-        function increaseScore(team) {
-            if (team === 1) {
-                score1 += 15;
-            } else if (team === 2) {
-                score2 += 15;
-            }
-            document.getElementById("score1").innerText = score1;
-            document.getElementById("score2").innerText = score2;
-        }
+  <button onclick="point('A')">Point Team A</button>
+  <button onclick="point('B')">Point Team B</button>
 
-        let timer;
-        let seconds = 0;
+  <h3>Timer</h3>
+  <input id="timeInput" placeholder="mm:ss" />
+  <button onclick="startTimer()">Start</button>
+  <button onclick="stopTimer()">Stop</button>
+  <button onclick="resetTimer()">Reset</button>
+  <button onclick="toggleTimer()">Show / Hide</button>
+</div>
 
-        function updateTimer() {
-            seconds++;
-            let mins = Math.floor(seconds / 60);
-            let secs = seconds % 60;
-            document.getElementById("timer").innerText = (mins < 10 ? "0" : "") + mins + ":" + (secs < 10 ? "0" : "") + secs;
-        }
+<script>
+const mode = new URLSearchParams(location.search).get('mode');
+const points = ["0","15","30","40","AD"];
 
-        function startTimer() {
-            if (!timer) {
-                timer = setInterval(updateTimer, 1000);
-            }
-        }
+let state = JSON.parse(localStorage.getItem("padel")) || {
+  aP:0,bP:0,aG:0,bG:0,
+  tA:"Player A1 / Player A2",
+  tB:"Player B1 / Player B2",
+  timer:"00:00",
+  timerVisible:false
+};
 
-        function stopTimer() {
-            clearInterval(timer);
-            timer = null;
-        }
-    </script>
+function save(){ localStorage.setItem("padel",JSON.stringify(state)); }
+
+function point(team){
+  let p = team==="A" ? "aP":"bP";
+  let o = team==="A" ? "bP":"aP";
+  if(state[p]===3 && state[o]===3){ state[p]=4; }
+  else if(state[p]===4){ state[p]=0; state[o]=0; state[team==="A"?"aG":"bG"]++; }
+  else state[p]++;
+  save();
+}
+
+function render(){
+  if(mode==="overlay"){
+    overlay.style.display="block";
+    teamA.textContent=state.tA;
+    teamB.textContent=state.tB;
+    aPoints.textContent=points[state.aP];
+    bPoints.textContent=points[state.bP];
+    aGames.textContent=state.aG;
+    bGames.textContent=state.bG;
+    timer.textContent=state.timer;
+    timer.style.display = state.timerVisible ? "block":"none";
+  }
+}
+
+if(mode==="control"){
+  control.style.display="block";
+  tA.value=state.tA;
+  tB.value=state.tB;
+  tA.oninput=()=>{state.tA=tA.value;save();}
+  tB.oninput=()=>{state.tB=tB.value;save();}
+}
+
+function toggleTimer(){ state.timerVisible=!state.timerVisible; save(); }
+function startTimer(){
+  let [m,s]=timeInput.value.split(":").map(Number);
+  let total=m*60+s;
+  clearInterval(window.t);
+  window.t=setInterval(()=>{
+    if(total<=0){clearInterval(t);return;}
+    total--;
+    state.timer=`${String(Math.floor(total/60)).padStart(2,"0")}:${String(total%60).padStart(2,"0")}`;
+    save();
+  },1000);
+}
+function stopTimer(){ clearInterval(window.t); }
+function resetTimer(){ state.timer="00:00"; save(); }
+
+setInterval(()=>{ state=JSON.parse(localStorage.getItem("padel"))||state; render(); },200);
+</script>
+
 </body>
 </html>
