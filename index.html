@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <title>Scoreboard για Πάντελ</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        input { margin: 5px; padding: 5px; width: 150px; }
+        .score { font-size: 60px; margin: 20px; }
+        button { padding: 10px 20px; font-size: 20px; margin: 10px; }
+        .timer { font-size: 40px; margin: 30px; }
+    </style>
+</head>
+<body>
+    <h1>Scoreboard Πάντελ</h1>
+    <div>
+        <input id="team1" type="text" placeholder="Όνομα Ομάδας 1" value="Ομάδα 1">
+        <input id="team2" type="text" placeholder="Όνομα Ομάδας 2" value="Ομάδα 2">
+    </div>
+    <div class="score">
+        <span id="score1">0</span> - <span id="score2">0</span>
+    </div>
+    <div>
+        <button onclick="increaseScore(1)">+15</button>
+        <button onclick="increaseScore(2)">+15</button>
+    </div>
+    <div class="timer">
+        Χρόνος: <span id="timer">00:00</span>
+        <br>
+        <button onclick="startTimer()">Ξεκίνα</button>
+        <button onclick="stopTimer()">Σταμάτα</button>
+    </div>
+
+    <script>
+        let score1 = 0;
+        let score2 = 0;
+
+        function increaseScore(team) {
+            if (team === 1) {
+                score1 += 15;
+            } else if (team === 2) {
+                score2 += 15;
+            }
+            document.getElementById("score1").innerText = score1;
+            document.getElementById("score2").innerText = score2;
+        }
+
+        let timer;
+        let seconds = 0;
+
+        function updateTimer() {
+            seconds++;
+            let mins = Math.floor(seconds / 60);
+            let secs = seconds % 60;
+            document.getElementById("timer").innerText = (mins < 10 ? "0" : "") + mins + ":" + (secs < 10 ? "0" : "") + secs;
+        }
+
+        function startTimer() {
+            if (!timer) {
+                timer = setInterval(updateTimer, 1000);
+            }
+        }
+
+        function stopTimer() {
+            clearInterval(timer);
+            timer = null;
+        }
+    </script>
+</body>
+</html>
