@@ -3,22 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <title>Padel OBS</title>
-  <link rel="stylesheet" href="./css/obs.css">
+  <style>
+    body { background: transparent; }
+    #board {
+      display: flex;
+      align-items: center;
+      font-size: 40px;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+    }
+    .serve {
+      margin: 0 10px;
+    }
+  </style>
 </head>
 <body>
 
-<div id="scoreboard">
-  <div>
-    <span id="serveA">🎾</span>
-    Team A: <span id="scoreA">0</span>
-  </div>
-  <div>
-    <span id="serveB">🎾</span>
-    Team B: <span id="scoreB">0</span>
-  </div>
+<div id="board">
+  <span id="serveA" class="serve">🎾</span>
+  <span id="scoreA">0</span>
+  <span> - </span>
+  <span id="scoreB">0</span>
+  <span id="serveB" class="serve">🎾</span>
 </div>
 
-<script src="./js/state.js"></script>
-<script src="./js/obs.js"></script>
+<script src="js/state.js"></script>
+<script src="js/obs.js"></script>
 </body>
 </html>
