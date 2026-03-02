@@ -1,5 +1,7 @@
 console.log("state loaded");
 
+const stateRef = db.ref("matchState");
+
 const DEFAULT_STATE = {
   scoreA: 0,
   scoreB: 0,
@@ -7,17 +9,26 @@ const DEFAULT_STATE = {
   visible: true
 };
 
-function getState() {
-  const s = localStorage.getItem("padelState");
-  return s ? JSON.parse(s) : DEFAULT_STATE;
+function initState() {
+  stateRef.once("value", snap => {
+    if (!snap.exists()) {
+      stateRef.set(DEFAULT_STATE);
+    }
+  });
 }
 
-function setState(newState) {
-  localStorage.setItem("padelState", JSON.stringify(newState));
+function updateState(updater) {
+  stateRef.transaction(state => {
+    if (!state) state = { ...DEFAULT_STATE };
+    updater(state);
+    return state;
+  });
 }
 
-function updateState(callback) {
-  const state = getState();
-  callback(state);
-  setState(state);
+function onStateChange(callback) {
+  stateRef.on("value", snap => {
+    callback(snap.val());
+  });
 }
+
+initState();
