@@ -2,51 +2,19 @@
 <html lang="el">
 <head>
   <meta charset="UTF-8">
-  <title>Padel War – Controller</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <link rel="stylesheet" href="css/controller.css">
+  <title>Padel Controller</title>
+  <link rel="stylesheet" href="./css/controller.css">
 </head>
 <body>
 
-<h1>Padel War Controller</h1>
+<h1>Controller</h1>
 
-<div class="panel">
+<button onclick="pointA()">+ Point A</button>
+<button onclick="pointB()">+ Point B</button>
+<button onclick="switchServe()">Switch Serve</button>
+<button onclick="resetScore()">Reset</button>
 
-  <div class="team">
-    <h2>Team A</h2>
-    <button id="plusA">+ Point</button>
-    <button id="minusA">- Point</button>
-    <div>Score: <span id="scoreA">0</span></div>
-    <div>Games: <span id="gamesA">0</span></div>
-    <div>Sets: <span id="setsA">0</span></div>
-  </div>
-
-  <div class="team">
-    <h2>Team B</h2>
-    <button id="plusB">+ Point</button>
-    <button id="minusB">- Point</button>
-    <div>Score: <span id="scoreB">0</span></div>
-    <div>Games: <span id="gamesB">0</span></div>
-    <div>Sets: <span id="setsB">0</span></div>
-  </div>
-
-</div>
-
-<hr>
-
-<div class="extras">
-  <button id="serveToggle">Switch Serve</button>
-  <button id="scoreboardToggle">ON</button>
-</div>
-
-<div class="timer">
-  <input id="timerInput" type="number" placeholder="Minutes">
-  <button id="setTimer">Set Timer</button>
-</div>
-
-<!-- ΠΡΟΣΟΧΗ: ΜΟΝΟ ΕΝΑ SCRIPT -->
-<script type="module" src="js/controller.js"></script>
-
+<script src="./js/state.js"></script>
+<script src="./js/controller.js"></script>
 </body>
 </html>
