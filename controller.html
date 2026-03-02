@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html lang="el">
 <head>
-<meta charset="UTF-8">
-<title>Controller</title>
-<link rel="stylesheet" href="css/controller.css">
+  <meta charset="UTF-8">
+  <title>Padel Controller</title>
+  <link rel="stylesheet" href="./css/controller.css">
 </head>
 <body>
 
-<h2>Σκορ</h2>
-<button onclick="point('A')">Πόντος A</button>
-<button onclick="point('B')">Πόντος B</button>
+<h1>Controller</h1>
 
-<h2>Σέρβις</h2>
-<button onclick="toggleServe()">Αλλαγή Σέρβις</button>
+<div class="buttons">
+  <button onclick="pointA()">+ Point A</button>
+  <button onclick="pointB()">+ Point B</button>
+  <button onclick="switchServe()">Switch Serve</button>
+  <button onclick="resetScore()">Reset</button>
+</div>
 
-<script src="js/state.js"></script>
-<script src="js/controller.js"></script>
+<script src="./js/state.js"></script>
+<script src="./js/controller.js"></script>
 </body>
 </html>
