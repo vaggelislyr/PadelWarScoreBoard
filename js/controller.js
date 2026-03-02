@@ -1,22 +1,34 @@
 console.log("controller loaded");
 
 function pointA() {
-  window.state.scoreA++;
-  saveState();
+  updateState(state => {
+    state.scoreA++;
+  });
 }
 
 function pointB() {
-  window.state.scoreB++;
-  saveState();
+  updateState(state => {
+    state.scoreB++;
+  });
 }
 
 function switchServe() {
-  window.state.serve = window.state.serve === "A" ? "B" : "A";
-  saveState();
+  updateState(state => {
+    state.serve = state.serve === "A" ? "B" : "A";
+  });
 }
 
 function resetScore() {
-  window.state.scoreA = 0;
-  window.state.scoreB = 0;
-  saveState();
+  setState({
+    scoreA: 0,
+    scoreB: 0,
+    serve: "A",
+    visible: true
+  });
+}
+
+function toggleScoreboard() {
+  updateState(state => {
+    state.visible = !state.visible;
+  });
 }
