@@ -1,16 +1,23 @@
 console.log("obs loaded");
 
+const scoreAEl = document.getElementById("scoreA");
+const scoreBEl = document.getElementById("scoreB");
+const serveAEl = document.getElementById("serveA");
+const serveBEl = document.getElementById("serveB");
+const boardEl = document.getElementById("board");
+
 function render() {
-  loadState();
+  const state = getState();
 
-  document.getElementById("scoreA").innerText = state.scoreA;
-  document.getElementById("scoreB").innerText = state.scoreB;
+  scoreAEl.textContent = state.scoreA;
+  scoreBEl.textContent = state.scoreB;
 
-  document.getElementById("serveA").style.opacity =
-    state.serve === "A" ? "1" : "0.2";
+  serveAEl.style.visibility = state.serve === "A" ? "visible" : "hidden";
+  serveBEl.style.visibility = state.serve === "B" ? "visible" : "hidden";
 
-  document.getElementById("serveB").style.opacity =
-    state.serve === "B" ? "1" : "0.2";
+  boardEl.style.display = state.visible ? "flex" : "none";
 }
 
+window.addEventListener("storage", render);
 setInterval(render, 300);
+render();
