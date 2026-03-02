@@ -1,34 +1,30 @@
 console.log("controller loaded");
 
 function pointA() {
-  updateState(state => {
-    state.scoreA++;
-  });
+  updateState(s => s.scoreA++);
 }
 
 function pointB() {
-  updateState(state => {
-    state.scoreB++;
-  });
+  updateState(s => s.scoreB++);
 }
 
 function switchServe() {
-  updateState(state => {
-    state.serve = state.serve === "A" ? "B" : "A";
-  });
-}
-
-function resetScore() {
-  setState({
-    scoreA: 0,
-    scoreB: 0,
-    serve: "A",
-    visible: true
+  updateState(s => {
+    s.serve = s.serve === "A" ? "B" : "A";
   });
 }
 
 function toggleScoreboard() {
-  updateState(state => {
-    state.visible = !state.visible;
+  updateState(s => {
+    s.visible = !s.visible;
+  });
+}
+
+function resetScore() {
+  updateState(s => {
+    s.scoreA = 0;
+    s.scoreB = 0;
+    s.serve = "A";
+    s.visible = true;
   });
 }
