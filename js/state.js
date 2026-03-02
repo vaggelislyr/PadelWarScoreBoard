@@ -1,22 +1,23 @@
 console.log("state loaded");
 
-window.state = {
+const DEFAULT_STATE = {
   scoreA: 0,
   scoreB: 0,
   serve: "A",
-  scoreboardVisible: true
+  visible: true
 };
 
-function saveState() {
-  localStorage.setItem("padelState", JSON.stringify(window.state));
+function getState() {
+  const s = localStorage.getItem("padelState");
+  return s ? JSON.parse(s) : DEFAULT_STATE;
 }
 
-function loadState() {
-  const saved = localStorage.getItem("padelState");
-  if (saved) {
-    window.state = JSON.parse(saved);
-  }
+function setState(newState) {
+  localStorage.setItem("padelState", JSON.stringify(newState));
 }
 
-loadState();
-saveState();
+function updateState(callback) {
+  const state = getState();
+  callback(state);
+  setState(state);
+}
