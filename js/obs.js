@@ -1,23 +1,19 @@
 console.log("obs loaded");
 
-const scoreAEl = document.getElementById("scoreA");
-const scoreBEl = document.getElementById("scoreB");
-const serveAEl = document.getElementById("serveA");
-const serveBEl = document.getElementById("serveB");
-const boardEl = document.getElementById("board");
+const board = document.getElementById("board");
+const scoreA = document.getElementById("scoreA");
+const scoreB = document.getElementById("scoreB");
+const serveA = document.getElementById("serveA");
+const serveB = document.getElementById("serveB");
 
-function render() {
-  const state = getState();
+onStateChange(state => {
+  if (!state) return;
 
-  scoreAEl.textContent = state.scoreA;
-  scoreBEl.textContent = state.scoreB;
+  scoreA.textContent = state.scoreA;
+  scoreB.textContent = state.scoreB;
 
-  serveAEl.style.visibility = state.serve === "A" ? "visible" : "hidden";
-  serveBEl.style.visibility = state.serve === "B" ? "visible" : "hidden";
+  serveA.style.visibility = state.serve === "A" ? "visible" : "hidden";
+  serveB.style.visibility = state.serve === "B" ? "visible" : "hidden";
 
-  boardEl.style.display = state.visible ? "flex" : "none";
-}
-
-window.addEventListener("storage", render);
-setInterval(render, 300);
-render();
+  board.style.display = state.visible ? "flex" : "none";
+});
