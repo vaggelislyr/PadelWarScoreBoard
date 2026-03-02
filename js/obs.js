@@ -1,16 +1,16 @@
-console.log("OBS loaded");
+console.log("obs loaded");
 
-function renderOBS() {
-  document.getElementById("scoreA").textContent = state.scoreA;
-  document.getElementById("scoreB").textContent = state.scoreB;
+function render() {
+  loadState();
 
-  document.getElementById("serveA").textContent =
-    state.serve === "A" ? "🎾" : "";
+  document.getElementById("scoreA").innerText = state.scoreA;
+  document.getElementById("scoreB").innerText = state.scoreB;
 
-  document.getElementById("serveB").textContent =
-    state.serve === "B" ? "🎾" : "";
+  document.getElementById("serveA").style.opacity =
+    state.serve === "A" ? "1" : "0.2";
+
+  document.getElementById("serveB").style.opacity =
+    state.serve === "B" ? "1" : "0.2";
 }
 
-renderOBS();
-
-window.addEventListener("storage", renderOBS);
+setInterval(render, 300);
