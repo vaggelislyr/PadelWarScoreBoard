@@ -1,18 +1,16 @@
-// obs.js
 console.log("OBS loaded");
 
-function updateOBS() {
-  const state = loadState();
+function renderOBS() {
+  document.getElementById("scoreA").textContent = state.scoreA;
+  document.getElementById("scoreB").textContent = state.scoreB;
 
-  document.getElementById("scoreA").innerText = state.score.A;
-  document.getElementById("scoreB").innerText = state.score.B;
+  document.getElementById("serveA").textContent =
+    state.serve === "A" ? "🎾" : "";
 
-  document.getElementById("gamesA").innerText = state.games.A;
-  document.getElementById("gamesB").innerText = state.games.B;
-
-  document.getElementById("setsA").innerText = state.sets.A;
-  document.getElementById("setsB").innerText = state.sets.B;
+  document.getElementById("serveB").textContent =
+    state.serve === "B" ? "🎾" : "";
 }
 
-// refresh κάθε 300ms
-setInterval(updateOBS, 300);
+renderOBS();
+
+window.addEventListener("storage", renderOBS);
