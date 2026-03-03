@@ -1,19 +1,40 @@
 console.log("obs loaded");
 
-const board = document.getElementById("board");
-const scoreA = document.getElementById("scoreA");
-const scoreB = document.getElementById("scoreB");
-const serveA = document.getElementById("serveA");
-const serveB = document.getElementById("serveB");
+function tennisDisplay(points) {
+  const map = ["0", "15", "30", "40", "AD"];
+  return map[points] ?? "0";
+}
 
 onStateChange(state => {
+
   if (!state) return;
 
-  scoreA.textContent = state.scoreA;
-  scoreB.textContent = state.scoreB;
+  const scoreAEl = document.getElementById("scoreA");
+  const scoreBEl = document.getElementById("scoreB");
+  const serveAEl = document.getElementById("serveA");
+  const serveBEl = document.getElementById("serveB");
+  const board = document.getElementById("board");
 
-  serveA.style.visibility = state.serve === "A" ? "visible" : "hidden";
-  serveB.style.visibility = state.serve === "B" ? "visible" : "hidden";
-
+  // Visibility
   board.style.display = state.visible ? "flex" : "none";
+
+  // Serve ball
+  serveAEl.style.opacity = state.serve === "A" ? "1" : "0.2";
+  serveBEl.style.opacity = state.serve === "B" ? "1" : "0.2";
+
+  // =========================
+  // DISPLAY LOGIC
+  // =========================
+
+  if (state.mode === "normal") {
+
+    scoreAEl.textContent = tennisDisplay(state.pointsA);
+    scoreBEl.textContent = tennisDisplay(state.pointsB);
+
+  } else {
+    // tiebreak or super
+    scoreAEl.textContent = state.pointsA;
+    scoreBEl.textContent = state.pointsB;
+  }
+
 });
