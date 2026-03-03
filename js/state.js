@@ -3,8 +3,13 @@ console.log("state loaded");
 const stateRef = db.ref("matchState");
 
 const DEFAULT_STATE = {
-  scoreA: 0,
-  scoreB: 0,
+  pointsA: 0,
+  pointsB: 0,
+  gamesA: 0,
+  gamesB: 0,
+  setsA: 0,
+  setsB: 0,
+  mode: "normal",   // normal | tiebreak | super
   serve: "A",
   visible: true
 };
