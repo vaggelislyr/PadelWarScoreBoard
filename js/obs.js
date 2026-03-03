@@ -1,40 +1,23 @@
-console.log("obs loaded");
+console.log("Obs loaded");
 
-function tennisDisplay(points) {
+const scoreAEl = document.getElementById("scoreA");
+const scoreBEl = document.getElementById("scoreB");
+const serveAEl = document.getElementById("serveA");
+const serveBEl = document.getElementById("serveB");
+
+function tennisPoints(p) {
   const map = ["0", "15", "30", "40", "AD"];
-  return map[points] ?? "0";
+  return map[p] ?? "0";
 }
 
 onStateChange(state => {
-
   if (!state) return;
 
-  const scoreAEl = document.getElementById("scoreA");
-  const scoreBEl = document.getElementById("scoreB");
-  const serveAEl = document.getElementById("serveA");
-  const serveBEl = document.getElementById("serveB");
-  const board = document.getElementById("board");
+  // Εμφάνιση πόντων
+  scoreAEl.textContent = tennisPoints(state.pointsA);
+  scoreBEl.textContent = tennisPoints(state.pointsB);
 
-  // Visibility
-  board.style.display = state.visible ? "flex" : "none";
-
-  // Serve ball
-  serveAEl.style.opacity = state.serve === "A" ? "1" : "0.2";
-  serveBEl.style.opacity = state.serve === "B" ? "1" : "0.2";
-
-  // =========================
-  // DISPLAY LOGIC
-  // =========================
-
-  if (state.mode === "normal") {
-
-    scoreAEl.textContent = tennisDisplay(state.pointsA);
-    scoreBEl.textContent = tennisDisplay(state.pointsB);
-
-  } else {
-    // tiebreak or super
-    scoreAEl.textContent = state.pointsA;
-    scoreBEl.textContent = state.pointsB;
-  }
-
+  // Εμφάνιση σερβίς
+  serveAEl.style.visibility = state.serve === "A" ? "visible" : "hidden";
+  serveBEl.style.visibility = state.serve === "B" ? "visible" : "hidden";
 });
