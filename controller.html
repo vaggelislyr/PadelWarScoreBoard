@@ -1,63 +1,280 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="el">
 <head>
-  <meta charset="UTF-8" />
-  <title>Padel Controller</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<title>Tennis Controller</title>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background: #111;
-      color: white;
-      padding: 40px;
-    }
+<style>
+body{
+  background:#111;
+  color:white;
+  font-family:Arial;
+  text-align:center;
+}
 
-    h1 {
-      margin-bottom: 30px;
-    }
+h2{margin-top:20px}
 
-    button {
-      padding: 15px 25px;
-      margin: 10px;
-      font-size: 18px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
+button{
+  padding:10px 18px;
+  margin:6px;
+  font-size:16px;
+  cursor:pointer;
+}
 
-    #pointA { background: #2ecc71; }
-    #pointB { background: #3498db; }
-    #switchServe { background: #f39c12; }
-    #toggleVisible { background: #9b59b6; }
-    #reset { background: #e74c3c; }
+.score{
+  font-size:28px;
+  margin:15px 0;
+}
 
-    button:hover {
-      opacity: 0.85;
-    }
-  </style>
+.undo{
+  background:#c0392b;
+  color:white;
+  font-weight:bold;
+}
+
+.gold{
+  background:gold;
+  color:black;
+  font-weight:bold;
+}
+
+.section{
+  margin-top:25px;
+  padding:10px;
+  border-top:1px solid #444;
+}
+
+input{
+  padding:6px;
+  font-size:16px;
+  margin:4px;
+}
+</style>
 </head>
 
 <body>
 
-  <h1>🎾 Padel Controller</h1>
+<h2>Tennis Score Controller</h2>
 
-  <button id="pointA">+ Point A</button>
-  <button id="pointB">+ Point B</button>
-  <br><br>
-  <button id="switchServe">Switch Serve</button>
-  <br><br>
-  <button id="toggleVisible">ON / OFF</button>
-  <button id="reset">Reset Match</button>
-  
- <!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<div class="score" id="scoreDisplay"></div>
 
-<script src="js/firebase.js"></script>
-<script src="js/state.js"></script>
-<script src="js/controller.js"></script>
+<!-- POINT BUTTONS -->
+<button onclick="addPoint('A')">Point A</button>
+<button onclick="addPoint('B')">Point B</button>
 
+<br>
+
+<button onclick="switchServe()">Switch Serve</button>
+<button onclick="undo()" class="undo">UNDO</button>
+
+<div class="section">
+<button onclick="toggleGolden()" class="gold">Golden ON/OFF</button>
+<button onclick="toggleOverlay()">Show / Hide Overlay</button>
+</div>
+
+<div class="section">
+<h3>Player Names</h3>
+<input id="inputA" placeholder="Player A">
+<input id="inputB" placeholder="Player B">
+<button onclick="updateNames()">Update Names</button>
+</div>
+
+<div class="section">
+<h3>Organizer</h3>
+<input id="organizerInput" placeholder="Tournament Name">
+<button onclick="updateOrganizer()">Update Organizer</button>
+</div>
+
+<script>
+
+/* ---------------- STATE ---------------- */
+
+let state = {
+  visible:true,
+  nameA:"PLAYER A",
+  nameB:"PLAYER B",
+  setsA:0,
+  setsB:0,
+  gamesA:0,
+  gamesB:0,
+  pointsA:0,
+  pointsB:0,
+  serve:"A",
+  goldenActive:false,
+  mode:"normal", // normal / tiebreak
+  organizer:""
+};
+
+let historyStack = [];
+
+/* ---------------- SYNC ---------------- */
+
+function sync(){
+  window.dispatchEvent(new CustomEvent("stateChange",{detail:state}));
+  document.getElementById("scoreDisplay").innerText =
+  `${state.setsA}-${state.setsB} | ${state.gamesA}-${state.gamesB} | ${state.pointsA}-${state.pointsB}`;
+}
+
+/* ---------------- SAVE HISTORY ---------------- */
+
+function saveHistory(){
+  historyStack.push(JSON.parse(JSON.stringify(state)));
+  if(historyStack.length>100){
+    historyStack.shift();
+  }
+}
+
+/* ---------------- UNDO ---------------- */
+
+function undo(){
+  if(historyStack.length>0){
+    state = historyStack.pop();
+    sync();
+  }
+}
+
+/* ---------------- SERVE ---------------- */
+
+function switchServe(){
+  saveHistory();
+  state.serve = state.serve==="A" ? "B":"A";
+  sync();
+}
+
+/* ---------------- GOLDEN ---------------- */
+
+function toggleGolden(){
+  state.goldenActive = !state.goldenActive;
+  sync();
+}
+
+/* ---------------- OVERLAY ---------------- */
+
+function toggleOverlay(){
+  state.visible = !state.visible;
+  sync();
+}
+
+/* ---------------- NAME UPDATE ---------------- */
+
+function updateNames(){
+  saveHistory();
+  state.nameA = document.getElementById("inputA").value || state.nameA;
+  state.nameB = document.getElementById("inputB").value || state.nameB;
+  sync();
+}
+
+/* ---------------- ORGANIZER ---------------- */
+
+function updateOrganizer(){
+  state.organizer = document.getElementById("organizerInput").value;
+  sync();
+}
+
+/* ---------------- ADD POINT ---------------- */
+
+function addPoint(player){
+
+  saveHistory();
+
+  if(state.mode==="tiebreak"){
+    state["points"+player]++;
+
+    if(
+      state["points"+player] >=7 &&
+      Math.abs(state.pointsA - state.pointsB) >=2
+    ){
+      winSet(player);
+    }
+
+    sync();
+    return;
+  }
+
+  state["points"+player]++;
+
+  // Golden active (no advantage)
+  if(state.goldenActive){
+
+    if(state.pointsA===4 || state.pointsB===4){
+      winGame(player);
+    }
+
+  }else{
+
+    // Normal tennis
+    if(state.pointsA>=3 && state.pointsB>=3){
+
+      if(state.pointsA===state.pointsB){
+        state.pointsA=3;
+        state.pointsB=3;
+      }
+
+      if(state.pointsA===5){
+        winGame("A");
+      }
+
+      if(state.pointsB===5){
+        winGame("B");
+      }
+
+    }else{
+
+      if(state.pointsA===4){
+        winGame("A");
+      }
+
+      if(state.pointsB===4){
+        winGame("B");
+      }
+
+    }
+
+  }
+
+  sync();
+}
+
+/* ---------------- WIN GAME ---------------- */
+
+function winGame(player){
+
+  state.gamesA = state.gamesA;
+  state.gamesB = state.gamesB;
+
+  state["games"+player]++;
+  state.pointsA=0;
+  state.pointsB=0;
+
+  if(state.gamesA===6 && state.gamesB===6){
+    state.mode="tiebreak";
+    return;
+  }
+
+  if(
+    state["games"+player]>=6 &&
+    Math.abs(state.gamesA-state.gamesB)>=2
+  ){
+    winSet(player);
+  }
+}
+
+/* ---------------- WIN SET ---------------- */
+
+function winSet(player){
+
+  state["sets"+player]++;
+  state.gamesA=0;
+  state.gamesB=0;
+  state.pointsA=0;
+  state.pointsB=0;
+  state.mode="normal";
+}
+
+/* ---------------- INIT ---------------- */
+
+sync();
+
+</script>
 </body>
 </html>
