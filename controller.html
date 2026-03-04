@@ -1,26 +1,66 @@
 <!DOCTYPE html>
-<html lang="el">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Padel Controller</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #111;
+      color: white;
+      padding: 40px;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+    }
+
+    button {
+      padding: 15px 25px;
+      margin: 10px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #pointA { background: #2ecc71; }
+    #pointB { background: #3498db; }
+    #switchServe { background: #f39c12; }
+    #toggleVisible { background: #9b59b6; }
+    #reset { background: #e74c3c; }
+
+    button:hover {
+      opacity: 0.85;
+    }
+  </style>
 </head>
+
 <body>
 
-<h1>🎮 Padel Controller</h1>
+  <h1>🎾 Padel Controller</h1>
 
-<button onclick="pointA()">+ Point A</button>
-<button onclick="pointB()">+ Point B</button>
-<button onclick="switchServe()">🎾 Switch Serve</button>
-<button onclick="toggleScoreboard()">ON / OFF</button>
-<button onclick="resetScore()">Reset</button>
+  <div>
+    <button id="pointA">+ Point A</button>
+    <button id="pointB">+ Point B</button>
+  </div>
 
-<!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <div>
+    <button id="switchServe">Switch Serve</button>
+  </div>
 
-<script src="js/firebase.js"></script>
-<script src="js/state.js"></script>
-<script src="js/controller.js"></script>
+  <div>
+    <button id="toggleVisible">ON / OFF</button>
+    <button id="reset">Reset Match</button>
+  </div>
+
+  <!-- Firebase -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/controller.js"></script>
 
 </body>
 </html>
