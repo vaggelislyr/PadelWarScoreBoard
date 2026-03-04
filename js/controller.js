@@ -1,5 +1,26 @@
 console.log("Controller loaded");
 
+/* ================= HISTORY ================= */
+
+let historyStack = [];
+
+function saveToHistory(currentState) {
+  const snapshot = JSON.parse(JSON.stringify(currentState));
+  historyStack.push(snapshot);
+
+  if (historyStack.length > 100) {
+    historyStack.shift(); // limit history size
+  }
+}
+
+function undoLast() {
+  if (historyStack.length === 0) return;
+
+  const previous = historyStack.pop();
+
+  database.ref("matchState").set(previous);
+}
+
 /* ================= HELPERS ================= */
 
 function nextServe(current) {
@@ -26,20 +47,18 @@ function winGame(state, player) {
   checkSetOrTiebreak(state);
 }
 
-/* ================= SET / TIEBREAK LOGIC ================= */
+/* ================= SET / TIEBREAK ================= */
 
 function checkSetOrTiebreak(state) {
 
   const { gamesA, gamesB } = state;
 
-  // 6-6 → start tiebreak immediately
   if (gamesA === 6 && gamesB === 6) {
     state.mode = "tiebreak";
     resetPoints(state);
     return;
   }
 
-  // Normal set win
   if (gamesA >= 6 && gamesA - gamesB >= 2) {
     state.setsA++;
     state.gamesA = 0;
@@ -59,16 +78,13 @@ function handleNormalPoint(state, player) {
 
   const opponent = player === "A" ? "B" : "A";
 
-  // GOLDEN active
   if (state.goldenActive && state.pointsA === 3 && state.pointsB === 3) {
     winGame(state, player);
     return;
   }
 
-  // Deuce logic
   if (state.pointsA >= 3 && state.pointsB >= 3) {
 
-    // Opponent had AD → back to deuce
     if (state["points" + opponent] === 4) {
       state.pointsA = 3;
       state.pointsB = 3;
@@ -81,20 +97,17 @@ function handleNormalPoint(state, player) {
       return;
     }
 
-    // Player had AD and wins
     if (state["points" + player] === 4) {
       winGame(state, player);
       return;
     }
 
-    // Deuce → give AD
     if (state.pointsA === 3 && state.pointsB === 3) {
       state["points" + player] = 4;
       return;
     }
   }
 
-  // Normal scoring
   state["points" + player]++;
 
   if (
@@ -132,7 +145,13 @@ function handleTieBreak(state, player) {
 
 function addPoint(player) {
 
-  updateState(state => {
+  database.ref("matchState").once("value").then(snapshot => {
+
+    let state = snapshot.val();
+
+    if (!state) return;
+
+    saveToHistory(state);
 
     if (!state.deuceCount) state.deuceCount = 0;
     if (!state.goldenActive) state.goldenActive = false;
@@ -145,14 +164,20 @@ function addPoint(player) {
       handleTieBreak(state, player);
     }
 
+    database.ref("matchState").set(state);
   });
 }
 
-/* ================= RESET MATCH ================= */
+/* ================= RESET ================= */
 
 function resetMatch() {
 
-  updateState(state => {
+  database.ref("matchState").once("value").then(snapshot => {
+
+    let state = snapshot.val();
+    if (!state) return;
+
+    saveToHistory(state);
 
     state.pointsA = 0;
     state.pointsB = 0;
@@ -168,6 +193,7 @@ function resetMatch() {
     state.deuceCount = 0;
     state.goldenActive = false;
 
+    database.ref("matchState").set(state);
   });
 }
 
@@ -177,15 +203,23 @@ document.getElementById("pointA").onclick = () => addPoint("A");
 document.getElementById("pointB").onclick = () => addPoint("B");
 
 document.getElementById("switchServe").onclick = () => {
-  updateState(state => {
+  database.ref("matchState").once("value").then(snapshot => {
+    let state = snapshot.val();
+    saveToHistory(state);
     state.serve = nextServe(state.serve);
+    database.ref("matchState").set(state);
   });
 };
 
 document.getElementById("toggleVisible").onclick = () => {
-  updateState(state => {
+  database.ref("matchState").once("value").then(snapshot => {
+    let state = snapshot.val();
+    saveToHistory(state);
     state.visible = !state.visible;
+    database.ref("matchState").set(state);
   });
 };
 
 document.getElementById("reset").onclick = resetMatch;
+
+document.getElementById("undo").onclick = undoLast;
