@@ -43,24 +43,18 @@
 
   <h1>🎾 Padel Controller</h1>
 
-  <div>
-    <button id="pointA">+ Point A</button>
-    <button id="pointB">+ Point B</button>
-  </div>
+  <button id="pointA">+ Point A</button>
+  <button id="pointB">+ Point B</button>
+  <br><br>
+  <button id="switchServe">Switch Serve</button>
+  <br><br>
+  <button id="toggleVisible">ON / OFF</button>
+  <button id="reset">Reset Match</button>
 
-  <div>
-    <button id="switchServe">Switch Serve</button>
-  </div>
-
-  <div>
-    <button id="toggleVisible">ON / OFF</button>
-    <button id="reset">Reset Match</button>
-  </div>
-
-  <!-- Firebase -->
-  <script src="js/firebase-config.js"></script>
-  <script src="js/state.js"></script>
-  <script src="js/controller.js"></script>
+  <!-- JS ORDER IS IMPORTANT -->
+  <script src="js/Firebase.js"></script>
+  <script src="js/State.js"></script>
+  <script src="js/Controller.js"></script>
 
 </body>
 </html>
