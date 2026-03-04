@@ -72,10 +72,28 @@ onStateChange(state => {
   gamesAEl.textContent = state.gamesA ?? 0;
   gamesBEl.textContent = state.gamesB ?? 0;
 
-  /* ===== NORMAL POINTS ===== */
-  if (state.mode !== "tiebreak") {
-    pointsAEl.textContent = tennisPoints(state.pointsA);
-    pointsBEl.textContent = tennisPoints(state.pointsB);
+  /* ===== POINT DISPLAY LOGIC ===== */
+
+if (state.mode === "tiebreak") {
+
+  // Hide normal tennis points
+  pointsAEl.textContent = "-";
+  pointsBEl.textContent = "-";
+
+  // Show numeric TB points in TB column
+  tbAEl.textContent = state.pointsA;
+  tbBEl.textContent = state.pointsB;
+
+} else {
+
+  // Normal mode
+  pointsAEl.textContent = tennisPoints(state.pointsA);
+  pointsBEl.textContent = tennisPoints(state.pointsB);
+
+  tbAEl.textContent = "0";
+  tbBEl.textContent = "0";
+}
+  
   }
 
   /* ===== GOLDEN VISUAL ===== */
