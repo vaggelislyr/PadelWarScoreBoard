@@ -1,126 +1,167 @@
-console.log("controller loaded");
+console.log("Controller loaded");
 
-function pointA() {
-  updateState(s => addPoint(s, "A"));
+function nextServe(current) {
+  return current === "A" ? "B" : "A";
 }
 
-function pointB() {
-  updateState(s => addPoint(s, "B"));
+function resetPoints(state) {
+  state.pointsA = 0;
+  state.pointsB = 0;
 }
 
-function switchServe() {
-  updateState(s => {
-    s.serve = s.serve === "A" ? "B" : "A";
-  });
+function winGame(state, player) {
+  if (player === "A") state.gamesA++;
+  else state.gamesB++;
+
+  resetPoints(state);
+  state.serve = nextServe(state.serve);
+
+  checkSetWinner(state);
 }
 
-function toggleScoreboard() {
-  updateState(s => {
-    s.visible = !s.visible;
-  });
+function checkSetWinner(state) {
+  const { gamesA, gamesB } = state;
+
+  if (gamesA >= 6 && gamesA - gamesB >= 2) {
+    state.setsA++;
+    state.gamesA = 0;
+    state.gamesB = 0;
+  }
+
+  if (gamesB >= 6 && gamesB - gamesA >= 2) {
+    state.setsB++;
+    state.gamesA = 0;
+    state.gamesB = 0;
+  }
+
+  // Tie break at 6-6
+  if (gamesA === 6 && gamesB === 6) {
+    state.mode = "tiebreak";
+    resetPoints(state);
+  }
 }
 
-function resetScore() {
-  updateState(s => {
-    s.pointsA = 0;
-    s.pointsB = 0;
-    s.gamesA = 0;
-    s.gamesB = 0;
-    s.setsA = 0;
-    s.setsB = 0;
-    s.mode = "normal";
-    s.serve = "A";
-    s.visible = true;
-  });
-}
+function handleNormalPoint(state, player) {
+  const opponent = player === "A" ? "B" : "A";
 
-function addPoint(s, player) {
+  if (state.pointsA >= 3 && state.pointsB >= 3) {
+    // Deuce logic
 
-  // =========================
-  // SUPER TIE BREAK (10)
-  // =========================
-  if (s.mode === "super") {
-
-    if (player === "A") s.pointsA++;
-    else s.pointsB++;
-
-    if (
-      (s.pointsA >= 10 || s.pointsB >= 10) &&
-      Math.abs(s.pointsA - s.pointsB) >= 2
-    ) {
-      alert("Match Winner: " + player);
+    if (state.pointsA === 4 && player === "B") {
+      state.pointsA = 3;
+      state.pointsB = 3;
+      return;
     }
 
+    if (state.pointsB === 4 && player === "A") {
+      state.pointsA = 3;
+      state.pointsB = 3;
+      return;
+    }
+
+    if (state.pointsA === 4 && player === "A") {
+      winGame(state, "A");
+      return;
+    }
+
+    if (state.pointsB === 4 && player === "B") {
+      winGame(state, "B");
+      return;
+    }
+
+    if (state.pointsA === 3 && state.pointsB === 3) {
+      state["points" + player]++;
+      return;
+    }
+  }
+
+  state["points" + player]++;
+
+  if (state["points" + player] >= 4 && state["points" + player] - state["points" + opponent] >= 2) {
+    winGame(state, player);
+  }
+}
+
+function handleGoldenPoint(state, player) {
+  if (state.pointsA === 3 && state.pointsB === 3) {
+    winGame(state, player);
     return;
   }
 
-  // =========================
-  // TIE BREAK (7)
-  // =========================
-  if (s.mode === "tiebreak") {
+  state["points" + player]++;
 
-    if (player === "A") s.pointsA++;
-    else s.pointsB++;
+  const opponent = player === "A" ? "B" : "A";
 
-    if (
-      (s.pointsA >= 7 || s.pointsB >= 7) &&
-      Math.abs(s.pointsA - s.pointsB) >= 2
-    ) {
-
-      if (player === "A") s.gamesA++;
-      else s.gamesB++;
-
-      awardSet(s, player);
-    }
-
-    return;
-  }
-
-  // =========================
-  // NORMAL GAME
-  // =========================
-
-  if (player === "A") s.pointsA++;
-  else s.pointsB++;
-
-  if (s.pointsA >= 4 || s.pointsB >= 4) {
-    if (Math.abs(s.pointsA - s.pointsB) >= 2) {
-
-      if (player === "A") s.gamesA++;
-      else s.gamesB++;
-
-      s.pointsA = 0;
-      s.pointsB = 0;
-
-      // 6-6 → Tie Break
-      if (s.gamesA === 6 && s.gamesB === 6) {
-        s.mode = "tiebreak";
-      }
-
-      // Κανονικό κλείσιμο σετ
-      if (
-        (s.gamesA >= 6 || s.gamesB >= 6) &&
-        Math.abs(s.gamesA - s.gamesB) >= 2
-      ) {
-        awardSet(s, player);
-      }
-    }
+  if (state["points" + player] >= 4 && state["points" + player] - state["points" + opponent] >= 2) {
+    winGame(state, player);
   }
 }
 
-function awardSet(s, player) {
+function handleTieBreak(state, player) {
+  state["points" + player]++;
 
-  if (player === "A") s.setsA++;
-  else s.setsB++;
+  const opponent = player === "A" ? "B" : "A";
 
-  s.gamesA = 0;
-  s.gamesB = 0;
-  s.pointsA = 0;
-  s.pointsB = 0;
-  s.mode = "normal";
+  if (state["points" + player] >= 7 &&
+      state["points" + player] - state["points" + opponent] >= 2) {
 
-  // Αν γίνει 1-1 → Super Tie Break
-  if (s.setsA === 1 && s.setsB === 1) {
-    s.mode = "super";
+    if (player === "A") state.setsA++;
+    else state.setsB++;
+
+    state.gamesA = 0;
+    state.gamesB = 0;
+    resetPoints(state);
+    state.mode = "normal";
   }
 }
+
+function handleSuperTieBreak(state, player) {
+  state["points" + player]++;
+
+  const opponent = player === "A" ? "B" : "A";
+
+  if (state["points" + player] >= 10 &&
+      state["points" + player] - state["points" + opponent] >= 2) {
+
+    if (player === "A") state.setsA++;
+    else state.setsB++;
+
+    state.gamesA = 0;
+    state.gamesB = 0;
+    resetPoints(state);
+    state.mode = "normal";
+  }
+}
+
+function addPoint(player) {
+  updateState(state => {
+
+    if (state.mode === "normal")
+      handleNormalPoint(state, player);
+
+    else if (state.mode === "golden")
+      handleGoldenPoint(state, player);
+
+    else if (state.mode === "tiebreak")
+      handleTieBreak(state, player);
+
+    else if (state.mode === "super")
+      handleSuperTieBreak(state, player);
+  });
+}
+
+function resetMatch() {
+  updateState(state => {
+    state.pointsA = 0;
+    state.pointsB = 0;
+    state.gamesA = 0;
+    state.gamesB = 0;
+    state.setsA = 0;
+    state.setsB = 0;
+    state.mode = "normal";
+  });
+}
+
+document.getElementById("pointA").onclick = () => addPoint("A");
+document.getElementById("pointB").onclick = () => addPoint("B");
+document.getElementById("reset").onclick = resetMatch;
