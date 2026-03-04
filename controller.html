@@ -1,280 +1,91 @@
 <!DOCTYPE html>
-<html lang="el">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Tennis Controller</title>
+<title>PADEL Scoreboard Controller</title>
 
 <style>
 body{
-  background:#111;
-  color:white;
-  font-family:Arial;
-  text-align:center;
+    background:#0f172a;
+    color:white;
+    font-family:Arial;
+    padding:20px;
 }
 
-h2{margin-top:20px}
-
-button{
-  padding:10px 18px;
-  margin:6px;
-  font-size:16px;
-  cursor:pointer;
-}
-
-.score{
-  font-size:28px;
-  margin:15px 0;
-}
-
-.undo{
-  background:#c0392b;
-  color:white;
-  font-weight:bold;
-}
-
-.gold{
-  background:gold;
-  color:black;
-  font-weight:bold;
+h1{
+    margin-bottom:10px;
 }
 
 .section{
-  margin-top:25px;
-  padding:10px;
-  border-top:1px solid #444;
+    background:#1e293b;
+    padding:15px;
+    margin-bottom:15px;
+    border-radius:8px;
+}
+
+button{
+    padding:8px 12px;
+    margin:4px;
+    border:none;
+    border-radius:6px;
+    background:#334155;
+    color:white;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#475569;
 }
 
 input{
-  padding:6px;
-  font-size:16px;
-  margin:4px;
+    padding:6px;
+    margin:4px;
+    border-radius:6px;
+    border:none;
+    width:150px;
+}
+
+.previewWrapper{
+    margin-top:20px;
+    border:2px solid #334155;
+    border-radius:8px;
+    overflow:hidden;
 }
 </style>
 </head>
 
 <body>
 
-<h2>Tennis Score Controller</h2>
-
-<div class="score" id="scoreDisplay"></div>
-
-<!-- POINT BUTTONS -->
-<button onclick="addPoint('A')">Point A</button>
-<button onclick="addPoint('B')">Point B</button>
-
-<br>
-
-<button onclick="switchServe()">Switch Serve</button>
-<button onclick="undo()" class="undo">UNDO</button>
+<h1>🎾 PADEL Scoreboard Controller</h1>
 
 <div class="section">
-<button onclick="toggleGolden()" class="gold">Golden ON/OFF</button>
-<button onclick="toggleOverlay()">Show / Hide Overlay</button>
-</div>
+<h3>Players</h3>
 
-<div class="section">
-<h3>Player Names</h3>
-<input id="inputA" placeholder="Player A">
-<input id="inputB" placeholder="Player B">
+<input id="p1" placeholder="Player 1">
+<input id="p2" placeholder="Player 2">
 <button onclick="updateNames()">Update Names</button>
 </div>
 
 <div class="section">
-<h3>Organizer</h3>
-<input id="organizerInput" placeholder="Tournament Name">
-<button onclick="updateOrganizer()">Update Organizer</button>
+<h3>Score</h3>
+
+<button onclick="point(1)">Point Team 1</button>
+<button onclick="point(2)">Point Team 2</button>
+<button onclick="undo()">UNDO</button>
+<button onclick="resetMatch()">RESET MATCH</button>
 </div>
 
-<script>
+<div class="section">
+<h3>Scoreboard Visibility</h3>
 
-/* ---------------- STATE ---------------- */
+<button onclick="toggleScoreboard()">ON / OFF</button>
+</div>
 
-let state = {
-  visible:true,
-  nameA:"PLAYER A",
-  nameB:"PLAYER B",
-  setsA:0,
-  setsB:0,
-  gamesA:0,
-  gamesB:0,
-  pointsA:0,
-  pointsB:0,
-  serve:"A",
-  goldenActive:false,
-  mode:"normal", // normal / tiebreak
-  organizer:""
-};
+<div class="previewWrapper">
+<iframe src="obs.html" width="100%" height="300"></iframe>
+</div>
 
-let historyStack = [];
+<script src="controller.js"></script>
 
-/* ---------------- SYNC ---------------- */
-
-function sync(){
-  window.dispatchEvent(new CustomEvent("stateChange",{detail:state}));
-  document.getElementById("scoreDisplay").innerText =
-  `${state.setsA}-${state.setsB} | ${state.gamesA}-${state.gamesB} | ${state.pointsA}-${state.pointsB}`;
-}
-
-/* ---------------- SAVE HISTORY ---------------- */
-
-function saveHistory(){
-  historyStack.push(JSON.parse(JSON.stringify(state)));
-  if(historyStack.length>100){
-    historyStack.shift();
-  }
-}
-
-/* ---------------- UNDO ---------------- */
-
-function undo(){
-  if(historyStack.length>0){
-    state = historyStack.pop();
-    sync();
-  }
-}
-
-/* ---------------- SERVE ---------------- */
-
-function switchServe(){
-  saveHistory();
-  state.serve = state.serve==="A" ? "B":"A";
-  sync();
-}
-
-/* ---------------- GOLDEN ---------------- */
-
-function toggleGolden(){
-  state.goldenActive = !state.goldenActive;
-  sync();
-}
-
-/* ---------------- OVERLAY ---------------- */
-
-function toggleOverlay(){
-  state.visible = !state.visible;
-  sync();
-}
-
-/* ---------------- NAME UPDATE ---------------- */
-
-function updateNames(){
-  saveHistory();
-  state.nameA = document.getElementById("inputA").value || state.nameA;
-  state.nameB = document.getElementById("inputB").value || state.nameB;
-  sync();
-}
-
-/* ---------------- ORGANIZER ---------------- */
-
-function updateOrganizer(){
-  state.organizer = document.getElementById("organizerInput").value;
-  sync();
-}
-
-/* ---------------- ADD POINT ---------------- */
-
-function addPoint(player){
-
-  saveHistory();
-
-  if(state.mode==="tiebreak"){
-    state["points"+player]++;
-
-    if(
-      state["points"+player] >=7 &&
-      Math.abs(state.pointsA - state.pointsB) >=2
-    ){
-      winSet(player);
-    }
-
-    sync();
-    return;
-  }
-
-  state["points"+player]++;
-
-  // Golden active (no advantage)
-  if(state.goldenActive){
-
-    if(state.pointsA===4 || state.pointsB===4){
-      winGame(player);
-    }
-
-  }else{
-
-    // Normal tennis
-    if(state.pointsA>=3 && state.pointsB>=3){
-
-      if(state.pointsA===state.pointsB){
-        state.pointsA=3;
-        state.pointsB=3;
-      }
-
-      if(state.pointsA===5){
-        winGame("A");
-      }
-
-      if(state.pointsB===5){
-        winGame("B");
-      }
-
-    }else{
-
-      if(state.pointsA===4){
-        winGame("A");
-      }
-
-      if(state.pointsB===4){
-        winGame("B");
-      }
-
-    }
-
-  }
-
-  sync();
-}
-
-/* ---------------- WIN GAME ---------------- */
-
-function winGame(player){
-
-  state.gamesA = state.gamesA;
-  state.gamesB = state.gamesB;
-
-  state["games"+player]++;
-  state.pointsA=0;
-  state.pointsB=0;
-
-  if(state.gamesA===6 && state.gamesB===6){
-    state.mode="tiebreak";
-    return;
-  }
-
-  if(
-    state["games"+player]>=6 &&
-    Math.abs(state.gamesA-state.gamesB)>=2
-  ){
-    winSet(player);
-  }
-}
-
-/* ---------------- WIN SET ---------------- */
-
-function winSet(player){
-
-  state["sets"+player]++;
-  state.gamesA=0;
-  state.gamesB=0;
-  state.pointsA=0;
-  state.pointsB=0;
-  state.mode="normal";
-}
-
-/* ---------------- INIT ---------------- */
-
-sync();
-
-</script>
 </body>
 </html>
