@@ -2,29 +2,81 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Padel OBS Scoreboard</title>
+<title>Padel TV Scoreboard</title>
 
 <style>
 body {
   margin: 0;
   background: transparent;
-  font-family: Arial, sans-serif;
+  font-family: 'Arial Black', Arial, sans-serif;
 }
 
+/* MAIN CONTAINER */
 .scoreboard {
   position: absolute;
-  top: 50px;
+  top: 40px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 150px;
+  align-items: center;
+  background: linear-gradient(90deg, #111, #222);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(0,0,0,0.6);
 }
 
+/* TEAM BLOCK */
+.team {
+  padding: 20px 40px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* TEAM COLORS */
+.teamA {
+  background: linear-gradient(135deg, #0057ff, #003bb5);
+}
+
+.teamB {
+  background: linear-gradient(135deg, #ff2a2a, #b50000);
+}
+
+/* TEAM NAME */
+.name {
+  font-size: 28px;
+  color: white;
+  letter-spacing: 1px;
+}
+
+/* SCORE NUMBER */
 .score {
-  font-size: 120px;
+  font-size: 90px;
   font-weight: bold;
-  color: black; /* ΑΛΛΑΞΕ ΤΟ ΧΡΩΜΑ ΕΔΩ ΑΝ ΘΕΣ */
-  text-shadow: 0 0 20px rgba(0,0,0,0.4);
+  color: white;
+  min-width: 100px;
+  text-align: center;
+}
+
+/* CENTER DIVIDER */
+.divider {
+  width: 4px;
+  background: white;
+  height: 100%;
+}
+
+/* MATCH LABEL */
+.match-label {
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #000;
+  color: white;
+  padding: 4px 16px;
+  font-size: 14px;
+  border-radius: 20px;
+  letter-spacing: 2px;
 }
 </style>
 </head>
@@ -32,8 +84,21 @@ body {
 <body>
 
 <div class="scoreboard">
-  <div id="teamA" class="score">0</div>
-  <div id="teamB" class="score">0</div>
+
+  <div class="match-label">PADEL LIVE</div>
+
+  <div class="team teamA">
+    <div class="name">TEAM A</div>
+    <div id="teamA" class="score">0</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="team teamB">
+    <div id="teamB" class="score">0</div>
+    <div class="name">TEAM B</div>
+  </div>
+
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
