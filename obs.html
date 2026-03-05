@@ -3,25 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <title>Padel OBS Scoreboard</title>
+
 <style>
 body {
-  margin:0;
-  background:transparent;
-  font-family:Arial;
-  color:white;
+  margin: 0;
+  background: transparent;
+  font-family: Arial, sans-serif;
 }
+
 .scoreboard {
-  position:absolute;
-  top:0;
-  left:0;
-  width:1920px;
-  height:1080px;
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 150px;
 }
+
 .score {
-  font-size:80px;
+  font-size: 120px;
+  font-weight: bold;
+  color: black; /* ΑΛΛΑΞΕ ΤΟ ΧΡΩΜΑ ΕΔΩ ΑΝ ΘΕΣ */
+  text-shadow: 0 0 20px rgba(0,0,0,0.4);
 }
 </style>
 </head>
+
 <body>
 
 <div class="scoreboard">
