@@ -2,67 +2,36 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>PADEL Scoreboard</title>
-
+<title>Padel OBS Scoreboard</title>
 <style>
-body{
-    margin:0;
-    background:transparent;
-    font-family:Arial;
+body {
+  margin:0;
+  background:transparent;
+  font-family:Arial;
+  color:white;
 }
-
-#scoreboard{
-    position:absolute;
-    bottom:40px;
-    left:50%;
-    transform:translateX(-50%);
-    background:rgba(15,23,42,0.95);
-    color:white;
-    padding:20px 40px;
-    border-radius:12px;
-    display:flex;
-    gap:40px;
-    font-size:28px;
-    align-items:center;
+.scoreboard {
+  position:absolute;
+  top:0;
+  left:0;
+  width:1920px;
+  height:1080px;
 }
-
-.team{
-    text-align:center;
-}
-
-.name{
-    font-size:22px;
-    margin-bottom:8px;
-}
-
-.points{
-    font-size:36px;
-    font-weight:bold;
-}
-
-.hidden{
-    display:none;
+.score {
+  font-size:80px;
 }
 </style>
 </head>
-
 <body>
 
-<div id="scoreboard">
-    <div class="team">
-        <div id="name1" class="name">Team 1</div>
-        <div id="points1" class="points">0</div>
-    </div>
-
-    <div class="team">
-        <div id="name2" class="name">Team 2</div>
-        <div id="points2" class="points">0</div>
-    </div>
+<div class="scoreboard">
+  <div id="teamA" class="score">0</div>
+  <div id="teamB" class="score">0</div>
 </div>
 
-<!-- IMPORTANT: SCRIPTS FROM /js FOLDER -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-<script src="js/state.js"></script>
 <script src="js/firebase.js"></script>
 <script src="js/obs.js"></script>
 
