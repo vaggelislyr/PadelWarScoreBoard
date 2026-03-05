@@ -1,4 +1,5 @@
-// Firebase core
+// Firebase CDN (compat version for OBS safety)
+
 const firebaseConfig = {
   apiKey: "AIzaSyCpD_3E32OgVJq9Zw_rTeeaeR2WGlXMs_4",
   authDomain: "padelwarscoreboard.firebaseapp.com",
@@ -9,6 +10,8 @@ const firebaseConfig = {
   appId: "1:443269359115:web:511358eab031b0930d090e"
 };
 
-// Load Firebase (compat – works everywhere)
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
+
+// Initialize Realtime Database
 const db = firebase.database();
