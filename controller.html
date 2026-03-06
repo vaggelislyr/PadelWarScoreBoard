@@ -6,117 +6,120 @@
 <title>Padel Controller</title>
 
 <style>
-
 body{
-font-family:Arial;
-background:#111;
-color:white;
-margin:0;
-padding:20px;
+  font-family:Arial, Helvetica, sans-serif;
+  background:#111;
+  color:white;
+  margin:0;
+  padding:20px;
 }
 
 .section{
-background:#1d1d1d;
-padding:16px;
-margin-bottom:16px;
-border-radius:10px;
+  background:#1d1d1d;
+  padding:16px;
+  margin-bottom:16px;
+  border-radius:10px;
 }
 
 h2{
-margin-top:0;
-font-size:18px;
+  margin-top:0;
+  font-size:18px;
 }
 
 input{
-width:100%;
-padding:12px;
-margin-bottom:10px;
-border-radius:6px;
-border:none;
-font-size:16px;
+  width:100%;
+  padding:12px;
+  margin-bottom:10px;
+  border-radius:6px;
+  border:none;
+  font-size:16px;
+  box-sizing:border-box;
 }
 
 button{
-width:100%;
-padding:16px;
-margin-top:6px;
-border:none;
-border-radius:8px;
-font-size:18px;
-font-weight:bold;
+  width:100%;
+  padding:16px;
+  margin-top:6px;
+  border:none;
+  border-radius:8px;
+  font-size:18px;
+  font-weight:bold;
 }
 
 .row{
-display:flex;
-gap:8px;
+  display:flex;
+  gap:8px;
 }
 
 .row button{
-flex:1;
+  flex:1;
 }
 
 .btnBlue{ background:#1976ff; color:white; }
 .btnGreen{ background:#00c853; color:white; }
 .btnRed{ background:#e53935; color:white; }
 .btnGray{ background:#444; color:white; }
+.btnGold{ background:#d4af37; color:#111; }
 
+.smallNote{
+  opacity:0.7;
+  font-size:13px;
+  margin-top:8px;
+}
 </style>
 </head>
 
 <body>
 
 <div class="section">
-<h2>Players</h2>
+  <h2>Players</h2>
 
-<input id="nameA" placeholder="Player A1 / Player A2">
-<input id="nameB" placeholder="Player B1 / Player B2">
+  <input id="nameA" placeholder="Player A1 / Player A2">
+  <input id="nameB" placeholder="Player B1 / Player B2">
 
-<button class="btnBlue" id="updateNames">Update Names</button>
+  <button class="btnBlue" id="updateNames">Update Names</button>
 </div>
-
 
 <div class="section">
-<h2>Match Controls</h2>
+  <h2>Match Controls</h2>
 
-<button class="btnGreen" id="pointA">Point Team 1</button>
-<button class="btnGreen" id="pointB">Point Team 2</button>
+  <button class="btnGreen" id="pointA">Point Team 1</button>
+  <button class="btnGreen" id="pointB">Point Team 2</button>
 
-<button class="btnBlue" id="switchServe">Switch Serve</button>
+  <button class="btnBlue" id="switchServe">Switch Serve</button>
 
-<h2 style="margin-top:16px;">Timer</h2>
+  <button class="btnBlue" id="toggleVisible">Show / Hide Scoreboard</button>
 
-<input id="timerMinutes" placeholder="Minutes">
+  <h2 style="margin-top:16px;">Timer</h2>
 
-<div class="row">
-<button class="btnGreen" id="timerStart">Start</button>
-<button class="btnGray" id="timerStop">Stop</button>
-<button class="btnRed" id="timerReset">Reset</button>
+  <div class="row">
+    <button class="btnGreen" id="timerStart">Start</button>
+    <button class="btnGray" id="timerStop">Stop</button>
+    <button class="btnRed" id="timerReset">Reset</button>
+  </div>
 </div>
-
-</div>
-
 
 <div class="section">
-<h2>Undo</h2>
-<button class="btnGray" id="undo">Undo Last Action</button>
+  <h2>Undo</h2>
+  <button class="btnGray" id="undo">Undo Last Action</button>
 </div>
-
 
 <div class="section">
-<h2>Reset Match</h2>
-<button class="btnRed" id="reset">Reset Match</button>
+  <h2>Reset Match</h2>
+  <button class="btnRed" id="reset">Reset Match</button>
+  <div class="smallNote">Το sponsor μένει όπως είναι. Τα ονόματα μηδενίζουν.</div>
 </div>
-
 
 <div class="section">
-<h2>Sponsor</h2>
+  <h2>Sponsor</h2>
 
-<input id="organizerInput" placeholder="@organizer">
+  <input id="organizerInput" placeholder="@organizer">
 
-<button class="btnBlue" id="updateOrganizer">Update Sponsor</button>
-
+  <div class="row">
+    <button class="btnBlue" id="updateOrganizer">Update Sponsor</button>
+    <button class="btnGold" id="toggleSponsorLock">Lock Sponsor</button>
+  </div>
 </div>
-
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
