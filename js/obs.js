@@ -24,6 +24,7 @@ const pointsBEl = document.getElementById("pointsB");
 
 const goldenBannerEl = document.getElementById("goldenBanner");
 const tiebreakBannerEl = document.getElementById("tiebreakBanner");
+const winnerBannerEl = document.getElementById("winnerBanner");
 
 const organizerEl = document.getElementById("organizer");
 const timerEl = document.getElementById("timer");
@@ -38,6 +39,12 @@ function tennisPoints(p) {
 function safeText(value, fallback = "") {
   if (value === undefined || value === null || value === "") return fallback;
   return String(value);
+}
+
+function clearWinnerStyles() {
+  nameAEl.classList.remove("winnerName", "loserName");
+  nameBEl.classList.remove("winnerName", "loserName");
+  winnerBannerEl.classList.remove("active");
 }
 
 /* ---------- RENDER ---------- */
@@ -58,21 +65,17 @@ onStateChange((state) => {
   serveBEl.style.visibility = state.serve === "B" ? "visible" : "hidden";
 
   /* ===== NAMES ===== */
-  nameAEl.textContent = safeText(state.nameA, "Player A / Player A");
-  nameBEl.textContent = safeText(state.nameB, "Player B / Player B");
+  nameAEl.textContent = safeText(state.nameA, "Player A1 / Player A2");
+  nameBEl.textContent = safeText(state.nameB, "Player B1 / Player B2");
 
-  /* ===== SET HISTORY =====
-     set1 column = 1st completed set (closer to games)
-     set2 column = 2nd completed set (closer to names)
-  */
+  /* ===== SET HISTORY ===== */
   const historyA = Array.isArray(state.setHistoryA) ? state.setHistoryA : [];
   const historyB = Array.isArray(state.setHistoryB) ? state.setHistoryB : [];
 
-  // first completed set
+  // First completed set (closer to games)
   if (historyA.length >= 1 && historyB.length >= 1) {
     set1AEl.classList.remove("hiddenSet");
     set1BEl.classList.remove("hiddenSet");
-
     set1AEl.textContent = safeText(historyA[0], "0");
     set1BEl.textContent = safeText(historyB[0], "0");
   } else {
@@ -82,11 +85,10 @@ onStateChange((state) => {
     set1BEl.textContent = "0";
   }
 
-  // second completed set
+  // Second completed set (closer to names)
   if (historyA.length >= 2 && historyB.length >= 2) {
     set2AEl.classList.remove("hiddenSet");
     set2BEl.classList.remove("hiddenSet");
-
     set2AEl.textContent = safeText(historyA[1], "0");
     set2BEl.textContent = safeText(historyB[1], "0");
   } else {
@@ -129,11 +131,26 @@ onStateChange((state) => {
     pointsBEl.classList.remove("goldenText");
   }
 
-  /* ===== TIEBREAK BANNER ===== */
+  /* ===== TIEBREAK ===== */
   if (state.mode === "tiebreak") {
     tiebreakBannerEl.classList.add("active");
   } else {
     tiebreakBannerEl.classList.remove("active");
+  }
+
+  /* ===== MATCH WINNER ===== */
+  clearWinnerStyles();
+
+  if (state.matchOver === true) {
+    winnerBannerEl.classList.add("active");
+
+    if ((state.setsA ?? 0) > (state.setsB ?? 0)) {
+      nameAEl.classList.add("winnerName");
+      nameBEl.classList.add("loserName");
+    } else if ((state.setsB ?? 0) > (state.setsA ?? 0)) {
+      nameBEl.classList.add("winnerName");
+      nameAEl.classList.add("loserName");
+    }
   }
 
   /* ===== BOTTOM BAR ===== */
