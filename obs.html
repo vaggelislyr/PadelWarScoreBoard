@@ -88,6 +88,18 @@
       white-space:nowrap;
       width:max-content;
       max-width:none;
+      transition:opacity 0.25s ease, color 0.25s ease, text-shadow 0.25s ease;
+    }
+
+    .winnerName{
+      color:#f0cf76;
+      text-shadow:
+        0 0 8px rgba(240,207,118,0.35),
+        0 0 20px rgba(240,207,118,0.20);
+    }
+
+    .loserName{
+      opacity:0.62;
     }
 
     .setCell,
@@ -131,7 +143,8 @@
     }
 
     #goldenBanner,
-    #tiebreakBanner{
+    #tiebreakBanner,
+    #winnerBanner{
       position:absolute;
       left:50%;
       transform:translateX(-50%) translateY(22px);
@@ -160,8 +173,14 @@
       color:#102544;
     }
 
+    #winnerBanner{
+      background:linear-gradient(180deg, #f7d981 0%, #d4af37 100%);
+      color:#2a1d00;
+    }
+
     #goldenBanner.active,
-    #tiebreakBanner.active{
+    #tiebreakBanner.active,
+    #winnerBanner.active{
       opacity:1;
       transform:translateX(-50%) translateY(0);
     }
@@ -233,10 +252,11 @@
 
       <div id="goldenBanner">GOLDEN POINT</div>
       <div id="tiebreakBanner">TIEBREAK</div>
+      <div id="winnerBanner">🏆 MATCH WINNER</div>
 
       <div class="row">
         <div class="serveCell"><span id="serveA" class="serveBall">🎾</span></div>
-        <div id="nameA" class="nameCell">Player A / Player A</div>
+        <div id="nameA" class="nameCell">Player A1 / Player A2</div>
         <div id="set2A" class="setCell hiddenSet">0</div>
         <div id="set1A" class="setCell hiddenSet">0</div>
         <div id="gamesA" class="gamesCell">0</div>
@@ -245,7 +265,7 @@
 
       <div class="row">
         <div class="serveCell"><span id="serveB" class="serveBall">🎾</span></div>
-        <div id="nameB" class="nameCell">Player B / Player B</div>
+        <div id="nameB" class="nameCell">Player B1 / Player B2</div>
         <div id="set2B" class="setCell hiddenSet">0</div>
         <div id="set1B" class="setCell hiddenSet">0</div>
         <div id="gamesB" class="gamesCell">0</div>
