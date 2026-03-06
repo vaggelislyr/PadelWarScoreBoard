@@ -1,64 +1,122 @@
 console.log("Controller loaded");
 
-// Firebase ref
-const scoreRef = db.ref("score");
+/* ---------- TIMER ---------- */
 
-// Current state
-let state = {
-  teamA: 0,
-  teamB: 0
+let timerInterval = null;
+let timerSeconds = 0;
+
+function updateTimerDisplay(){
+  const minutes = Math.floor(timerSeconds / 60).toString().padStart(2,"0");
+  const seconds = (timerSeconds % 60).toString().padStart(2,"0");
+
+  updateState(state=>{
+    state.timerText = minutes + ":" + seconds;
+  });
+}
+
+function startTimer(){
+
+  if(timerInterval) return;
+
+  timerInterval = setInterval(()=>{
+    timerSeconds++;
+    updateTimerDisplay();
+  },1000);
+}
+
+function stopTimer(){
+  clearInterval(timerInterval);
+  timerInterval = null;
+}
+
+function resetTimer(){
+  stopTimer();
+  timerSeconds = 0;
+  updateTimerDisplay();
+}
+
+
+/* ---------- NAMES ---------- */
+
+document.getElementById("updateNames").onclick = ()=>{
+
+  const nameA = document.getElementById("nameA").value;
+  const nameB = document.getElementById("nameB").value;
+
+  updateState(state=>{
+    state.nameA = nameA;
+    state.nameB = nameB;
+  });
+
 };
 
-// Undo history
-let historyStack = [];
 
-// Deep copy helper
-function cloneState(obj) {
-  return JSON.parse(JSON.stringify(obj));
-}
+/* ---------- SPONSOR ---------- */
 
-// Load / sync current state from Firebase
-scoreRef.on("value", (snapshot) => {
-  const data = snapshot.val();
-  if (data) {
-    state = data;
-  } else {
-    scoreRef.set(state);
-  }
-});
+document.getElementById("updateOrganizer").onclick = ()=>{
 
-// Save current state before any change
-function pushHistory() {
-  historyStack.push(cloneState(state));
+  const org = document.getElementById("organizerInput").value;
 
-  // Κρατάμε μέχρι 100 βήματα για ασφάλεια
-  if (historyStack.length > 100) {
-    historyStack.shift();
-  }
-}
+  updateState(state=>{
+    state.organizer = org;
+  });
 
-// Add point
-function addPoint(team) {
-  pushHistory();
+};
 
-  if (team === "A") {
-    state.teamA++;
-  } else if (team === "B") {
-    state.teamB++;
-  }
 
-  scoreRef.set(state);
-}
+/* ---------- POINTS ---------- */
 
-// True undo: restore previous snapshot
-function undo() {
-  if (historyStack.length === 0) return;
+document.getElementById("pointA").onclick = ()=>{
+  addPoint("A");
+};
 
-  state = historyStack.pop();
-  scoreRef.set(state);
-}
+document.getElementById("pointB").onclick = ()=>{
+  addPoint("B");
+};
 
-// Button bindings
-document.getElementById("btnA").onclick = () => addPoint("A");
-document.getElementById("btnB").onclick = () => addPoint("B");
-document.getElementById("btnUndo").onclick = undo;
+
+/* ---------- SERVE ---------- */
+
+document.getElementById("switchServe").onclick = ()=>{
+
+  updateState(state=>{
+    state.serve = state.serve === "A" ? "B" : "A";
+  });
+
+};
+
+
+/* ---------- UNDO ---------- */
+
+document.getElementById("undo").onclick = ()=>{
+  undoLastAction();
+};
+
+
+/* ---------- RESET ---------- */
+
+document.getElementById("reset").onclick = ()=>{
+
+  updateState(state=>{
+
+    state.pointsA = 0;
+    state.pointsB = 0;
+
+    state.gamesA = 0;
+    state.gamesB = 0;
+
+    state.setsA = 0;
+    state.setsB = 0;
+
+    state.mode = "normal";
+
+  });
+
+};
+
+
+/* ---------- TIMER BUTTONS ---------- */
+
+document.getElementById("timerStart").onclick = startTimer;
+document.getElementById("timerStop").onclick = stopTimer;
+document.getElementById("timerReset").onclick = resetTimer;
