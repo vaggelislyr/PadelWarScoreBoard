@@ -1,16 +1,138 @@
 <!DOCTYPE html>
-<html>
+<html lang="el">
 <head>
-  <meta charset="UTF-8">
-  <title>Padel Controller</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Padel Controller</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#111;
+color:white;
+margin:0;
+padding:20px;
+}
+
+.section{
+background:#1d1d1d;
+padding:16px;
+margin-bottom:16px;
+border-radius:10px;
+}
+
+h2{
+margin-top:0;
+font-size:18px;
+}
+
+input{
+width:100%;
+padding:12px;
+margin-bottom:10px;
+border-radius:6px;
+border:none;
+font-size:16px;
+}
+
+button{
+width:100%;
+padding:16px;
+margin-top:6px;
+border:none;
+border-radius:8px;
+font-size:18px;
+font-weight:bold;
+}
+
+.btnBlue{
+background:#1976ff;
+color:white;
+}
+
+.btnGreen{
+background:#00c853;
+color:white;
+}
+
+.btnRed{
+background:#e53935;
+color:white;
+}
+
+.btnGray{
+background:#444;
+color:white;
+}
+
+</style>
 </head>
+
 <body>
 
-<h2>PADEL SCOREBOARD CONTROLLER</h2>
+<div class="section">
+<h2>Players</h2>
 
-<button id="btnA">Team A +</button>
-<button id="btnB">Team B +</button>
-<button id="btnUndo">UNDO</button>
+<input id="nameA" placeholder="Player A1 / Player A2">
+
+<input id="nameB" placeholder="Player B1 / Player B2">
+
+<button class="btnBlue" id="updateNames">Update Names</button>
+</div>
+
+
+<div class="section">
+<h2>Score</h2>
+
+<button class="btnGreen" id="pointA">Point Team 1</button>
+
+<button class="btnGreen" id="pointB">Point Team 2</button>
+</div>
+
+
+<div class="section">
+<h2>Serve</h2>
+
+<button class="btnBlue" id="switchServe">Switch Serve</button>
+</div>
+
+
+<div class="section">
+<h2>Undo</h2>
+
+<button class="btnGray" id="undo">Undo Last Action</button>
+</div>
+
+
+<div class="section">
+<h2>Reset</h2>
+
+<button class="btnRed" id="reset">Reset Match</button>
+</div>
+
+
+<div class="section">
+<h2>Sponsor</h2>
+
+<input id="organizerInput" placeholder="@organizer">
+
+<button class="btnBlue" id="updateOrganizer">Update Sponsor</button>
+</div>
+
+
+<div class="section">
+<h2>Timer</h2>
+
+<input id="timerMinutes" placeholder="Minutes">
+
+<button class="btnGreen" id="timerStart">Start</button>
+
+<button class="btnGray" id="timerStop">Stop</button>
+
+<button class="btnRed" id="timerReset">Reset</button>
+</div>
+
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
