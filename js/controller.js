@@ -1,15 +1,23 @@
 console.log("Controller loaded");
 
-// Reference στο Realtime Database
+// Firebase ref
 const scoreRef = db.ref("score");
 
-// Default state
+// Current state
 let state = {
   teamA: 0,
   teamB: 0
 };
 
-// Φόρτωση υπάρχοντος state από Firebase
+// Undo history
+let historyStack = [];
+
+// Deep copy helper
+function cloneState(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
+// Load / sync current state from Firebase
 scoreRef.on("value", (snapshot) => {
   const data = snapshot.val();
   if (data) {
@@ -19,12 +27,20 @@ scoreRef.on("value", (snapshot) => {
   }
 });
 
+// Save current state before any change
+function pushHistory() {
+  historyStack.push(cloneState(state));
 
-// =========================
-// BUTTON ACTIONS
-// =========================
+  // Κρατάμε μέχρι 100 βήματα για ασφάλεια
+  if (historyStack.length > 100) {
+    historyStack.shift();
+  }
+}
 
+// Add point
 function addPoint(team) {
+  pushHistory();
+
   if (team === "A") {
     state.teamA++;
   } else if (team === "B") {
@@ -34,18 +50,15 @@ function addPoint(team) {
   scoreRef.set(state);
 }
 
+// True undo: restore previous snapshot
 function undo() {
-  if (state.teamA > 0) state.teamA--;
-  if (state.teamB > 0) state.teamB--;
+  if (historyStack.length === 0) return;
 
+  state = historyStack.pop();
   scoreRef.set(state);
 }
 
-
-// =========================
-// CONNECT BUTTONS
-// =========================
-
+// Button bindings
 document.getElementById("btnA").onclick = () => addPoint("A");
 document.getElementById("btnB").onclick = () => addPoint("B");
 document.getElementById("btnUndo").onclick = undo;
