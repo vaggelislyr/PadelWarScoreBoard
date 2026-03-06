@@ -3,8 +3,8 @@ console.log("state loaded");
 const stateRef = db.ref("matchState");
 
 const DEFAULT_STATE = {
-  nameA: "Player A / Player A",
-  nameB: "Player B / Player B",
+  nameA: "Player A1 / Player A2",
+  nameB: "Player B1 / Player B2",
 
   organizer: "@sponsor",
   sponsorLocked: true,
@@ -18,10 +18,14 @@ const DEFAULT_STATE = {
   setsA: 0,
   setsB: 0,
 
+  // store finished set scores
+  // example:
+  // setHistoryA = [6, 4]
+  // setHistoryB = [4, 6]
   setHistoryA: [],
   setHistoryB: [],
 
-  mode: "normal", // normal | tiebreak | super | finished
+  mode: "normal", // normal | tiebreak | finished
   serve: "A",
   visible: true,
 
@@ -37,11 +41,9 @@ function clone(obj) {
 }
 
 function normalizeState(raw) {
-  const base = clone(DEFAULT_STATE);
   const incoming = raw || {};
-
   return {
-    ...base,
+    ...clone(DEFAULT_STATE),
     ...incoming,
     setHistoryA: Array.isArray(incoming.setHistoryA) ? incoming.setHistoryA : [],
     setHistoryB: Array.isArray(incoming.setHistoryB) ? incoming.setHistoryB : []
