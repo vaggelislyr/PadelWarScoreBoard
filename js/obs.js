@@ -13,6 +13,9 @@ const nameBEl = document.getElementById("nameB");
 const set1AEl = document.getElementById("set1A");
 const set1BEl = document.getElementById("set1B");
 
+const set2AEl = document.getElementById("set2A");
+const set2BEl = document.getElementById("set2B");
+
 const gamesAEl = document.getElementById("gamesA");
 const gamesBEl = document.getElementById("gamesB");
 
@@ -42,7 +45,7 @@ function safeText(value, fallback = "") {
 onStateChange((state) => {
   if (!state) return;
 
-  /* ===== GLOBAL SHOW / HIDE ===== */
+  /* ===== SHOW / HIDE ===== */
   if (state.visible === false) {
     overlayWrapper.style.display = "none";
     return;
@@ -58,15 +61,20 @@ onStateChange((state) => {
   nameAEl.textContent = safeText(state.nameA, "Player A / Player A");
   nameBEl.textContent = safeText(state.nameB, "Player B / Player B");
 
-  /* ===== FIRST SET COLUMN =====
-     Αυτή η πρώτη set στήλη ανοίγει μόνο όταν υπάρχει ολοκληρωμένο set.
-     Προς το παρόν δείχνει το συνολικό setsA / setsB όταν γίνει τουλάχιστον 1 set.
+  /* ===== SET HISTORY =====
+     set1 column = 1st completed set (closer to games)
+     set2 column = 2nd completed set (closer to names)
   */
-  if ((state.setsA ?? 0) > 0 || (state.setsB ?? 0) > 0) {
+  const historyA = Array.isArray(state.setHistoryA) ? state.setHistoryA : [];
+  const historyB = Array.isArray(state.setHistoryB) ? state.setHistoryB : [];
+
+  // first completed set
+  if (historyA.length >= 1 && historyB.length >= 1) {
     set1AEl.classList.remove("hiddenSet");
     set1BEl.classList.remove("hiddenSet");
-    set1AEl.textContent = safeText(state.setsA, "0");
-    set1BEl.textContent = safeText(state.setsB, "0");
+
+    set1AEl.textContent = safeText(historyA[0], "0");
+    set1BEl.textContent = safeText(historyB[0], "0");
   } else {
     set1AEl.classList.add("hiddenSet");
     set1BEl.classList.add("hiddenSet");
@@ -74,21 +82,38 @@ onStateChange((state) => {
     set1BEl.textContent = "0";
   }
 
-  /* ===== GAMES ===== */
+  // second completed set
+  if (historyA.length >= 2 && historyB.length >= 2) {
+    set2AEl.classList.remove("hiddenSet");
+    set2BEl.classList.remove("hiddenSet");
+
+    set2AEl.textContent = safeText(historyA[1], "0");
+    set2BEl.textContent = safeText(historyB[1], "0");
+  } else {
+    set2AEl.classList.add("hiddenSet");
+    set2BEl.classList.add("hiddenSet");
+    set2AEl.textContent = "0";
+    set2BEl.textContent = "0";
+  }
+
+  /* ===== CURRENT GAMES ===== */
   gamesAEl.textContent = safeText(state.gamesA, "0");
   gamesBEl.textContent = safeText(state.gamesB, "0");
 
-  /* ===== POINTS / TIEBREAK ===== */
-  if (state.mode === "tiebreak" || state.mode === "super") {
+  /* ===== CURRENT POINTS ===== */
+  if (state.mode === "tiebreak") {
     pointsAEl.textContent = safeText(state.pointsA, "0");
     pointsBEl.textContent = safeText(state.pointsB, "0");
+  } else if (state.mode === "finished") {
+    pointsAEl.textContent = "-";
+    pointsBEl.textContent = "-";
   } else {
     pointsAEl.textContent = tennisPoints(state.pointsA ?? 0);
     pointsBEl.textContent = tennisPoints(state.pointsB ?? 0);
   }
 
-  /* ===== GOLDEN VISUAL ===== */
-  if (state.goldenActive) {
+  /* ===== GOLDEN ===== */
+  if (state.goldenActive && state.mode === "normal") {
     goldenBannerEl.classList.add("active");
 
     if ((state.pointsA ?? 0) === 3 && (state.pointsB ?? 0) === 3) {
@@ -105,15 +130,13 @@ onStateChange((state) => {
   }
 
   /* ===== TIEBREAK BANNER ===== */
-  if (state.mode === "tiebreak" || state.mode === "super") {
+  if (state.mode === "tiebreak") {
     tiebreakBannerEl.classList.add("active");
   } else {
     tiebreakBannerEl.classList.remove("active");
   }
 
-  /* ===== ORGANIZER ===== */
+  /* ===== BOTTOM BAR ===== */
   organizerEl.textContent = safeText(state.organizer, "@sponsor");
-
-  /* ===== TIMER ===== */
   timerEl.textContent = safeText(state.timerText, "00:00");
 });
