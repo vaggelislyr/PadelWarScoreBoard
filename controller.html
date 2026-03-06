@@ -46,25 +46,19 @@ font-size:18px;
 font-weight:bold;
 }
 
-.btnBlue{
-background:#1976ff;
-color:white;
+.row{
+display:flex;
+gap:8px;
 }
 
-.btnGreen{
-background:#00c853;
-color:white;
+.row button{
+flex:1;
 }
 
-.btnRed{
-background:#e53935;
-color:white;
-}
-
-.btnGray{
-background:#444;
-color:white;
-}
+.btnBlue{ background:#1976ff; color:white; }
+.btnGreen{ background:#00c853; color:white; }
+.btnRed{ background:#e53935; color:white; }
+.btnGray{ background:#444; color:white; }
 
 </style>
 </head>
@@ -75,7 +69,6 @@ color:white;
 <h2>Players</h2>
 
 <input id="nameA" placeholder="Player A1 / Player A2">
-
 <input id="nameB" placeholder="Player B1 / Player B2">
 
 <button class="btnBlue" id="updateNames">Update Names</button>
@@ -83,31 +76,34 @@ color:white;
 
 
 <div class="section">
-<h2>Score</h2>
+<h2>Match Controls</h2>
 
 <button class="btnGreen" id="pointA">Point Team 1</button>
-
 <button class="btnGreen" id="pointB">Point Team 2</button>
-</div>
-
-
-<div class="section">
-<h2>Serve</h2>
 
 <button class="btnBlue" id="switchServe">Switch Serve</button>
+
+<h2 style="margin-top:16px;">Timer</h2>
+
+<input id="timerMinutes" placeholder="Minutes">
+
+<div class="row">
+<button class="btnGreen" id="timerStart">Start</button>
+<button class="btnGray" id="timerStop">Stop</button>
+<button class="btnRed" id="timerReset">Reset</button>
+</div>
+
 </div>
 
 
 <div class="section">
 <h2>Undo</h2>
-
 <button class="btnGray" id="undo">Undo Last Action</button>
 </div>
 
 
 <div class="section">
-<h2>Reset</h2>
-
+<h2>Reset Match</h2>
 <button class="btnRed" id="reset">Reset Match</button>
 </div>
 
@@ -118,19 +114,7 @@ color:white;
 <input id="organizerInput" placeholder="@organizer">
 
 <button class="btnBlue" id="updateOrganizer">Update Sponsor</button>
-</div>
 
-
-<div class="section">
-<h2>Timer</h2>
-
-<input id="timerMinutes" placeholder="Minutes">
-
-<button class="btnGreen" id="timerStart">Start</button>
-
-<button class="btnGray" id="timerStop">Stop</button>
-
-<button class="btnRed" id="timerReset">Reset</button>
 </div>
 
 
