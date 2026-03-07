@@ -2,8 +2,7 @@ console.log("Obs loaded");
 
 const overlayWrapper = document.getElementById("overlayWrapper");
 
-const serveAEl = document.getElementById("serveA");
-const serveBEl = document.getElementById("serveB");
+const serveBallEl = document.getElementById("serveBall");
 
 const nameAEl = document.getElementById("nameA");
 const nameBEl = document.getElementById("nameB");
@@ -27,6 +26,11 @@ const winnerBannerEl = document.getElementById("winnerBanner");
 const organizerEl = document.getElementById("organizer");
 const timerEl = document.getElementById("timer");
 
+let previousPointsA = null;
+let previousPointsB = null;
+let previousGamesA = null;
+let previousGamesB = null;
+
 function tennisPoints(p) {
   const map = ["0", "15", "30", "40", "AD"];
   return map[p] ?? "0";
@@ -45,6 +49,16 @@ function clearWinnerStyles() {
   winnerBannerEl.classList.remove("active");
 }
 
+function popScore(el) {
+  el.classList.remove("scorePop");
+  void el.offsetWidth;
+  el.classList.add("scorePop");
+
+  setTimeout(() => {
+    el.classList.remove("scorePop");
+  }, 180);
+}
+
 onStateChange(function (state) {
   if (!state) return;
 
@@ -55,8 +69,12 @@ onStateChange(function (state) {
     overlayWrapper.style.display = "flex";
   }
 
-  serveAEl.style.visibility = state.serve === "A" ? "visible" : "hidden";
-  serveBEl.style.visibility = state.serve === "B" ? "visible" : "hidden";
+  // Serve ball smooth vertical move
+  if (state.serve === "B") {
+    serveBallEl.classList.add("toBottom");
+  } else {
+    serveBallEl.classList.remove("toBottom");
+  }
 
   nameAEl.textContent = safeText(state.nameA, "Player A1 / Player A2");
   nameBEl.textContent = safeText(state.nameB, "Player B1 / Player B2");
@@ -88,16 +106,37 @@ onStateChange(function (state) {
     set2BEl.textContent = "0";
   }
 
+  if (previousGamesA !== null && previousGamesA !== state.gamesA) {
+    popScore(gamesAEl);
+  }
+  if (previousGamesB !== null && previousGamesB !== state.gamesB) {
+    popScore(gamesBEl);
+  }
+
   gamesAEl.textContent = safeText(state.gamesA, "0");
   gamesBEl.textContent = safeText(state.gamesB, "0");
 
   if (state.mode === "tiebreak") {
+    if (previousPointsA !== null && previousPointsA !== state.pointsA) {
+      popScore(pointsAEl);
+    }
+    if (previousPointsB !== null && previousPointsB !== state.pointsB) {
+      popScore(pointsBEl);
+    }
+
     pointsAEl.textContent = safeText(state.pointsA, "0");
     pointsBEl.textContent = safeText(state.pointsB, "0");
   } else if (state.mode === "finished") {
     pointsAEl.textContent = "-";
     pointsBEl.textContent = "-";
   } else {
+    if (previousPointsA !== null && previousPointsA !== state.pointsA) {
+      popScore(pointsAEl);
+    }
+    if (previousPointsB !== null && previousPointsB !== state.pointsB) {
+      popScore(pointsBEl);
+    }
+
     pointsAEl.textContent = tennisPoints(state.pointsA ?? 0);
     pointsBEl.textContent = tennisPoints(state.pointsB ?? 0);
   }
@@ -140,4 +179,9 @@ onStateChange(function (state) {
 
   organizerEl.textContent = safeText(state.organizer, "@sponsor");
   timerEl.textContent = safeText(state.timerText, "00:00");
+
+  previousPointsA = state.pointsA;
+  previousPointsB = state.pointsB;
+  previousGamesA = state.gamesA;
+  previousGamesB = state.gamesB;
 });
