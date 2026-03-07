@@ -33,6 +33,7 @@
       box-shadow:
         0 0 30px rgba(0,140,255,0.15),
         inset 0 0 12px rgba(0,140,255,0.08);
+      overflow:visible;
     }
 
     .row{
@@ -40,27 +41,50 @@
       grid-template-columns:30px auto 60px 60px 60px 90px;
       align-items:center;
       gap:12px;
+      min-height:46px;
     }
 
     .serveCell{
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      position:relative;
       width:30px;
+      height:98px;
+      grid-row:1 / span 2;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
     }
 
-    .serveBall{
+    #serveTrack{
+      position:relative;
+      width:30px;
+      height:98px;
+    }
+
+    #serveBall{
+      position:absolute;
+      left:50%;
+      transform:translateX(-50%);
+      top:8px;
       font-size:22px;
       filter:
         drop-shadow(0 0 6px #fff)
         drop-shadow(0 0 10px #00cfff);
+      transition:
+        top 0.34s cubic-bezier(.22,.8,.24,1),
+        transform 0.25s ease,
+        opacity 0.25s ease;
       animation:servePulse 1.4s infinite;
+      z-index:3;
+    }
+
+    #serveBall.toBottom{
+      top:62px;
     }
 
     @keyframes servePulse{
-      0%{transform:scale(1);}
-      50%{transform:scale(1.15);}
-      100%{transform:scale(1);}
+      0%{ transform:translateX(-50%) scale(1); }
+      50%{ transform:translateX(-50%) scale(1.15); }
+      100%{ transform:translateX(-50%) scale(1); }
     }
 
     .nameCell{
@@ -74,6 +98,18 @@
       width:max-content;
       min-width:260px;
       max-width:none;
+      transition:opacity 0.25s ease, color 0.25s ease, text-shadow 0.25s ease;
+    }
+
+    .winnerName{
+      color:#ffd86b;
+      text-shadow:
+        0 0 10px #ffd86b,
+        0 0 20px #ffd86b;
+    }
+
+    .loserName{
+      opacity:.55;
     }
 
     .setCell,
@@ -102,6 +138,16 @@
       box-shadow:
         inset 0 0 12px rgba(0,200,255,0.15),
         0 0 10px rgba(0,200,255,0.2);
+      transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease;
+    }
+
+    .pointsCell.scorePop{
+      transform:scale(1.12);
+      box-shadow:
+        inset 0 0 16px rgba(0,200,255,0.25),
+        0 0 18px rgba(0,200,255,0.38);
     }
 
     .hiddenSet{
@@ -112,15 +158,17 @@
     #tiebreakBanner,
     #winnerBanner{
       position:absolute;
-      top:-22px;
+      top:-28px;
       left:50%;
-      transform:translateX(-50%);
+      transform:translateX(-50%) translateY(-10px);
       padding:6px 14px;
       font-size:14px;
       font-weight:800;
       border-radius:10px;
       opacity:0;
-      transition:all .35s ease;
+      transition:
+        opacity .25s ease,
+        transform .32s cubic-bezier(.22,.8,.24,1);
       pointer-events:none;
     }
 
@@ -146,17 +194,7 @@
     #tiebreakBanner.active,
     #winnerBanner.active{
       opacity:1;
-    }
-
-    .winnerName{
-      color:#ffd86b;
-      text-shadow:
-        0 0 10px #ffd86b,
-        0 0 20px #ffd86b;
-    }
-
-    .loserName{
-      opacity:.55;
+      transform:translateX(-50%) translateY(0);
     }
 
     .goldenText{
@@ -203,7 +241,11 @@
       <div id="winnerBanner">🏆 MATCH WINNER</div>
 
       <div class="row">
-        <div class="serveCell"><span id="serveA" class="serveBall">🎾</span></div>
+        <div class="serveCell">
+          <div id="serveTrack">
+            <span id="serveBall">🎾</span>
+          </div>
+        </div>
         <div id="nameA" class="nameCell">Player A1 / Player A2</div>
         <div id="set2A" class="setCell hiddenSet">0</div>
         <div id="set1A" class="setCell hiddenSet">0</div>
@@ -212,7 +254,6 @@
       </div>
 
       <div class="row">
-        <div class="serveCell"><span id="serveB" class="serveBall">🎾</span></div>
         <div id="nameB" class="nameCell">Player B1 / Player B2</div>
         <div id="set2B" class="setCell hiddenSet">0</div>
         <div id="set1B" class="setCell hiddenSet">0</div>
