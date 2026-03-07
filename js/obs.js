@@ -1,7 +1,5 @@
 console.log("Obs loaded");
 
-/* ---------- ELEMENTS ---------- */
-
 const overlayWrapper = document.getElementById("overlayWrapper");
 
 const serveAEl = document.getElementById("serveA");
@@ -29,15 +27,15 @@ const winnerBannerEl = document.getElementById("winnerBanner");
 const organizerEl = document.getElementById("organizer");
 const timerEl = document.getElementById("timer");
 
-/* ---------- HELPERS ---------- */
-
 function tennisPoints(p) {
   const map = ["0", "15", "30", "40", "AD"];
   return map[p] ?? "0";
 }
 
 function safeText(value, fallback = "") {
-  if (value === undefined || value === null || value === "") return fallback;
+  if (value === undefined || value === null || value === "") {
+    return fallback;
+  }
   return String(value);
 }
 
@@ -47,12 +45,9 @@ function clearWinnerStyles() {
   winnerBannerEl.classList.remove("active");
 }
 
-/* ---------- RENDER ---------- */
-
-onStateChange((state) => {
+onStateChange(function (state) {
   if (!state) return;
 
-  /* ===== SHOW / HIDE ===== */
   if (state.visible === false) {
     overlayWrapper.style.display = "none";
     return;
@@ -60,19 +55,15 @@ onStateChange((state) => {
     overlayWrapper.style.display = "flex";
   }
 
-  /* ===== SERVE ===== */
   serveAEl.style.visibility = state.serve === "A" ? "visible" : "hidden";
   serveBEl.style.visibility = state.serve === "B" ? "visible" : "hidden";
 
-  /* ===== NAMES ===== */
   nameAEl.textContent = safeText(state.nameA, "Player A1 / Player A2");
   nameBEl.textContent = safeText(state.nameB, "Player B1 / Player B2");
 
-  /* ===== SET HISTORY ===== */
   const historyA = Array.isArray(state.setHistoryA) ? state.setHistoryA : [];
   const historyB = Array.isArray(state.setHistoryB) ? state.setHistoryB : [];
 
-  // First completed set (closer to games)
   if (historyA.length >= 1 && historyB.length >= 1) {
     set1AEl.classList.remove("hiddenSet");
     set1BEl.classList.remove("hiddenSet");
@@ -85,7 +76,6 @@ onStateChange((state) => {
     set1BEl.textContent = "0";
   }
 
-  // Second completed set (closer to names)
   if (historyA.length >= 2 && historyB.length >= 2) {
     set2AEl.classList.remove("hiddenSet");
     set2BEl.classList.remove("hiddenSet");
@@ -98,11 +88,9 @@ onStateChange((state) => {
     set2BEl.textContent = "0";
   }
 
-  /* ===== CURRENT GAMES ===== */
   gamesAEl.textContent = safeText(state.gamesA, "0");
   gamesBEl.textContent = safeText(state.gamesB, "0");
 
-  /* ===== CURRENT POINTS ===== */
   if (state.mode === "tiebreak") {
     pointsAEl.textContent = safeText(state.pointsA, "0");
     pointsBEl.textContent = safeText(state.pointsB, "0");
@@ -114,7 +102,6 @@ onStateChange((state) => {
     pointsBEl.textContent = tennisPoints(state.pointsB ?? 0);
   }
 
-  /* ===== GOLDEN ===== */
   if (state.goldenActive && state.mode === "normal") {
     goldenBannerEl.classList.add("active");
 
@@ -131,14 +118,12 @@ onStateChange((state) => {
     pointsBEl.classList.remove("goldenText");
   }
 
-  /* ===== TIEBREAK ===== */
   if (state.mode === "tiebreak") {
     tiebreakBannerEl.classList.add("active");
   } else {
     tiebreakBannerEl.classList.remove("active");
   }
 
-  /* ===== MATCH WINNER ===== */
   clearWinnerStyles();
 
   if (state.matchOver === true) {
@@ -153,7 +138,6 @@ onStateChange((state) => {
     }
   }
 
-  /* ===== BOTTOM BAR ===== */
   organizerEl.textContent = safeText(state.organizer, "@sponsor");
   timerEl.textContent = safeText(state.timerText, "00:00");
 });
