@@ -1,124 +1,288 @@
 <!DOCTYPE html>
 <html lang="el">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Padel Controller</title>
+  <meta charset="UTF-8">
+  <title>Padel OBS Overlay</title>
+  <style>
+    body{
+      margin:0;
+      background:transparent;
+      font-family:Orbitron, Arial, sans-serif;
+      color:#fff;
+      overflow:hidden;
+    }
 
-<style>
-body{
-  font-family:Arial, Helvetica, sans-serif;
-  background:#111;
-  color:white;
-  margin:0;
-  padding:20px;
-}
+    #overlayWrapper{
+      position:absolute;
+      top:40px;
+      left:40px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
 
-.section{
-  background:#1d1d1d;
-  padding:16px;
-  margin-bottom:16px;
-  border-radius:10px;
-}
+    #scoreboard{
+      position:relative;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      padding:14px 16px;
+      border-radius:16px;
+      background:linear-gradient(180deg,#0c1628 0%,#040a16 100%);
+      border:1px solid rgba(0,180,255,0.25);
+      box-shadow:
+        0 0 30px rgba(0,140,255,0.15),
+        inset 0 0 12px rgba(0,140,255,0.08);
+      overflow:visible;
+    }
 
-h2{
-  margin-top:0;
-  font-size:18px;
-}
+    .row{
+      display:grid;
+      grid-template-columns:30px auto 60px 60px 60px 90px;
+      align-items:center;
+      gap:12px;
+      min-height:46px;
+    }
 
-input{
-  width:100%;
-  padding:12px;
-  margin-bottom:10px;
-  border-radius:6px;
-  border:none;
-  font-size:16px;
-  box-sizing:border-box;
-}
+    .serveCell{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width:30px;
+      min-height:46px;
+    }
 
-button{
-  width:100%;
-  padding:16px;
-  margin-top:6px;
-  border:none;
-  border-radius:8px;
-  font-size:18px;
-  font-weight:bold;
-}
+    .serveCellTrack{
+      position:relative;
+      width:30px;
+      height:98px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      grid-row:1 / span 2;
+    }
 
-.row{
-  display:flex;
-  gap:8px;
-}
+    #serveTrack{
+      position:relative;
+      width:30px;
+      height:98px;
+    }
 
-.row button{
-  flex:1;
-}
+    #serveBall{
+      position:absolute;
+      left:50%;
+      transform:translateX(-50%);
+      top:8px;
+      font-size:22px;
+      filter:
+        drop-shadow(0 0 6px #fff)
+        drop-shadow(0 0 10px #00cfff);
+      transition:
+        top 0.34s cubic-bezier(.22,.8,.24,1),
+        transform 0.25s ease,
+        opacity 0.25s ease;
+      animation:servePulse 1.4s infinite;
+      z-index:3;
+    }
 
-.btnBlue{ background:#1976ff; color:white; }
-.btnGreen{ background:#00c853; color:white; }
-.btnRed{ background:#e53935; color:white; }
-.btnGray{ background:#444; color:white; }
-.btnGold{ background:#d4af37; color:#111; }
+    #serveBall.toBottom{
+      top:62px;
+    }
 
-.smallNote{
-  opacity:0.7;
-  font-size:13px;
-  margin-top:8px;
-}
-</style>
+    @keyframes servePulse{
+      0%{ transform:translateX(-50%) scale(1); }
+      50%{ transform:translateX(-50%) scale(1.15); }
+      100%{ transform:translateX(-50%) scale(1); }
+    }
+
+    .nameCell{
+      font-size:18px;
+      font-weight:700;
+      padding:6px 10px;
+      border-radius:8px;
+      background:linear-gradient(180deg,#162a4a,#0c1b32);
+      box-shadow:inset 0 0 10px rgba(0,160,255,0.15);
+      white-space:nowrap;
+      width:max-content;
+      min-width:260px;
+      max-width:none;
+      transition:opacity 0.25s ease, color 0.25s ease, text-shadow 0.25s ease;
+    }
+
+    .winnerName{
+      color:#ffd86b;
+      text-shadow:
+        0 0 10px #ffd86b,
+        0 0 20px #ffd86b;
+    }
+
+    .loserName{
+      opacity:.55;
+    }
+
+    .setCell,
+    .gamesCell{
+      font-size:26px;
+      font-weight:800;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      height:38px;
+      border-radius:8px;
+      background:linear-gradient(180deg,#0b1c35,#071428);
+      box-shadow:inset 0 0 10px rgba(0,200,255,0.1);
+    }
+
+    .pointsCell{
+      font-size:34px;
+      font-weight:900;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      height:44px;
+      min-width:90px;
+      border-radius:10px;
+      background:linear-gradient(180deg,#0b1c35,#061122);
+      box-shadow:
+        inset 0 0 12px rgba(0,200,255,0.15),
+        0 0 10px rgba(0,200,255,0.2);
+      transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease;
+    }
+
+    .pointsCell.scorePop{
+      transform:scale(1.12);
+      box-shadow:
+        inset 0 0 16px rgba(0,200,255,0.25),
+        0 0 18px rgba(0,200,255,0.38);
+    }
+
+    .hiddenSet{
+      display:none;
+    }
+
+    #goldenBanner,
+    #tiebreakBanner,
+    #winnerBanner{
+      position:absolute;
+      top:-28px;
+      left:50%;
+      transform:translateX(-50%) translateY(-10px);
+      padding:6px 14px;
+      font-size:14px;
+      font-weight:800;
+      border-radius:10px;
+      opacity:0;
+      transition:
+        opacity .25s ease,
+        transform .32s cubic-bezier(.22,.8,.24,1);
+      pointer-events:none;
+    }
+
+    #goldenBanner{
+      background:#e8c55b;
+      color:#000;
+      box-shadow:0 0 14px #e8c55b;
+    }
+
+    #tiebreakBanner{
+      background:#00c8ff;
+      color:#000;
+      box-shadow:0 0 14px #00c8ff;
+    }
+
+    #winnerBanner{
+      background:#ffd86b;
+      color:#000;
+      box-shadow:0 0 20px #ffd86b;
+    }
+
+    #goldenBanner.active,
+    #tiebreakBanner.active,
+    #winnerBanner.active{
+      opacity:1;
+      transform:translateX(-50%) translateY(0);
+    }
+
+    .goldenText{
+      color:#e8c55b;
+      text-shadow:
+        0 0 8px rgba(232,197,91,0.45),
+        0 0 16px rgba(232,197,91,0.35);
+    }
+
+    #bottomBar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:6px 12px;
+      border-radius:12px;
+      background:linear-gradient(180deg,#0a1425,#050b17);
+      border:1px solid rgba(0,200,255,0.2);
+      box-shadow:0 0 16px rgba(0,200,255,0.12);
+    }
+
+    #organizer{
+      font-size:18px;
+      font-weight:700;
+      white-space:nowrap;
+      width:max-content;
+      max-width:none;
+    }
+
+    #timer{
+      font-size:20px;
+      font-weight:900;
+      letter-spacing:1px;
+      white-space:nowrap;
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="section">
-  <h2>Players</h2>
-  <input id="nameA" placeholder="Player A1 / Player A2">
-  <input id="nameB" placeholder="Player B1 / Player B2">
-  <button class="btnBlue" id="updateNames">Update Names</button>
-</div>
+  <div id="overlayWrapper">
+    <div id="scoreboard">
 
-<div class="section">
-  <h2>Match Controls</h2>
-  <button class="btnGreen" id="pointA">Point Team 1</button>
-  <button class="btnGreen" id="pointB">Point Team 2</button>
-  <button class="btnBlue" id="switchServe">Switch Serve</button>
-  <button class="btnBlue" id="toggleVisible">Show / Hide Scoreboard</button>
+      <div id="goldenBanner">GOLDEN POINT</div>
+      <div id="tiebreakBanner">TIEBREAK</div>
+      <div id="winnerBanner">🏆 MATCH WINNER</div>
 
-  <h2 style="margin-top:16px;">Timer</h2>
-  <div class="row">
-    <button class="btnGreen" id="timerStart">Start</button>
-    <button class="btnGray" id="timerStop">Stop</button>
-    <button class="btnRed" id="timerReset">Reset</button>
+      <div class="row">
+        <div class="serveCellTrack">
+          <div id="serveTrack">
+            <span id="serveBall">🎾</span>
+          </div>
+        </div>
+        <div id="nameA" class="nameCell">Player A1 / Player A2</div>
+        <div id="set2A" class="setCell hiddenSet">0</div>
+        <div id="set1A" class="setCell hiddenSet">0</div>
+        <div id="gamesA" class="gamesCell">0</div>
+        <div id="pointsA" class="pointsCell">0</div>
+      </div>
+
+      <div class="row">
+        <div class="serveCell"></div>
+        <div id="nameB" class="nameCell">Player B1 / Player B2</div>
+        <div id="set2B" class="setCell hiddenSet">0</div>
+        <div id="set1B" class="setCell hiddenSet">0</div>
+        <div id="gamesB" class="gamesCell">0</div>
+        <div id="pointsB" class="pointsCell">0</div>
+      </div>
+
+    </div>
+
+    <div id="bottomBar">
+      <div id="organizer">@sponsor</div>
+      <div id="timer">00:00</div>
+    </div>
   </div>
-</div>
 
-<div class="section">
-  <h2>Undo</h2>
-  <button class="btnGray" id="undo">Undo Last Action</button>
-</div>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-<div class="section">
-  <h2>Reset Match</h2>
-  <button class="btnRed" id="reset">Reset Match</button>
-  <div class="smallNote">Το sponsor μένει μόνο αν είναι locked.</div>
-</div>
-
-<div class="section">
-  <h2>Sponsor</h2>
-  <input id="organizerInput" placeholder="@organizer">
-  <div class="row">
-    <button class="btnBlue" id="updateOrganizer">Update Sponsor</button>
-    <button class="btnGold" id="toggleSponsorLock">Lock Sponsor</button>
-  </div>
-</div>
-
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
-<script src="js/firebase.js"></script>
-<script src="js/state.js"></script>
-<script src="js/controller.js"></script>
-
+  <script src="js/firebase.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/obs.js"></script>
 </body>
 </html>
