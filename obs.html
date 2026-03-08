@@ -23,9 +23,6 @@
 
     #scoreboard{
       position:relative;
-      display:flex;
-      flex-direction:column;
-      gap:6px;
       padding:14px 16px;
       border-radius:16px;
       background:linear-gradient(180deg,#0c1628 0%,#040a16 100%);
@@ -36,19 +33,21 @@
       overflow:visible;
     }
 
-    .row{
+    #scoreboardGrid{
       display:grid;
       grid-template-columns:30px auto 60px 60px 60px 90px;
+      grid-template-rows:46px 46px;
+      column-gap:12px;
+      row-gap:6px;
       align-items:center;
-      gap:12px;
-      min-height:46px;
     }
 
-    .serveCell{
+    .serveTrackCell{
+      grid-column:1;
+      grid-row:1 / span 2;
       position:relative;
       width:30px;
       height:98px;
-      grid-row:1 / span 2;
       display:flex;
       align-items:flex-start;
       justify-content:center;
@@ -71,8 +70,7 @@
         drop-shadow(0 0 10px #00cfff);
       transition:
         top 0.34s cubic-bezier(.22,.8,.24,1),
-        transform 0.25s ease,
-        opacity 0.25s ease;
+        transform 0.25s ease;
       animation:servePulse 1.4s infinite;
       z-index:3;
     }
@@ -240,27 +238,27 @@
       <div id="tiebreakBanner">TIEBREAK</div>
       <div id="winnerBanner">🏆 MATCH WINNER</div>
 
-      <div class="row">
-        <div class="serveCell">
+      <div id="scoreboardGrid">
+
+        <div class="serveTrackCell">
           <div id="serveTrack">
             <span id="serveBall">🎾</span>
           </div>
         </div>
-        <div id="nameA" class="nameCell">Player A1 / Player A2</div>
-        <div id="set2A" class="setCell hiddenSet">0</div>
-        <div id="set1A" class="setCell hiddenSet">0</div>
-        <div id="gamesA" class="gamesCell">0</div>
-        <div id="pointsA" class="pointsCell">0</div>
-      </div>
 
-      <div class="row">
-        <div id="nameB" class="nameCell">Player B1 / Player B2</div>
-        <div id="set2B" class="setCell hiddenSet">0</div>
-        <div id="set1B" class="setCell hiddenSet">0</div>
-        <div id="gamesB" class="gamesCell">0</div>
-        <div id="pointsB" class="pointsCell">0</div>
-      </div>
+        <div id="nameA" class="nameCell" style="grid-column:2; grid-row:1;">Player A1 / Player A2</div>
+        <div id="set2A" class="setCell hiddenSet" style="grid-column:3; grid-row:1;">0</div>
+        <div id="set1A" class="setCell hiddenSet" style="grid-column:4; grid-row:1;">0</div>
+        <div id="gamesA" class="gamesCell" style="grid-column:5; grid-row:1;">0</div>
+        <div id="pointsA" class="pointsCell" style="grid-column:6; grid-row:1;">0</div>
 
+        <div id="nameB" class="nameCell" style="grid-column:2; grid-row:2;">Player B1 / Player B2</div>
+        <div id="set2B" class="setCell hiddenSet" style="grid-column:3; grid-row:2;">0</div>
+        <div id="set1B" class="setCell hiddenSet" style="grid-column:4; grid-row:2;">0</div>
+        <div id="gamesB" class="gamesCell" style="grid-column:5; grid-row:2;">0</div>
+        <div id="pointsB" class="pointsCell" style="grid-column:6; grid-row:2;">0</div>
+
+      </div>
     </div>
 
     <div id="bottomBar">
