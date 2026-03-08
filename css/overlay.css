@@ -1,7 +1,6 @@
 :root{
   --bg-deep-1: rgba(2, 8, 20, 0.90);
   --bg-deep-2: rgba(5, 16, 36, 0.95);
-  --bg-deep-3: rgba(9, 28, 62, 0.86);
 
   --text-main: #f3fbff;
   --text-soft: #c9dbe8;
@@ -533,7 +532,7 @@ body{
   height:4px;
   width:100%;
   z-index:1;
-  margin-top:-1px;
+  margin-top:0;
 }
 
 #barConnector::before{
@@ -544,12 +543,7 @@ body{
   top:0;
   height:4px;
   background:linear-gradient(180deg, rgba(116,239,255,0.24) 0%, rgba(116,239,255,0.00) 100%);
-  clip-path:polygon(
-    12px 0%,
-    calc(100% - 18px) 0%,
-    calc(100% - 6px) 100%,
-    24px 100%
-  );
+  clip-path:polygon(12px 0%, calc(100% - 18px) 0%, calc(100% - 6px) 100%, 24px 100%);
   opacity:.34;
   filter:blur(.6px);
 }
@@ -571,7 +565,7 @@ body{
 }
 
 /* =========================
-   BOTTOM BAR
+   BOTTOM BAR FIXED
 ========================= */
 
 #bottomBar{
@@ -583,7 +577,23 @@ body{
   align-items:center;
   gap:18px;
   padding:8px 16px 9px 18px;
+  min-height:40px;
   background:linear-gradient(180deg, rgba(8,22,48,0.96) 0%, rgba(2,8,20,0.99) 100%);
+  border:1px solid rgba(116,239,255,0.18);
+  box-shadow:0 0 14px rgba(24,200,255,0.10), inset 0 0 12px rgba(116,239,255,0.04);
+  overflow:visible;
+  z-index:1;
+}
+
+/* outer futuristic shape without cutting the bottom */
+#bottomBar::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,
+    rgba(116,239,255,0.30) 0%,
+    rgba(24,200,255,0.16) 50%,
+    rgba(64,104,255,0.10) 100%);
   clip-path:polygon(
     56px 0%,
     calc(100% - 44px) 0%,
@@ -594,21 +604,6 @@ body{
     100% 24px,
     calc(100% - 10px) 0%
   );
-  border:1px solid rgba(116,239,255,0.18);
-  box-shadow:0 0 14px rgba(24,200,255,0.10), inset 0 0 12px rgba(116,239,255,0.04);
-  overflow:visible;
-  min-height:40px;
-}
-
-#bottomBar::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  clip-path:inherit;
-  background:linear-gradient(135deg,
-    rgba(116,239,255,0.30) 0%,
-    rgba(24,200,255,0.16) 50%,
-    rgba(64,104,255,0.10) 100%);
   filter:
     drop-shadow(0 0 6px rgba(116,239,255,0.16))
     drop-shadow(0 0 16px rgba(24,200,255,0.08));
@@ -616,21 +611,22 @@ body{
   pointer-events:none;
 }
 
+/* inner dark panel with FLAT bottom edge */
 #bottomBar::after{
   content:"";
   position:absolute;
   inset:2px;
+  background:linear-gradient(180deg, rgba(10,24,50,0.96) 0%, rgba(3,8,18,0.99) 100%);
   clip-path:polygon(
     54px 0%,
     calc(100% - 45px) 0%,
     calc(100% - 25px) 13px,
     19px 13px,
-    3px calc(100% - 3px),
-    calc(100% - 3px) calc(100% - 3px),
-    calc(100% - 3px) 24px,
+    4px 100%,
+    100% 100%,
+    100% 24px,
     calc(100% - 12px) 0%
   );
-  background:linear-gradient(180deg, rgba(10,24,50,0.96) 0%, rgba(3,8,18,0.99) 100%);
   z-index:0;
   pointer-events:none;
 }
