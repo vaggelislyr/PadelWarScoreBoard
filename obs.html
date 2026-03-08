@@ -5,386 +5,623 @@
 <title>Padel OBS Overlay</title>
 
 <style>
-
 :root{
   --bg1:#030a18;
   --bg2:#07142a;
+  --bg3:#0a1f3d;
+
   --panel:#0c1d36;
+  --panel2:#102849;
+
   --line:#3fdcff55;
+  --line2:#8b7bff44;
+
   --glow:#00e0ff55;
+  --glow2:#7c6cff33;
   --accent:#64f0ff;
+  --accent2:#8b7bff;
   --gold:#ffd86b;
+  --text:#ecf7ff;
+  --soft:#9fc6d9;
 }
 
 *{
-box-sizing:border-box;
+  box-sizing:border-box;
 }
 
 body{
-margin:0;
-background:transparent;
-font-family:Orbitron,Arial,sans-serif;
-color:white;
-overflow:hidden;
+  margin:0;
+  background:transparent;
+  font-family:Orbitron,Arial,sans-serif;
+  color:var(--text);
+  overflow:hidden;
 }
 
 #overlayWrapper{
-position:absolute;
-top:40px;
-left:40px;
-display:flex;
-flex-direction:column;
-gap:10px;
+  position:absolute;
+  top:40px;
+  left:40px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
 }
 
+/* =========================
+   SCOREBOARD MAIN PANEL
+========================= */
+
 #scoreboard{
-
-position:relative;
-
-padding:16px 18px;
-
-border-radius:22px;
-
-background:
-linear-gradient(180deg,var(--bg2),var(--bg1));
-
-border:1px solid var(--line);
-
-box-shadow:
-0 0 20px var(--glow),
-0 0 60px #0048ff22,
-inset 0 0 20px #00cfff11;
-
-backdrop-filter:blur(8px);
-
-overflow:visible;
-
+  position:relative;
+  padding:18px 20px 16px;
+  border-radius:24px;
+  background:
+    linear-gradient(135deg, rgba(100,240,255,0.10) 0%, rgba(100,240,255,0.00) 24%),
+    linear-gradient(225deg, rgba(139,123,255,0.14) 0%, rgba(139,123,255,0.00) 32%),
+    linear-gradient(180deg, var(--bg3) 0%, var(--bg2) 55%, var(--bg1) 100%);
+  border:1px solid var(--line);
+  box-shadow:
+    0 0 22px var(--glow),
+    0 0 60px #0048ff22,
+    inset 0 0 20px #00cfff11;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  overflow:visible;
 }
 
 #scoreboard::before{
-content:"";
-position:absolute;
-inset:8px;
-border-radius:16px;
-border:1px solid rgba(255,255,255,0.04);
+  content:"";
+  position:absolute;
+  inset:8px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,0.05);
+  pointer-events:none;
 }
+
+#scoreboard::after{
+  content:"";
+  position:absolute;
+  left:18px;
+  right:18px;
+  top:0;
+  height:1px;
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(100,240,255,0.0) 10%,
+    rgba(100,240,255,0.75) 50%,
+    rgba(100,240,255,0.0) 90%,
+    transparent 100%);
+  pointer-events:none;
+}
+
+/* Decorative broadcast corners */
+.corner{
+  position:absolute;
+  width:24px;
+  height:24px;
+  pointer-events:none;
+  opacity:.95;
+}
+
+.corner::before,
+.corner::after{
+  content:"";
+  position:absolute;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  box-shadow:0 0 10px rgba(100,240,255,0.5);
+  border-radius:999px;
+}
+
+.cornerTL{ top:10px; left:10px; }
+.cornerTR{ top:10px; right:10px; transform:scaleX(-1); }
+.cornerBL{ bottom:10px; left:10px; transform:scaleY(-1); }
+.cornerBR{ bottom:10px; right:10px; transform:scale(-1); }
+
+.corner::before{
+  top:0;
+  left:0;
+  width:18px;
+  height:2px;
+}
+.corner::after{
+  top:0;
+  left:0;
+  width:2px;
+  height:18px;
+}
+
+/* faint grid texture */
+#scoreboardGridBg{
+  position:absolute;
+  inset:12px;
+  border-radius:18px;
+  background:
+    linear-gradient(rgba(100,240,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(100,240,255,0.025) 1px, transparent 1px);
+  background-size:22px 22px;
+  mask-image:linear-gradient(180deg, rgba(0,0,0,.9), rgba(0,0,0,.35));
+  pointer-events:none;
+}
+
+/* =========================
+   GRID
+========================= */
 
 #scoreboardGrid{
-display:grid;
-grid-template-columns:34px auto 62px 62px 64px 98px;
-grid-template-rows:48px 48px;
-column-gap:12px;
-row-gap:8px;
-align-items:center;
+  position:relative;
+  z-index:2;
+  display:grid;
+  grid-template-columns:34px auto 62px 62px 64px 98px;
+  grid-template-rows:48px 48px;
+  column-gap:12px;
+  row-gap:8px;
+  align-items:center;
 }
 
+/* =========================
+   SERVE TRACK
+========================= */
+
 .serveTrackCell{
-grid-column:1;
-grid-row:1 / span 2;
-position:relative;
-width:34px;
-height:104px;
-display:flex;
-align-items:flex-start;
-justify-content:center;
+  grid-column:1;
+  grid-row:1 / span 2;
+  position:relative;
+  width:34px;
+  height:104px;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
 }
 
 #serveTrack{
-position:relative;
-width:34px;
-height:104px;
+  position:relative;
+  width:34px;
+  height:104px;
 }
 
 #serveTrack::before{
-content:"";
-position:absolute;
-left:50%;
-top:8px;
-transform:translateX(-50%);
-width:4px;
-height:88px;
-border-radius:999px;
-background:linear-gradient(180deg,#64f0ff,#8b7bff);
-box-shadow:0 0 10px #64f0ff;
+  content:"";
+  position:absolute;
+  left:50%;
+  top:8px;
+  transform:translateX(-50%);
+  width:4px;
+  height:88px;
+  border-radius:999px;
+  background:linear-gradient(180deg,#64f0ff,#8b7bff);
+  box-shadow:
+    0 0 10px #64f0ff,
+    0 0 20px #64f0ff33;
+}
+
+#serveTrack::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:8px;
+  transform:translateX(-50%);
+  width:16px;
+  height:88px;
+  border-radius:999px;
+  background:linear-gradient(180deg,#64f0ff22,#8b7bff14);
+  filter:blur(5px);
 }
 
 #serveBall{
-position:absolute;
-left:50%;
-transform:translateX(-50%);
-top:6px;
-font-size:22px;
-
-filter:
-drop-shadow(0 0 6px #fff)
-drop-shadow(0 0 12px #64f0ff);
-
-transition:
-top .35s cubic-bezier(.22,.8,.24,1),
-transform .25s ease;
-
-animation:servePulse 1.3s infinite;
-
-z-index:3;
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  top:6px;
+  font-size:22px;
+  filter:
+    drop-shadow(0 0 6px #fff)
+    drop-shadow(0 0 12px #64f0ff)
+    drop-shadow(0 0 22px #64f0ff66);
+  transition:
+    top .35s cubic-bezier(.22,.8,.24,1),
+    transform .25s ease,
+    filter .25s ease;
+  animation:servePulse 1.3s infinite;
+  z-index:3;
 }
 
 #serveBall.toBottom{
-top:66px;
+  top:66px;
 }
 
 @keyframes servePulse{
-0%{transform:translateX(-50%) scale(1)}
-50%{transform:translateX(-50%) scale(1.15)}
-100%{transform:translateX(-50%) scale(1)}
+  0%{
+    transform:translateX(-50%) scale(1);
+  }
+  50%{
+    transform:translateX(-50%) scale(1.15);
+  }
+  100%{
+    transform:translateX(-50%) scale(1);
+  }
 }
 
+/* =========================
+   NAME CELLS
+========================= */
+
 .nameCell{
+  position:relative;
+  font-size:18px;
+  font-weight:700;
+  padding:8px 14px 8px 20px;
+  border-radius:12px;
+  background:linear-gradient(180deg,#122a4c,#08162a);
+  border:1px solid #3fdcff33;
+  box-shadow:
+    inset 0 0 14px #64f0ff11,
+    0 0 10px #00000033;
+  white-space:nowrap;
+  min-width:280px;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+  transition:
+    color .22s ease,
+    opacity .22s ease,
+    box-shadow .22s ease,
+    border-color .22s ease,
+    transform .22s ease;
+}
 
-font-size:18px;
-font-weight:700;
-
-padding:8px 14px;
-
-border-radius:12px;
-
-background:linear-gradient(180deg,#122a4c,#08162a);
-
-border:1px solid #3fdcff33;
-
-box-shadow:
-inset 0 0 14px #64f0ff11,
-0 0 10px #00000033;
-
-white-space:nowrap;
-
-min-width:280px;
-
-text-transform:uppercase;
-
-letter-spacing:.4px;
-
+.nameCell::before{
+  content:"";
+  position:absolute;
+  left:10px;
+  top:50%;
+  transform:translateY(-50%);
+  width:3px;
+  height:62%;
+  border-radius:999px;
+  background:linear-gradient(180deg,var(--accent),var(--accent2));
+  box-shadow:0 0 10px #64f0ff88;
 }
 
 .winnerName{
-color:var(--gold);
-text-shadow:0 0 10px var(--gold);
+  color:var(--gold);
+  border-color:#ffd86b66;
+  box-shadow:
+    inset 0 0 16px #ffd86b18,
+    0 0 18px #ffd86b22;
+  text-shadow:
+    0 0 10px #ffd86b88,
+    0 0 20px #ffd86b33;
 }
 
 .loserName{
-opacity:.45;
+  opacity:.45;
 }
+
+/* =========================
+   SETS / GAMES / POINTS
+========================= */
 
 .setCell,
 .gamesCell{
-
-font-size:25px;
-font-weight:800;
-
-display:flex;
-align-items:center;
-justify-content:center;
-
-height:40px;
-
-border-radius:11px;
-
-background:linear-gradient(180deg,#0c1d36,#071223);
-
-border:1px solid #3fdcff33;
-
-box-shadow:
-inset 0 0 10px #64f0ff11;
-
+  font-size:25px;
+  font-weight:800;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:40px;
+  border-radius:11px;
+  background:linear-gradient(180deg,#0c1d36,#071223);
+  border:1px solid #3fdcff33;
+  box-shadow:inset 0 0 10px #64f0ff11;
+  transition:
+    transform .16s ease,
+    box-shadow .16s ease,
+    border-color .16s ease;
 }
 
 .gamesCell{
-border-color:#64f0ff55;
-box-shadow:
-inset 0 0 12px #64f0ff22,
-0 0 10px #64f0ff22;
+  border-color:#64f0ff55;
+  box-shadow:
+    inset 0 0 12px #64f0ff22,
+    0 0 10px #64f0ff22;
 }
 
 .pointsCell{
-
-font-size:34px;
-font-weight:900;
-
-display:flex;
-align-items:center;
-justify-content:center;
-
-height:46px;
-min-width:98px;
-
-border-radius:13px;
-
-background:linear-gradient(180deg,#102849,#061122);
-
-border:1px solid #64f0ff66;
-
-box-shadow:
-inset 0 0 16px #64f0ff22,
-0 0 16px #64f0ff33;
-
-transition:
-transform .18s ease,
-box-shadow .18s ease;
-
+  position:relative;
+  font-size:34px;
+  font-weight:900;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:46px;
+  min-width:98px;
+  border-radius:13px;
+  background:
+    linear-gradient(180deg,#102849,#061122);
+  border:1px solid #64f0ff66;
+  box-shadow:
+    inset 0 0 16px #64f0ff22,
+    0 0 16px #64f0ff33;
+  transition:
+    transform .18s ease,
+    box-shadow .18s ease,
+    border-color .18s ease,
+    filter .18s ease;
+  overflow:hidden;
 }
 
-.pointsCell.scorePop{
-transform:scale(1.1);
-box-shadow:
-inset 0 0 18px #64f0ff44,
-0 0 24px #64f0ff88;
+.pointsCell::before{
+  content:"";
+  position:absolute;
+  inset:-40% -20%;
+  background:linear-gradient(120deg,
+    transparent 0%,
+    rgba(255,255,255,0.00) 35%,
+    rgba(255,255,255,0.10) 50%,
+    rgba(255,255,255,0.00) 65%,
+    transparent 100%);
+  transform:translateX(-110%);
+  pointer-events:none;
+}
+
+.pointsCell.visualPulse::before{
+  animation:scoreSweep .45s ease;
+}
+
+@keyframes scoreSweep{
+  0%{ transform:translateX(-110%); }
+  100%{ transform:translateX(110%); }
+}
+
+.pointsCell.scorePop,
+.pointsCell.visualPulse{
+  transform:scale(1.1);
+  box-shadow:
+    inset 0 0 18px #64f0ff44,
+    0 0 24px #64f0ff88;
+}
+
+.setCell.visualPulse,
+.gamesCell.visualPulse{
+  transform:scale(1.08);
+  border-color:#64f0ff88;
+  box-shadow:
+    inset 0 0 12px #64f0ff33,
+    0 0 18px #64f0ff55;
 }
 
 .hiddenSet{
-display:none;
+  display:none;
 }
+
+/* =========================
+   BANNERS
+========================= */
 
 #goldenBanner,
 #tiebreakBanner,
 #winnerBanner{
-
-position:absolute;
-
-top:-30px;
-
-left:50%;
-
-transform:translateX(-50%) translateY(-12px);
-
-padding:7px 16px;
-
-font-size:13px;
-
-font-weight:900;
-
-border-radius:999px;
-
-opacity:0;
-
-transition:
-opacity .25s ease,
-transform .32s cubic-bezier(.22,.8,.24,1);
-
-pointer-events:none;
-
-text-transform:uppercase;
-
+  position:absolute;
+  top:-30px;
+  left:50%;
+  transform:translateX(-50%) translateY(-12px);
+  padding:7px 16px;
+  font-size:13px;
+  font-weight:900;
+  border-radius:999px;
+  opacity:0;
+  transition:
+    opacity .25s ease,
+    transform .32s cubic-bezier(.22,.8,.24,1);
+  pointer-events:none;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  z-index:5;
+  white-space:nowrap;
 }
 
 #goldenBanner{
-background:linear-gradient(#ffe08a,#e8c55b);
-color:black;
-box-shadow:0 0 16px #e8c55b;
+  background:linear-gradient(#ffe08a,#e8c55b);
+  color:black;
+  box-shadow:
+    0 0 16px #e8c55b,
+    0 0 34px #e8c55b33;
 }
 
 #tiebreakBanner{
-background:linear-gradient(#78f0ff,#00c8ff);
-color:black;
-box-shadow:0 0 16px #00c8ff;
+  background:linear-gradient(#78f0ff,#00c8ff);
+  color:black;
+  box-shadow:
+    0 0 16px #00c8ff,
+    0 0 34px #00c8ff33;
 }
 
 #winnerBanner{
-background:linear-gradient(#ffe7a3,#ffd86b);
-color:black;
-box-shadow:0 0 20px #ffd86b;
+  background:linear-gradient(#ffe7a3,#ffd86b);
+  color:black;
+  box-shadow:
+    0 0 20px #ffd86b,
+    0 0 38px #ffd86b44;
 }
 
 #goldenBanner.active,
 #tiebreakBanner.active,
 #winnerBanner.active{
-opacity:1;
-transform:translateX(-50%) translateY(0);
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
 }
 
 .goldenText{
-color:#ffd86b;
-text-shadow:0 0 8px #ffd86b;
+  color:#ffd86b;
+  text-shadow:0 0 8px #ffd86b;
 }
 
+/* =========================
+   BOTTOM BAR
+========================= */
+
 #bottomBar{
+  position:relative;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:18px;
+  padding:8px 12px;
+  border-radius:16px;
+  background:
+    linear-gradient(180deg,#081325,#050b17);
+  border:1px solid #3fdcff33;
+  box-shadow:
+    0 0 16px #64f0ff22,
+    inset 0 0 12px #64f0ff11;
+  overflow:hidden;
+}
 
-display:flex;
+#bottomBar::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:-40%;
+  width:40%;
+  height:100%;
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(255,255,255,0.08) 50%,
+    transparent 100%);
+  animation:bottomScan 6s linear infinite;
+  pointer-events:none;
+}
 
-justify-content:space-between;
-
-align-items:center;
-
-padding:8px 12px;
-
-border-radius:16px;
-
-background:linear-gradient(180deg,#081325,#050b17);
-
-border:1px solid #3fdcff33;
-
-box-shadow:
-0 0 16px #64f0ff22,
-inset 0 0 12px #64f0ff11;
-
+@keyframes bottomScan{
+  0%{ left:-40%; }
+  100%{ left:110%; }
 }
 
 #organizer{
-font-size:17px;
-font-weight:700;
-white-space:nowrap;
-text-transform:uppercase;
-color:#9fc6d9;
+  font-size:17px;
+  font-weight:700;
+  white-space:nowrap;
+  text-transform:uppercase;
+  color:var(--soft);
+  letter-spacing:.4px;
 }
 
 #timer{
-font-size:20px;
-font-weight:900;
-letter-spacing:1.4px;
-white-space:nowrap;
-text-shadow:0 0 6px #64f0ff;
+  font-size:20px;
+  font-weight:900;
+  letter-spacing:1.4px;
+  white-space:nowrap;
+  text-shadow:0 0 6px #64f0ff;
 }
 
+/* =========================
+   SPECIAL MODES
+========================= */
+
+#scoreboard.mode-tiebreak{
+  border-color:#00c8ff88;
+  box-shadow:
+    0 0 24px #00c8ff44,
+    0 0 64px #009dff22,
+    inset 0 0 20px #00c8ff18;
+}
+
+#scoreboard.mode-tiebreak::after{
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(0,200,255,0.0) 10%,
+    rgba(0,200,255,0.95) 50%,
+    rgba(0,200,255,0.0) 90%,
+    transparent 100%);
+}
+
+#scoreboard.mode-golden{
+  border-color:#ffd86b88;
+  box-shadow:
+    0 0 24px #ffd86b33,
+    0 0 68px #ffbf0030,
+    inset 0 0 20px #ffd86b18;
+}
+
+#scoreboard.mode-golden::after{
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(255,216,107,0.0) 10%,
+    rgba(255,216,107,0.95) 50%,
+    rgba(255,216,107,0.0) 90%,
+    transparent 100%);
+}
+
+#scoreboard.match-finished{
+  border-color:#ffd86b99;
+  box-shadow:
+    0 0 26px #ffd86b44,
+    0 0 90px #ffd86b22,
+    inset 0 0 20px #ffd86b18;
+}
+
+#scoreboard.match-finished::before{
+  border-color:#ffd86b33;
+}
+
+#scoreboard.match-finished .pointsCell,
+#scoreboard.match-finished .gamesCell,
+#scoreboard.match-finished .setCell{
+  box-shadow:
+    inset 0 0 16px #ffd86b18,
+    0 0 14px #ffd86b18;
+}
+
+#scoreboard.match-finished .corner::before,
+#scoreboard.match-finished .corner::after{
+  background:linear-gradient(90deg,#ffe7a3,#ffd86b);
+  box-shadow:0 0 10px #ffd86b88;
+}
 </style>
 
 </head>
-
 <body>
 
 <div id="overlayWrapper">
 
-<div id="scoreboard">
+  <div id="scoreboard">
 
-<div id="goldenBanner">GOLDEN POINT</div>
-<div id="tiebreakBanner">TIEBREAK</div>
-<div id="winnerBanner">🏆 MATCH WINNER</div>
+    <div id="scoreboardGridBg"></div>
 
-<div id="scoreboardGrid">
+    <div class="corner cornerTL"></div>
+    <div class="corner cornerTR"></div>
+    <div class="corner cornerBL"></div>
+    <div class="corner cornerBR"></div>
 
-<div class="serveTrackCell">
-<div id="serveTrack">
-<span id="serveBall">🎾</span>
-</div>
-</div>
+    <div id="goldenBanner">GOLDEN POINT</div>
+    <div id="tiebreakBanner">TIEBREAK</div>
+    <div id="winnerBanner">🏆 MATCH WINNER</div>
 
-<div id="nameA" class="nameCell" style="grid-column:2; grid-row:1;">Player A1 / Player A2</div>
-<div id="set2A" class="setCell hiddenSet" style="grid-column:3; grid-row:1;">0</div>
-<div id="set1A" class="setCell hiddenSet" style="grid-column:4; grid-row:1;">0</div>
-<div id="gamesA" class="gamesCell" style="grid-column:5; grid-row:1;">0</div>
-<div id="pointsA" class="pointsCell" style="grid-column:6; grid-row:1;">0</div>
+    <div id="scoreboardGrid">
 
-<div id="nameB" class="nameCell" style="grid-column:2; grid-row:2;">Player B1 / Player B2</div>
-<div id="set2B" class="setCell hiddenSet" style="grid-column:3; grid-row:2;">0</div>
-<div id="set1B" class="setCell hiddenSet" style="grid-column:4; grid-row:2;">0</div>
-<div id="gamesB" class="gamesCell" style="grid-column:5; grid-row:2;">0</div>
-<div id="pointsB" class="pointsCell" style="grid-column:6; grid-row:2;">0</div>
+      <div class="serveTrackCell">
+        <div id="serveTrack">
+          <span id="serveBall">🎾</span>
+        </div>
+      </div>
 
-</div>
+      <div id="nameA" class="nameCell" style="grid-column:2; grid-row:1;">Player A1 / Player A2</div>
+      <div id="set2A" class="setCell hiddenSet" style="grid-column:3; grid-row:1;">0</div>
+      <div id="set1A" class="setCell hiddenSet" style="grid-column:4; grid-row:1;">0</div>
+      <div id="gamesA" class="gamesCell" style="grid-column:5; grid-row:1;">0</div>
+      <div id="pointsA" class="pointsCell" style="grid-column:6; grid-row:1;">0</div>
 
-</div>
+      <div id="nameB" class="nameCell" style="grid-column:2; grid-row:2;">Player B1 / Player B2</div>
+      <div id="set2B" class="setCell hiddenSet" style="grid-column:3; grid-row:2;">0</div>
+      <div id="set1B" class="setCell hiddenSet" style="grid-column:4; grid-row:2;">0</div>
+      <div id="gamesB" class="gamesCell" style="grid-column:5; grid-row:2;">0</div>
+      <div id="pointsB" class="pointsCell" style="grid-column:6; grid-row:2;">0</div>
 
-<div id="bottomBar">
-<div id="organizer">@sponsor</div>
-<div id="timer">00:00</div>
-</div>
+    </div>
+  </div>
+
+  <div id="bottomBar">
+    <div id="organizer">@sponsor</div>
+    <div id="timer">00:00</div>
+  </div>
 
 </div>
 
@@ -394,6 +631,89 @@ text-shadow:0 0 6px #64f0ff;
 <script src="js/firebase.js"></script>
 <script src="js/state.js"></script>
 <script src="js/obs.js"></script>
+
+<script>
+/* visual-only enhancer layer */
+(function(){
+  const scoreboard = document.getElementById("scoreboard");
+
+  const goldenBanner = document.getElementById("goldenBanner");
+  const tiebreakBanner = document.getElementById("tiebreakBanner");
+  const winnerBanner = document.getElementById("winnerBanner");
+
+  const nameA = document.getElementById("nameA");
+  const nameB = document.getElementById("nameB");
+
+  const pointsA = document.getElementById("pointsA");
+  const pointsB = document.getElementById("pointsB");
+  const gamesA = document.getElementById("gamesA");
+  const gamesB = document.getElementById("gamesB");
+  const set1A = document.getElementById("set1A");
+  const set1B = document.getElementById("set1B");
+  const set2A = document.getElementById("set2A");
+  const set2B = document.getElementById("set2B");
+
+  function syncModes(){
+    scoreboard.classList.toggle("mode-golden", goldenBanner.classList.contains("active"));
+    scoreboard.classList.toggle("mode-tiebreak", tiebreakBanner.classList.contains("active"));
+
+    const hasWinner =
+      winnerBanner.classList.contains("active") ||
+      nameA.classList.contains("winnerName") ||
+      nameB.classList.contains("winnerName");
+
+    scoreboard.classList.toggle("match-finished", hasWinner);
+  }
+
+  function pulse(el){
+    if(!el) return;
+    el.classList.remove("visualPulse");
+    void el.offsetWidth;
+    el.classList.add("visualPulse");
+    setTimeout(() => el.classList.remove("visualPulse"), 260);
+  }
+
+  function watchText(el, doPulse){
+    if(!el) return;
+    let last = el.textContent;
+    const observer = new MutationObserver(() => {
+      const now = el.textContent;
+      if(now !== last){
+        last = now;
+        if(doPulse) pulse(el);
+      }
+    });
+    observer.observe(el, {
+      childList:true,
+      subtree:true,
+      characterData:true
+    });
+  }
+
+  function watchClass(el){
+    if(!el) return;
+    const observer = new MutationObserver(syncModes);
+    observer.observe(el, { attributes:true, attributeFilter:["class"] });
+  }
+
+  watchClass(goldenBanner);
+  watchClass(tiebreakBanner);
+  watchClass(winnerBanner);
+  watchClass(nameA);
+  watchClass(nameB);
+
+  watchText(pointsA, true);
+  watchText(pointsB, true);
+  watchText(gamesA, true);
+  watchText(gamesB, true);
+  watchText(set1A, true);
+  watchText(set1B, true);
+  watchText(set2A, true);
+  watchText(set2B, true);
+
+  syncModes();
+})();
+</script>
 
 </body>
 </html>
