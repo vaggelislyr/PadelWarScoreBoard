@@ -530,36 +530,36 @@ body{
 
 #barConnector{
   position:relative;
-  height:6px;
+  height:4px;
   width:100%;
   z-index:1;
-  margin-top:-2px;
+  margin-top:-1px;
 }
 
 #barConnector::before{
   content:"";
   position:absolute;
-  left:56px;
-  right:50px;
+  left:62px;
+  right:56px;
   top:0;
-  height:6px;
+  height:4px;
   background:linear-gradient(180deg, rgba(116,239,255,0.24) 0%, rgba(116,239,255,0.00) 100%);
   clip-path:polygon(
-    18px 0%,
-    calc(100% - 26px) 0%,
-    calc(100% - 10px) 100%,
-    34px 100%
+    12px 0%,
+    calc(100% - 18px) 0%,
+    calc(100% - 6px) 100%,
+    24px 100%
   );
   opacity:.34;
-  filter:blur(1px);
+  filter:blur(.6px);
 }
 
 #barConnector::after{
   content:"";
   position:absolute;
-  left:88px;
-  right:76px;
-  top:1px;
+  left:92px;
+  right:84px;
+  top:0;
   height:2px;
   background:linear-gradient(90deg,
     transparent 0%,
@@ -582,7 +582,7 @@ body{
   justify-content:space-between;
   align-items:center;
   gap:18px;
-  padding:9px 16px 10px 18px;
+  padding:8px 16px 9px 18px;
   background:linear-gradient(180deg, rgba(8,22,48,0.96) 0%, rgba(2,8,20,0.99) 100%);
   clip-path:polygon(
     56px 0%,
@@ -590,14 +590,14 @@ body{
     calc(100% - 24px) 14px,
     18px 14px,
     0% 100%,
-    calc(100% - 10px) 100%,
+    100% 100%,
     100% 24px,
-    100% 0%
+    calc(100% - 10px) 0%
   );
   border:1px solid rgba(116,239,255,0.18);
   box-shadow:0 0 14px rgba(24,200,255,0.10), inset 0 0 12px rgba(116,239,255,0.04);
   overflow:visible;
-  min-height:44px;
+  min-height:40px;
 }
 
 #bottomBar::before{
@@ -626,9 +626,9 @@ body{
     calc(100% - 25px) 13px,
     19px 13px,
     3px calc(100% - 3px),
-    calc(100% - 12px) calc(100% - 3px),
+    calc(100% - 3px) calc(100% - 3px),
     calc(100% - 3px) 24px,
-    calc(100% - 3px) 0%
+    calc(100% - 12px) 0%
   );
   background:linear-gradient(180deg, rgba(10,24,50,0.96) 0%, rgba(3,8,18,0.99) 100%);
   z-index:0;
