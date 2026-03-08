@@ -44,7 +44,97 @@ body{
   gap:0;
   width:max-content;
   transform-origin:top left;
-  will-change:opacity, transform;
+  will-change:opacity, transform, filter;
+}
+
+/* =========================
+   BROADCAST INTRO LAYER
+========================= */
+
+#overlayWrapper.broadcastIntro #scoreboard::before,
+#overlayWrapper.broadcastIntro #bottomBar::before{
+  animation:introFrameGlow 900ms cubic-bezier(.18,.84,.24,1);
+}
+
+#overlayWrapper.broadcastIntro #scoreboard,
+#overlayWrapper.broadcastIntro #bottomBar{
+  animation:introPanelLift 850ms cubic-bezier(.18,.84,.24,1);
+}
+
+#overlayWrapper.broadcastIntro .frameLine,
+#overlayWrapper.broadcastIntro .bottomFrameLine,
+#overlayWrapper.broadcastIntro .techBars,
+#overlayWrapper.broadcastIntro #barTech{
+  animation:introLinesReveal 760ms cubic-bezier(.18,.84,.24,1);
+}
+
+#overlayWrapper.broadcastIntro .nameCell,
+#overlayWrapper.broadcastIntro .setCell,
+#overlayWrapper.broadcastIntro .gamesCell,
+#overlayWrapper.broadcastIntro .pointsCell{
+  animation:introCellsReveal 920ms cubic-bezier(.18,.84,.24,1);
+}
+
+#overlayWrapper.broadcastIntro #bottomBarContent,
+#overlayWrapper.broadcastIntro #contentLayer{
+  animation:introContentFade 980ms cubic-bezier(.18,.84,.24,1);
+}
+
+@keyframes introFrameGlow{
+  0%{
+    opacity:.15;
+    filter:drop-shadow(0 0 1px rgba(255,255,255,0.08));
+  }
+  45%{
+    opacity:1;
+    filter:drop-shadow(0 0 10px rgba(255,255,255,0.20));
+  }
+  100%{
+    opacity:1;
+  }
+}
+
+@keyframes introPanelLift{
+  0%{
+    transform:translateY(-8px) scale(.992);
+  }
+  60%{
+    transform:translateY(0px) scale(1.003);
+  }
+  100%{
+    transform:translateY(0px) scale(1);
+  }
+}
+
+@keyframes introLinesReveal{
+  0%{
+    opacity:0;
+    transform:translateX(-10px);
+  }
+  100%{
+    opacity:1;
+    transform:translateX(0);
+  }
+}
+
+@keyframes introCellsReveal{
+  0%{
+    opacity:0;
+    transform:translateY(8px) scale(.985);
+  }
+  100%{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
+}
+
+@keyframes introContentFade{
+  0%{
+    opacity:0;
+  }
+  100%{
+    opacity:1;
+  }
 }
 
 /* =========================
@@ -352,7 +442,7 @@ body{
     top .35s cubic-bezier(.22,.8,.24,1),
     transform .25s ease,
     filter .25s ease;
-  animation:servePulse 1.35s infinite;
+  animation:servePulse 1.45s infinite;
   z-index:3;
 }
 
@@ -365,7 +455,7 @@ body{
     transform:translateX(-50%) scale(1);
   }
   50%{
-    transform:translateX(-50%) scale(1.15);
+    transform:translateX(-50%) scale(1.16);
     filter:
       drop-shadow(0 0 7px #ffffff)
       drop-shadow(0 0 14px rgba(255,255,255,0.30));
