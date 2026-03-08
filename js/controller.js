@@ -15,7 +15,7 @@ function pushHistory(currentState) {
   }
 }
 
-function undoLastAction() {
+function undo() {
   if (historyStack.length === 0) return;
   const previous = historyStack.pop();
   writeState(previous);
@@ -49,6 +49,7 @@ function updateTimerDisplay() {
 
 function startTimer() {
   if (timerInterval) return;
+
   timerInterval = setInterval(() => {
     timerSeconds++;
     updateTimerDisplay();
@@ -86,18 +87,18 @@ function finishMatch(state) {
 }
 
 function recordCompletedSet(state, scoreA, scoreB) {
+  if (!Array.isArray(state.setHistoryA)) state.setHistoryA = [];
+  if (!Array.isArray(state.setHistoryB)) state.setHistoryB = [];
   state.setHistoryA.push(scoreA);
   state.setHistoryB.push(scoreB);
 }
 
 function afterSetWin(state) {
-  // best of 3 => first to 2 sets wins
   if (state.setsA === 2 || state.setsB === 2) {
     finishMatch(state);
     return;
   }
 
-  // no super tiebreak, 3rd set is normal
   state.gamesA = 0;
   state.gamesB = 0;
   state.mode = "normal";
@@ -155,50 +156,41 @@ function winGame(state, player) {
   checkSetOrTiebreak(state);
 }
 
-/* ================= SCORING LOGIC ================= */
+/* ================= SCORING ================= */
 
 function handleNormalPoint(state, player) {
   const opponent = player === "A" ? "B" : "A";
 
-  // match over => no score changes, but undo still works because buttons remain active
   if (state.matchOver) return;
 
-  // Golden active at 40-40 => next point wins
   if (state.goldenActive && state.pointsA === 3 && state.pointsB === 3) {
     winGame(state, player);
     return;
   }
 
-  // Deuce / Advantage area
   if (state.pointsA >= 3 && state.pointsB >= 3) {
-
-    // Opponent had AD and current player scores => back to 40-40
     if (state["points" + opponent] === 4) {
       state.pointsA = 3;
       state.pointsB = 3;
       state.deuceCount++;
 
-      // After second cancelled AD => golden active
       if (state.deuceCount >= 2) {
         state.goldenActive = true;
       }
       return;
     }
 
-    // Current player had AD and scores again => game
     if (state["points" + player] === 4) {
       winGame(state, player);
       return;
     }
 
-    // At exact deuce => give AD
     if (state.pointsA === 3 && state.pointsB === 3) {
       state["points" + player] = 4;
       return;
     }
   }
 
-  // Normal scoring below deuce
   state["points" + player]++;
 
   if (
@@ -244,68 +236,57 @@ function addPoint(player) {
   });
 }
 
-/* ================= UI ACTIONS ================= */
+/* ================= CONTROLLER ACTIONS ================= */
 
-document.getElementById("updateNames").onclick = () => {
+function updateNameA() {
+  const value = document.getElementById("nameAInput").value || "";
+
   readState(state => {
     pushHistory(state);
-
-    state.nameA = document.getElementById("nameA").value || "";
-    state.nameB = document.getElementById("nameB").value || "";
-
+    state.nameA = value;
     writeState(state);
   });
-};
+}
 
-document.getElementById("updateOrganizer").onclick = () => {
+function updateNameB() {
+  const value = document.getElementById("nameBInput").value || "";
+
   readState(state => {
     pushHistory(state);
-
-    state.organizer = document.getElementById("organizerInput").value || "";
-
+    state.nameB = value;
     writeState(state);
   });
-};
+}
 
-document.getElementById("toggleSponsorLock").onclick = () => {
+function updateSponsor() {
+  const value = document.getElementById("sponsorInput").value || "";
+
   readState(state => {
     pushHistory(state);
-
-    state.sponsorLocked = !state.sponsorLocked;
-
+    state.organizer = value;
     writeState(state);
   });
-};
+}
 
-document.getElementById("pointA").onclick = () => addPoint("A");
-document.getElementById("pointB").onclick = () => addPoint("B");
-
-document.getElementById("switchServe").onclick = () => {
+function switchServe() {
   readState(state => {
     pushHistory(state);
     state.serve = nextServe(state.serve);
     writeState(state);
   });
-};
+}
 
-document.getElementById("toggleVisible").onclick = () => {
+function toggleScoreboard() {
   readState(state => {
     pushHistory(state);
     state.visible = !state.visible;
     writeState(state);
   });
-};
+}
 
-document.getElementById("undo").onclick = () => {
-  undoLastAction();
-};
-
-document.getElementById("reset").onclick = () => {
+function resetMatch() {
   readState(state => {
     pushHistory(state);
-
-    const keepOrganizer = state.sponsorLocked ? state.organizer : "";
-    const keepLock = state.sponsorLocked;
 
     state.nameA = "";
     state.nameB = "";
@@ -330,8 +311,7 @@ document.getElementById("reset").onclick = () => {
     state.deuceCount = 0;
     state.matchOver = false;
 
-    state.organizer = keepOrganizer;
-    state.sponsorLocked = keepLock;
+    state.organizer = state.organizer || "@sponsor";
 
     state.timerText = "00:00";
     timerSeconds = 0;
@@ -339,29 +319,28 @@ document.getElementById("reset").onclick = () => {
 
     writeState(state);
   });
-};
+}
 
-document.getElementById("timerStart").onclick = () => {
-  startTimer();
-};
-
-document.getElementById("timerStop").onclick = () => {
-  stopTimer();
-};
-
-document.getElementById("timerReset").onclick = () => {
-  resetTimer();
-};
-
-/* ================= INIT UI FROM STATE ================= */
+/* ================= INIT INPUTS FROM STATE ================= */
 
 onStateChange(state => {
-  document.getElementById("nameA").value = state.nameA || "";
-  document.getElementById("nameB").value = state.nameB || "";
-  document.getElementById("organizerInput").value = state.organizer || "";
+  document.getElementById("nameAInput").value = state.nameA || "";
+  document.getElementById("nameBInput").value = state.nameB || "";
+  document.getElementById("sponsorInput").value = state.organizer || "";
 
   timerSeconds = parseTimerText(state.timerText || "00:00");
-
-  const sponsorBtn = document.getElementById("toggleSponsorLock");
-  sponsorBtn.textContent = state.sponsorLocked ? "Unlock Sponsor" : "Lock Sponsor";
 });
+
+/* ================= GLOBAL EXPORTS FOR HTML onclick ================= */
+
+window.updateNameA = updateNameA;
+window.updateNameB = updateNameB;
+window.updateSponsor = updateSponsor;
+window.addPoint = addPoint;
+window.switchServe = switchServe;
+window.undo = undo;
+window.toggleScoreboard = toggleScoreboard;
+window.resetMatch = resetMatch;
+window.startTimer = startTimer;
+window.stopTimer = stopTimer;
+window.resetTimer = resetTimer;
