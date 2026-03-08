@@ -577,7 +577,7 @@ body{
 }
 
 /* =========================
-   BOTTOM BAR SAFE / MONOCHROME
+   BOTTOM BAR - FUTURISTIC BUT SAFE
 ========================= */
 
 #bottomBar{
@@ -600,36 +600,34 @@ body{
   z-index:1;
 }
 
-/* outer top accent line */
+/* left top bevel accent */
 #bottomBar::before{
   content:"";
   position:absolute;
   top:0;
-  left:40px;
-  right:42px;
-  height:2px;
-  background:linear-gradient(90deg,
-    rgba(255,255,255,0.78) 0%,
-    rgba(180,180,180,0.34) 100%);
-  box-shadow:0 0 4px rgba(255,255,255,0.08);
+  left:0;
+  width:72px;
+  height:16px;
+  background:linear-gradient(135deg, rgba(255,255,255,0.16), rgba(255,255,255,0.02));
+  clip-path:polygon(24px 0%, 100% 0%, 76% 100%, 0% 100%);
   pointer-events:none;
   z-index:1;
 }
 
-/* inner subtle top slice only, no bottom cutting */
+/* top futuristic overlay only */
 #bottomBar::after{
   content:"";
   position:absolute;
-  top:2px;
+  top:0;
   left:14px;
   right:14px;
-  height:12px;
-  background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.00));
+  height:13px;
+  background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.00));
   clip-path:polygon(
-    28px 0%,
+    26px 0%,
     calc(100% - 34px) 0%,
     calc(100% - 18px) 100%,
-    10px 100%
+    6px 100%
   );
   pointer-events:none;
   z-index:1;
@@ -648,8 +646,8 @@ body{
 
 #barLineLeft{
   top:8px;
-  left:16px;
-  width:148px;
+  left:28px;
+  width:132px;
   height:2px;
 }
 
