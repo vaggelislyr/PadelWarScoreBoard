@@ -7,7 +7,7 @@
 </head>
 <body>
 
-  <div id="overlayWrapper">
+  <div id="overlayWrapper" class="overlay-visible">
 
     <div id="topBanners">
       <div id="goldenBanner">GOLDEN POINT</div>
@@ -171,71 +171,92 @@
     syncModes();
 
     /* =========================================
-       SAFE SHOW / HIDE INTRO-OUTRO ANIMATION
-       Πιάνει display/class/hidden αλλαγές
+       SHOW / HIDE ANIMATION LAYER
+       Μετατρέπει display none/flex σε smooth
+       slide + fade χωρίς να χαλάει το engine
     ========================================= */
 
-    let hideTimer = null;
-    let lastVisible = true;
+    const HIDE_DURATION = 520;
+    let internalUpdate = false;
+    let currentVisible = true;
+    let hideFinishTimer = null;
 
-    function isActuallyHidden(el){
-      const cs = window.getComputedStyle(el);
-      return cs.display === "none" || cs.visibility === "hidden" || el.hidden;
+    function forceVisibleBox(){
+      overlayWrapper.style.display = "";
+      overlayWrapper.hidden = false;
     }
 
-    function playIntro(){
-      clearTimeout(hideTimer);
-      overlayWrapper.classList.remove("overlayOutro");
-      overlayWrapper.classList.add("overlayIntro");
-      setTimeout(() => {
-        overlayWrapper.classList.remove("overlayIntro");
-      }, 460);
-    }
+    function setOverlayVisible(shouldShow){
+      clearTimeout(hideFinishTimer);
 
-    function playOutro(){
-      clearTimeout(hideTimer);
-      overlayWrapper.classList.remove("overlayIntro");
-      overlayWrapper.classList.add("overlayOutro");
-      hideTimer = setTimeout(() => {
-        overlayWrapper.classList.remove("overlayOutro");
-      }, 340);
-    }
+      internalUpdate = true;
+      forceVisibleBox();
 
-    function syncOverlayVisibility(){
-      const hiddenNow = isActuallyHidden(overlayWrapper);
-
-      if(lastVisible && hiddenNow){
-        /* κάποιος το έκανε hide από έξω */
-        overlayWrapper.style.display = "flex";
-        playOutro();
-        hideTimer = setTimeout(() => {
-          overlayWrapper.style.display = "none";
-        }, 320);
+      if(shouldShow){
+        overlayWrapper.classList.remove("overlay-hidden", "overlay-hiding");
+        void overlayWrapper.offsetWidth;
+        overlayWrapper.classList.add("overlay-visible");
+        currentVisible = true;
+        internalUpdate = false;
+        return;
       }
 
-      if(!lastVisible && !hiddenNow){
-        overlayWrapper.style.display = "flex";
-        playIntro();
-      }
+      overlayWrapper.classList.remove("overlay-visible", "overlay-hidden");
+      void overlayWrapper.offsetWidth;
+      overlayWrapper.classList.add("overlay-hiding");
+      currentVisible = false;
 
-      lastVisible = !hiddenNow;
+      hideFinishTimer = setTimeout(() => {
+        internalUpdate = true;
+        overlayWrapper.classList.remove("overlay-hiding");
+        overlayWrapper.classList.add("overlay-hidden");
+        internalUpdate = false;
+      }, HIDE_DURATION);
+
+      internalUpdate = false;
     }
 
-    /* αρχικό intro όταν φορτώσει */
-    requestAnimationFrame(() => {
-      overlayWrapper.classList.add("overlayIntro");
-      setTimeout(() => overlayWrapper.classList.remove("overlayIntro"), 460);
-      lastVisible = !isActuallyHidden(overlayWrapper);
-    });
+    function requestedHidden(){
+      const inlineDisplay = overlayWrapper.style.display;
+      return overlayWrapper.hidden || inlineDisplay === "none";
+    }
 
-    const visibilityObserver = new MutationObserver(() => {
-      syncOverlayVisibility();
-    });
+    function syncRequestedVisibility(){
+      if(internalUpdate) return;
 
+      const shouldHide = requestedHidden();
+
+      if(shouldHide && currentVisible){
+        setOverlayVisible(false);
+      } else if(!shouldHide && !currentVisible){
+        setOverlayVisible(true);
+      }
+
+      /* καθαρίζουμε το display:none που βάζει το engine
+         ώστε να αφήσουμε το animation να δουλέψει */
+      if(overlayWrapper.style.display === "none"){
+        internalUpdate = true;
+        overlayWrapper.style.display = "";
+        internalUpdate = false;
+      }
+
+      if(overlayWrapper.hidden){
+        internalUpdate = true;
+        overlayWrapper.hidden = false;
+        internalUpdate = false;
+      }
+    }
+
+    const visibilityObserver = new MutationObserver(syncRequestedVisibility);
     visibilityObserver.observe(overlayWrapper, {
       attributes:true,
-      attributeFilter:["style","class","hidden"]
+      attributeFilter:["style","hidden","class"]
     });
+
+    /* initial state */
+    forceVisibleBox();
+    overlayWrapper.classList.add("overlay-visible");
+    currentVisible = true;
   })();
   </script>
 
