@@ -1,0 +1,380 @@
+:root{
+  --bg: #07090d;
+  --bg2: #0f131a;
+  --panel: #121821;
+  --panel2: #181f29;
+  --panel3: #0f141c;
+
+  --text: #ffffff;
+  --textSoft: #cfd5de;
+  --textDim: #8f98a6;
+
+  --line: rgba(255,255,255,0.10);
+  --lineStrong: rgba(255,255,255,0.18);
+
+  --shadow: 0 10px 30px rgba(0,0,0,0.32);
+  --glow: 0 0 0 1px rgba(255,255,255,0.04) inset;
+
+  --primary: #ffffff;
+  --primaryText: #000000;
+
+  --secondary: #262f3b;
+  --secondaryHover: #303a49;
+
+  --danger: #c93f3f;
+  --dangerHover: #dd4a4a;
+
+  --dangerSoft: #5a2323;
+  --dangerSoftHover: #6a2a2a;
+
+  --success: #89f3ac;
+  --gold: #ffd86b;
+
+  --radiusLg: 20px;
+  --radiusMd: 14px;
+  --radiusSm: 10px;
+}
+
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body{
+  margin:0;
+  padding:0;
+  background:
+    radial-gradient(circle at top, rgba(255,255,255,0.05), transparent 28%),
+    linear-gradient(180deg, #0a0d12 0%, #07090d 100%);
+  color:var(--text);
+  font-family: Inter, Arial, Helvetica, sans-serif;
+}
+
+body{
+  min-height:100vh;
+}
+
+.appShell{
+  width:100%;
+  max-width:980px;
+  margin:0 auto;
+  padding:16px 14px 28px;
+}
+
+.appHeader{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:16px;
+}
+
+.eyebrow{
+  font-size:11px;
+  letter-spacing:1.8px;
+  color:var(--textDim);
+  text-transform:uppercase;
+  margin-bottom:6px;
+}
+
+h1{
+  margin:0;
+  font-size:28px;
+  line-height:1.05;
+  letter-spacing:-0.4px;
+}
+
+h2{
+  margin:0;
+  font-size:18px;
+  color:var(--text);
+}
+
+.headerStatus{
+  flex-shrink:0;
+}
+
+.statusChip{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 12px;
+  border-radius:999px;
+  background:linear-gradient(180deg, #131923, #0d1219);
+  border:1px solid var(--lineStrong);
+  color:var(--textSoft);
+  font-size:13px;
+  white-space:nowrap;
+}
+
+.statusDot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:var(--success);
+  box-shadow:0 0 12px rgba(137,243,172,0.5);
+}
+
+.panel{
+  background:linear-gradient(180deg, rgba(23,30,40,0.96), rgba(13,18,25,0.98));
+  border:1px solid var(--line);
+  border-radius:var(--radiusLg);
+  box-shadow:var(--shadow), var(--glow);
+  padding:16px;
+  margin-bottom:14px;
+}
+
+.sectionTop{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  margin-bottom:14px;
+}
+
+.miniBadges{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap:8px;
+}
+
+.miniBadge{
+  padding:8px 10px;
+  border-radius:999px;
+  font-size:12px;
+  color:var(--textSoft);
+  background:#0f141b;
+  border:1px solid var(--line);
+  white-space:nowrap;
+}
+
+.previewFrameWrap{
+  width:100%;
+  overflow:hidden;
+  border-radius:18px;
+  border:1px solid var(--lineStrong);
+  background:#05070a;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.03);
+}
+
+.previewFrame{
+  width:100%;
+  height:240px;
+  border:none;
+  display:block;
+  background:transparent;
+}
+
+.fieldGrid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:14px;
+}
+
+.fieldBlock{
+  background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:14px;
+}
+
+.fieldBlock.fullSpan{
+  grid-column:1 / -1;
+}
+
+label{
+  display:block;
+  margin-bottom:8px;
+  font-size:13px;
+  color:var(--textSoft);
+  font-weight:600;
+}
+
+input{
+  width:100%;
+  border:none;
+  outline:none;
+  background:#0c1117;
+  color:var(--text);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px;
+  padding:14px 14px;
+  font-size:16px;
+  margin-bottom:12px;
+}
+
+input::placeholder{
+  color:#7f8997;
+}
+
+.teamGrid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:14px;
+  margin-bottom:14px;
+}
+
+.teamCard{
+  position:relative;
+  overflow:hidden;
+}
+
+.teamCard::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(135deg, rgba(255,255,255,0.04), transparent 40%);
+}
+
+.teamCardTop{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+  margin-bottom:14px;
+}
+
+.teamLabel{
+  font-size:12px;
+  letter-spacing:1.6px;
+  text-transform:uppercase;
+  color:var(--textDim);
+  margin-bottom:6px;
+}
+
+.teamNamePreview{
+  font-size:16px;
+  font-weight:700;
+  color:var(--text);
+  line-height:1.2;
+  word-break:break-word;
+}
+
+.scoreActionGrid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:10px;
+}
+
+.actionGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.btn{
+  border:none;
+  outline:none;
+  cursor:pointer;
+  min-height:56px;
+  border-radius:14px;
+  padding:14px 14px;
+  font-size:16px;
+  font-weight:800;
+  letter-spacing:0.2px;
+  transition:transform .12s ease, filter .12s ease, background .12s ease, border-color .12s ease;
+  touch-action:manipulation;
+}
+
+.btn:active{
+  transform:scale(0.985);
+}
+
+.btnFull{
+  width:100%;
+}
+
+.btnPrimary{
+  background:linear-gradient(180deg, #ffffff, #d7d7d7);
+  color:var(--primaryText);
+}
+
+.btnPrimary:hover{
+  filter:brightness(0.98);
+}
+
+.btnSecondary{
+  background:linear-gradient(180deg, var(--secondaryHover), var(--secondary));
+  color:var(--text);
+  border:1px solid rgba(255,255,255,0.08);
+}
+
+.btnScore{
+  background:linear-gradient(180deg, #ffffff, #d9d9d9);
+  color:#000;
+  min-height:62px;
+  font-size:18px;
+}
+
+.btnDanger{
+  background:linear-gradient(180deg, var(--dangerHover), var(--danger));
+  color:white;
+}
+
+.btnDangerSoft{
+  background:linear-gradient(180deg, var(--dangerSoftHover), var(--dangerSoft));
+  color:white;
+}
+
+.timerPreview{
+  font-size:24px;
+  font-weight:900;
+  letter-spacing:1px;
+  color:var(--gold);
+}
+
+@media (min-width: 700px){
+  .appShell{
+    padding:22px 20px 34px;
+  }
+
+  .previewFrame{
+    height:290px;
+  }
+
+  .fieldGrid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .teamGrid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .scoreActionGrid{
+    grid-template-columns:1fr;
+  }
+
+  .actionGrid{
+    grid-template-columns:repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 520px){
+  h1{
+    font-size:24px;
+  }
+
+  .appHeader{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .sectionTop{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .miniBadges{
+    justify-content:flex-start;
+  }
+
+  .actionGrid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .previewFrame{
+    height:220px;
+  }
+}
