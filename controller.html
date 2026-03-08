@@ -1,142 +1,138 @@
 <!DOCTYPE html>
 <html lang="el">
 <head>
-<meta charset="UTF-8">
-<title>Padel Scoreboard Controller</title>
-
-<style>
-
-body{
-font-family:Arial,Helvetica,sans-serif;
-background:#0b1220;
-color:white;
-margin:0;
-padding:20px;
-}
-
-h1{
-margin-top:0;
-font-size:24px;
-}
-
-.section{
-background:#141d33;
-padding:15px;
-border-radius:10px;
-margin-bottom:15px;
-}
-
-label{
-display:block;
-margin-bottom:6px;
-font-size:14px;
-}
-
-input{
-width:100%;
-padding:8px;
-border-radius:6px;
-border:none;
-margin-bottom:10px;
-}
-
-button{
-padding:10px 14px;
-border:none;
-border-radius:8px;
-background:#1e6cff;
-color:white;
-font-weight:bold;
-cursor:pointer;
-margin:4px;
-}
-
-button.secondary{
-background:#444;
-}
-
-button.red{
-background:#d63939;
-}
-
-.rowButtons{
-display:flex;
-flex-wrap:wrap;
-}
-
-</style>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PadelWars ScoreBoard</title>
+  <link rel="stylesheet" href="css/controller.css">
 </head>
 <body>
 
-<h1>Padel Scoreboard Controller</h1>
+  <div class="appShell">
 
-<div class="section">
+    <header class="appHeader">
+      <div>
+        <div class="eyebrow">LIVE CONTROLLER</div>
+        <h1>PadelWars ScoreBoard</h1>
+      </div>
 
-<label>Team A Players</label>
-<input id="nameAInput" placeholder="Player1 / Player2">
+      <div class="headerStatus">
+        <div class="statusChip">
+          <span class="statusDot"></span>
+          <span>Firebase Live</span>
+        </div>
+      </div>
+    </header>
 
-<button onclick="updateNameA()">Update</button>
+    <section class="previewSection panel">
+      <div class="sectionTop">
+        <h2>OBS Preview</h2>
+        <div class="miniBadges">
+          <span id="visibleBadge" class="miniBadge">Overlay Visible</span>
+          <span id="modeBadge" class="miniBadge">Normal Mode</span>
+          <span id="serveBadge" class="miniBadge">Serve: A</span>
+        </div>
+      </div>
 
-<label>Team B Players</label>
-<input id="nameBInput" placeholder="Player1 / Player2">
+      <div class="previewFrameWrap">
+        <iframe
+          id="obsPreview"
+          class="previewFrame"
+          src="obs.html"
+          title="OBS Scoreboard Preview"
+          loading="lazy">
+        </iframe>
+      </div>
+    </section>
 
-<button onclick="updateNameB()">Update</button>
+    <section class="panel infoPanel">
+      <div class="sectionTop">
+        <h2>Match Info</h2>
+      </div>
 
-</div>
+      <div class="fieldGrid">
+        <div class="fieldBlock">
+          <label for="nameAInput">Team A Players</label>
+          <input id="nameAInput" placeholder="Player1 / Player2">
+          <button class="btn btnPrimary btnFull" onclick="updateNameA()">Update Team A</button>
+        </div>
 
+        <div class="fieldBlock">
+          <label for="nameBInput">Team B Players</label>
+          <input id="nameBInput" placeholder="Player1 / Player2">
+          <button class="btn btnPrimary btnFull" onclick="updateNameB()">Update Team B</button>
+        </div>
 
-<div class="section">
+        <div class="fieldBlock fullSpan">
+          <label for="sponsorInput">Sponsor (@)</label>
+          <input id="sponsorInput" placeholder="@sponsor">
+          <button class="btn btnPrimary btnFull" onclick="updateSponsor()">Update Sponsor</button>
+        </div>
+      </div>
+    </section>
 
-<label>Sponsor (@)</label>
-<input id="sponsorInput" placeholder="@sponsor">
+    <section class="teamGrid">
+      <article class="panel teamCard teamA">
+        <div class="teamCardTop">
+          <div>
+            <div class="teamLabel">TEAM A</div>
+            <div id="teamANamePreview" class="teamNamePreview">Player1 / Player2</div>
+          </div>
+        </div>
 
-<button onclick="updateSponsor()">Update</button>
+        <div class="scoreActionGrid">
+          <button class="btn btnScore" onclick="addPoint('A')">+ Point A</button>
+        </div>
+      </article>
 
-</div>
+      <article class="panel teamCard teamB">
+        <div class="teamCardTop">
+          <div>
+            <div class="teamLabel">TEAM B</div>
+            <div id="teamBNamePreview" class="teamNamePreview">Player1 / Player2</div>
+          </div>
+        </div>
 
+        <div class="scoreActionGrid">
+          <button class="btn btnScore" onclick="addPoint('B')">+ Point B</button>
+        </div>
+      </article>
+    </section>
 
-<div class="section">
+    <section class="panel">
+      <div class="sectionTop">
+        <h2>Quick Controls</h2>
+      </div>
 
-<div class="rowButtons">
+      <div class="actionGrid">
+        <button class="btn btnSecondary" onclick="switchServe()">Switch Serve</button>
+        <button class="btn btnSecondary" onclick="undo()">Undo</button>
+        <button class="btn btnSecondary" onclick="toggleScoreboard()">Show / Hide</button>
+        <button class="btn btnDanger" onclick="resetMatch()">Reset Match</button>
+      </div>
+    </section>
 
-<button onclick="addPoint('A')">Point A</button>
-<button onclick="addPoint('B')">Point B</button>
+    <section class="panel">
+      <div class="sectionTop">
+        <h2>Timer Controls</h2>
+        <div id="timerLivePreview" class="timerPreview">00:00</div>
+      </div>
 
-<button onclick="switchServe()">Switch Serve</button>
+      <div class="actionGrid">
+        <button class="btn btnPrimary" onclick="startTimer()">Start</button>
+        <button class="btn btnSecondary" onclick="stopTimer()">Stop</button>
+        <button class="btn btnDangerSoft" onclick="resetTimer()">Reset Timer</button>
+      </div>
+    </section>
 
-<button onclick="undo()">Undo</button>
+  </div>
 
-<button onclick="toggleScoreboard()">Show / Hide</button>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-<button class="red" onclick="resetMatch()">Reset Match</button>
-
-</div>
-
-</div>
-
-
-<div class="section">
-
-<label>Timer</label>
-
-<div class="rowButtons">
-
-<button onclick="startTimer()">Start</button>
-<button onclick="stopTimer()">Stop</button>
-<button onclick="resetTimer()">Reset</button>
-
-</div>
-
-</div>
-
-
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
-<script src="js/firebase.js"></script>
-<script src="js/state.js"></script>
-<script src="js/controller.js"></script>
+  <script src="js/firebase.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/controller.js"></script>
 
 </body>
 </html>
