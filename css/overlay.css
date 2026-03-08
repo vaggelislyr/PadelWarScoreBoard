@@ -529,43 +529,44 @@ body{
 
 #barConnector{
   position:relative;
-  height:4px;
+  height:2px;
   width:100%;
   z-index:1;
-  margin-top:0;
+  margin-top:-1px;
 }
 
 #barConnector::before{
   content:"";
   position:absolute;
-  left:62px;
-  right:56px;
+  left:74px;
+  right:58px;
   top:0;
-  height:4px;
-  background:linear-gradient(180deg, rgba(116,239,255,0.24) 0%, rgba(116,239,255,0.00) 100%);
-  clip-path:polygon(12px 0%, calc(100% - 18px) 0%, calc(100% - 6px) 100%, 24px 100%);
-  opacity:.34;
-  filter:blur(.6px);
+  height:2px;
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(170,247,255,0.34) 16%,
+    rgba(116,239,255,0.14) 50%,
+    rgba(170,247,255,0.34) 84%,
+    transparent 100%);
+  opacity:.95;
 }
 
 #barConnector::after{
   content:"";
   position:absolute;
-  left:92px;
-  right:84px;
+  left:56px;
+  right:48px;
   top:0;
   height:2px;
   background:linear-gradient(90deg,
-    transparent 0%,
-    rgba(170,247,255,0.42) 16%,
-    rgba(116,239,255,0.18) 50%,
-    rgba(170,247,255,0.42) 84%,
-    transparent 100%);
-  opacity:.88;
+    rgba(116,239,255,0.10) 0%,
+    rgba(116,239,255,0.00) 100%);
+  clip-path:polygon(18px 0%, calc(100% - 20px) 0%, calc(100% - 8px) 100%, 28px 100%);
+  opacity:.35;
 }
 
 /* =========================
-   BOTTOM BAR FIXED
+   BOTTOM BAR FIXED + NEW LEFT CUT
 ========================= */
 
 #bottomBar{
@@ -585,7 +586,7 @@ body{
   z-index:1;
 }
 
-/* outer futuristic shape without cutting the bottom */
+/* outer futuristic frame */
 #bottomBar::before{
   content:"";
   position:absolute;
@@ -595,11 +596,11 @@ body{
     rgba(24,200,255,0.16) 50%,
     rgba(64,104,255,0.10) 100%);
   clip-path:polygon(
-    56px 0%,
+    70px 0%,
     calc(100% - 44px) 0%,
     calc(100% - 24px) 14px,
-    18px 14px,
-    0% 100%,
+    28px 14px,
+    12px 100%,
     100% 100%,
     100% 24px,
     calc(100% - 10px) 0%
@@ -611,18 +612,18 @@ body{
   pointer-events:none;
 }
 
-/* inner dark panel with FLAT bottom edge */
+/* inner dark panel with extra top-left notch */
 #bottomBar::after{
   content:"";
   position:absolute;
   inset:2px;
   background:linear-gradient(180deg, rgba(10,24,50,0.96) 0%, rgba(3,8,18,0.99) 100%);
   clip-path:polygon(
-    54px 0%,
+    68px 0%,
     calc(100% - 45px) 0%,
     calc(100% - 25px) 13px,
-    19px 13px,
-    4px 100%,
+    30px 13px,
+    16px 100%,
     100% 100%,
     100% 24px,
     calc(100% - 12px) 0%
@@ -640,10 +641,11 @@ body{
   opacity:.84;
 }
 
+/* moved to match the new left notch */
 #barLineLeft{
-  top:8px;
-  left:70px;
-  width:118px;
+  top:7px;
+  left:82px;
+  width:104px;
   height:2px;
 }
 
@@ -665,7 +667,7 @@ body{
 
 #barTech{
   position:absolute;
-  left:206px;
+  left:214px;
   bottom:8px;
   display:flex;
   gap:4px;
