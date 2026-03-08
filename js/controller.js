@@ -321,6 +321,18 @@ function resetMatch() {
   });
 }
 
+/* ================= UI HELPERS ================= */
+
+function setBadgeText(id, text) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = text;
+}
+
+function setText(id, text) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = text;
+}
+
 /* ================= INIT INPUTS FROM STATE ================= */
 
 onStateChange(state => {
@@ -329,6 +341,19 @@ onStateChange(state => {
   document.getElementById("sponsorInput").value = state.organizer || "";
 
   timerSeconds = parseTimerText(state.timerText || "00:00");
+
+  setText("teamANamePreview", state.nameA || "Player1 / Player2");
+  setText("teamBNamePreview", state.nameB || "Player1 / Player2");
+  setText("timerLivePreview", state.timerText || "00:00");
+
+  setBadgeText("serveBadge", `Serve: ${state.serve || "A"}`);
+
+  let modeText = "Normal Mode";
+  if (state.mode === "tiebreak") modeText = "Tiebreak";
+  if (state.matchOver === true || state.mode === "finished") modeText = "Match Finished";
+  setBadgeText("modeBadge", modeText);
+
+  setBadgeText("visibleBadge", state.visible === false ? "Overlay Hidden" : "Overlay Visible");
 });
 
 /* ================= GLOBAL EXPORTS FOR HTML onclick ================= */
