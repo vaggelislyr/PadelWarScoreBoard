@@ -35,7 +35,7 @@ let previousGamesB = null;
    SAFE SHOW / HIDE ANIMATION
 ========================================= */
 
-const OVERLAY_ANIM_MS = 420;
+const OVERLAY_ANIM_MS = 760;
 
 let overlayIsVisible = true;
 let overlayHideTimer = null;
@@ -43,15 +43,25 @@ let overlayHideTimer = null;
 function setupOverlayAnimationBase() {
   overlayWrapper.style.display = "flex";
   overlayWrapper.style.opacity = "1";
-  overlayWrapper.style.transform = "translateY(0px)";
+  overlayWrapper.style.transform = "translateY(0px) scale(1)";
   overlayWrapper.style.filter = "blur(0px)";
   overlayWrapper.style.pointerEvents = "none";
   overlayWrapper.style.willChange = "opacity, transform, filter";
   overlayWrapper.style.transition = [
-    `opacity ${OVERLAY_ANIM_MS}ms cubic-bezier(.22,.8,.24,1)`,
-    `transform ${OVERLAY_ANIM_MS}ms cubic-bezier(.22,.8,.24,1)`,
-    `filter ${OVERLAY_ANIM_MS}ms cubic-bezier(.22,.8,.24,1)`
+    `opacity ${OVERLAY_ANIM_MS}ms cubic-bezier(.18,.84,.24,1)`,
+    `transform ${OVERLAY_ANIM_MS}ms cubic-bezier(.18,.84,.24,1)`,
+    `filter ${OVERLAY_ANIM_MS}ms cubic-bezier(.18,.84,.24,1)`
   ].join(", ");
+}
+
+function restartIntroSequence() {
+  overlayWrapper.classList.remove("broadcastIntro");
+  void overlayWrapper.offsetWidth;
+  overlayWrapper.classList.add("broadcastIntro");
+
+  setTimeout(() => {
+    overlayWrapper.classList.remove("broadcastIntro");
+  }, 1100);
 }
 
 function showOverlaySmooth() {
@@ -60,20 +70,21 @@ function showOverlaySmooth() {
   if (overlayIsVisible && overlayWrapper.style.display !== "none") {
     overlayWrapper.style.display = "flex";
     overlayWrapper.style.opacity = "1";
-    overlayWrapper.style.transform = "translateY(0px)";
+    overlayWrapper.style.transform = "translateY(0px) scale(1)";
     overlayWrapper.style.filter = "blur(0px)";
     return;
   }
 
   overlayWrapper.style.display = "flex";
   overlayWrapper.style.opacity = "0";
-  overlayWrapper.style.transform = "translateY(-18px)";
-  overlayWrapper.style.filter = "blur(2px)";
+  overlayWrapper.style.transform = "translateY(-28px) scale(0.985)";
+  overlayWrapper.style.filter = "blur(3px)";
 
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
+      restartIntroSequence();
       overlayWrapper.style.opacity = "1";
-      overlayWrapper.style.transform = "translateY(0px)";
+      overlayWrapper.style.transform = "translateY(0px) scale(1)";
       overlayWrapper.style.filter = "blur(0px)";
     });
   });
@@ -88,9 +99,10 @@ function hideOverlaySmooth() {
     return;
   }
 
+  overlayWrapper.classList.remove("broadcastIntro");
   overlayWrapper.style.display = "flex";
   overlayWrapper.style.opacity = "0";
-  overlayWrapper.style.transform = "translateY(-18px)";
+  overlayWrapper.style.transform = "translateY(-24px) scale(0.99)";
   overlayWrapper.style.filter = "blur(2px)";
 
   overlayHideTimer = setTimeout(() => {
@@ -148,7 +160,6 @@ onStateChange(function (state) {
     showOverlaySmooth();
   }
 
-  // Serve ball smooth vertical move
   if (state.serve === "B") {
     serveBallEl.classList.add("toBottom");
   } else {
