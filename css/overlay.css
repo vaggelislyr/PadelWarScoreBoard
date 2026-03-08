@@ -1,1 +1,145 @@
-1
+body{
+margin:0;
+background:transparent;
+font-family:Orbitron,Arial,sans-serif;
+color:white;
+overflow:hidden;
+}
+
+#overlayWrapper{
+position:absolute;
+top:40px;
+left:40px;
+display:flex;
+flex-direction:column;
+gap:0;
+width:max-content;
+}
+
+/* banners */
+
+#topBanners{
+position:absolute;
+top:-30px;
+left:0;
+width:100%;
+display:flex;
+justify-content:center;
+pointer-events:none;
+z-index:80;
+}
+
+#goldenBanner,
+#tiebreakBanner,
+#winnerBanner{
+position:absolute;
+left:50%;
+transform:translateX(-50%) translateY(-12px);
+padding:7px 16px;
+font-size:13px;
+font-weight:900;
+letter-spacing:1px;
+text-transform:uppercase;
+opacity:0;
+transition:opacity .25s, transform .25s;
+}
+
+#goldenBanner.active,
+#tiebreakBanner.active,
+#winnerBanner.active{
+opacity:1;
+transform:translateX(-50%) translateY(0);
+}
+
+/* scoreboard */
+
+#scoreboard{
+position:relative;
+padding:18px 20px;
+background:linear-gradient(180deg,#181818,#050505);
+border:1px solid rgba(255,255,255,0.2);
+box-shadow:0 0 20px rgba(255,255,255,0.08);
+}
+
+/* grid */
+
+#scoreboardGrid{
+display:grid;
+grid-template-columns:34px auto 62px 62px 64px 100px;
+grid-template-rows:48px 48px;
+column-gap:12px;
+row-gap:8px;
+align-items:center;
+}
+
+/* serve */
+
+#serveBall{
+font-size:22px;
+animation:servePulse 1.3s infinite;
+}
+
+@keyframes servePulse{
+0%{transform:scale(1)}
+50%{transform:scale(1.15)}
+100%{transform:scale(1)}
+}
+
+/* cells */
+
+.nameCell{
+font-size:18px;
+font-weight:700;
+padding:8px 14px;
+border:1px solid rgba(255,255,255,0.15);
+background:linear-gradient(180deg,#2a2a2a,#090909);
+}
+
+.setCell,
+.gamesCell{
+font-size:25px;
+height:40px;
+display:flex;
+align-items:center;
+justify-content:center;
+border:1px solid rgba(255,255,255,0.15);
+background:#111;
+}
+
+.pointsCell{
+font-size:34px;
+font-weight:900;
+height:46px;
+display:flex;
+align-items:center;
+justify-content:center;
+border:1px solid rgba(255,255,255,0.3);
+background:#222;
+}
+
+.hiddenSet{
+display:none;
+}
+
+/* bottom bar */
+
+#bottomBar{
+margin-top:-4px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:10px 16px;
+background:linear-gradient(180deg,#181818,#050505);
+border:1px solid rgba(255,255,255,0.15);
+}
+
+#organizer{
+font-size:17px;
+font-weight:700;
+color:#d4d4d4;
+}
+
+#timer{
+font-size:20px;
+font-weight:900;
+}
