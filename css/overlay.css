@@ -43,6 +43,47 @@ body{
   flex-direction:column;
   gap:0;
   width:max-content;
+  transform-origin:top left;
+  will-change:transform, opacity, filter;
+}
+
+#overlayWrapper.overlayIntro{
+  animation:overlayIntroAnim .42s cubic-bezier(.18,.84,.24,1) both;
+}
+
+#overlayWrapper.overlayOutro{
+  animation:overlayOutroAnim .30s ease both;
+}
+
+@keyframes overlayIntroAnim{
+  0%{
+    opacity:0;
+    transform:translateY(-14px) scale(.985);
+    filter:blur(3px);
+  }
+  55%{
+    opacity:1;
+    transform:translateY(0) scale(1.004);
+    filter:blur(0);
+  }
+  100%{
+    opacity:1;
+    transform:translateY(0) scale(1);
+    filter:blur(0);
+  }
+}
+
+@keyframes overlayOutroAnim{
+  0%{
+    opacity:1;
+    transform:translateY(0) scale(1);
+    filter:blur(0);
+  }
+  100%{
+    opacity:0;
+    transform:translateY(-8px) scale(.992);
+    filter:blur(2px);
+  }
 }
 
 /* =========================
@@ -492,7 +533,6 @@ body{
     0 0 8px rgba(255,255,255,0.04);
 }
 
-/* κρατάμε ίδιο μέγεθος, μόνο πιο premium look */
 .pointsCell{
   height:46px;
   min-width:100px;
@@ -513,12 +553,6 @@ body{
   left:-42%;
   width:34%;
   opacity:.55;
-}
-
-/* extra broadcast sheen */
-.pointsCell .scoreInner{
-  position:relative;
-  z-index:2;
 }
 
 .pointsCell.visualPulse::after{
@@ -628,7 +662,6 @@ body{
   z-index:1;
 }
 
-/* left top bevel accent */
 #bottomBar::before{
   content:"";
   position:absolute;
@@ -642,7 +675,6 @@ body{
   z-index:1;
 }
 
-/* top futuristic overlay only */
 #bottomBar::after{
   content:"";
   position:absolute;
