@@ -566,7 +566,7 @@ body{
 }
 
 /* =========================
-   BOTTOM BAR FIXED + NEW LEFT CUT
+   BOTTOM BAR WITH CLEAR LEFT NOTCH
 ========================= */
 
 #bottomBar{
@@ -584,9 +584,19 @@ body{
   box-shadow:0 0 14px rgba(24,200,255,0.10), inset 0 0 12px rgba(116,239,255,0.04);
   overflow:visible;
   z-index:1;
+  clip-path:polygon(
+    76px 0%,
+    calc(100% - 44px) 0%,
+    calc(100% - 24px) 14px,
+    34px 14px,
+    18px 100%,
+    100% 100%,
+    100% 24px,
+    calc(100% - 10px) 0%
+  );
 }
 
-/* outer futuristic frame */
+/* glow frame */
 #bottomBar::before{
   content:"";
   position:absolute;
@@ -595,16 +605,7 @@ body{
     rgba(116,239,255,0.30) 0%,
     rgba(24,200,255,0.16) 50%,
     rgba(64,104,255,0.10) 100%);
-  clip-path:polygon(
-    70px 0%,
-    calc(100% - 44px) 0%,
-    calc(100% - 24px) 14px,
-    28px 14px,
-    12px 100%,
-    100% 100%,
-    100% 24px,
-    calc(100% - 10px) 0%
-  );
+  clip-path:inherit;
   filter:
     drop-shadow(0 0 6px rgba(116,239,255,0.16))
     drop-shadow(0 0 16px rgba(24,200,255,0.08));
@@ -612,18 +613,18 @@ body{
   pointer-events:none;
 }
 
-/* inner dark panel with extra top-left notch */
+/* inner panel */
 #bottomBar::after{
   content:"";
   position:absolute;
   inset:2px;
   background:linear-gradient(180deg, rgba(10,24,50,0.96) 0%, rgba(3,8,18,0.99) 100%);
   clip-path:polygon(
-    68px 0%,
+    74px 0%,
     calc(100% - 45px) 0%,
     calc(100% - 25px) 13px,
-    30px 13px,
-    16px 100%,
+    36px 13px,
+    22px 100%,
     100% 100%,
     100% 24px,
     calc(100% - 12px) 0%
@@ -641,12 +642,17 @@ body{
   opacity:.84;
 }
 
-/* moved to match the new left notch */
+/* top left line now starts after notch */
 #barLineLeft{
   top:7px;
-  left:82px;
-  width:104px;
+  left:92px;
+  width:92px;
   height:2px;
+}
+
+/* optional extra small angled stroke to make left notch visible */
+#bottomBarLeftCutAccent{
+  display:none;
 }
 
 #barLineRight{
