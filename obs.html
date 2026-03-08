@@ -7,7 +7,7 @@
 </head>
 <body>
 
-  <div id="overlayWrapper" class="overlay-visible">
+  <div id="overlayWrapper">
 
     <div id="topBanners">
       <div id="goldenBanner">GOLDEN POINT</div>
@@ -91,7 +91,6 @@
 
   <script>
   (function(){
-    const overlayWrapper = document.getElementById("overlayWrapper");
     const scoreboard = document.getElementById("scoreboard");
 
     const goldenBanner = document.getElementById("goldenBanner");
@@ -169,94 +168,6 @@
     watchText(set2B, true);
 
     syncModes();
-
-    /* =========================================
-       SHOW / HIDE ANIMATION LAYER
-       Μετατρέπει display none/flex σε smooth
-       slide + fade χωρίς να χαλάει το engine
-    ========================================= */
-
-    const HIDE_DURATION = 520;
-    let internalUpdate = false;
-    let currentVisible = true;
-    let hideFinishTimer = null;
-
-    function forceVisibleBox(){
-      overlayWrapper.style.display = "";
-      overlayWrapper.hidden = false;
-    }
-
-    function setOverlayVisible(shouldShow){
-      clearTimeout(hideFinishTimer);
-
-      internalUpdate = true;
-      forceVisibleBox();
-
-      if(shouldShow){
-        overlayWrapper.classList.remove("overlay-hidden", "overlay-hiding");
-        void overlayWrapper.offsetWidth;
-        overlayWrapper.classList.add("overlay-visible");
-        currentVisible = true;
-        internalUpdate = false;
-        return;
-      }
-
-      overlayWrapper.classList.remove("overlay-visible", "overlay-hidden");
-      void overlayWrapper.offsetWidth;
-      overlayWrapper.classList.add("overlay-hiding");
-      currentVisible = false;
-
-      hideFinishTimer = setTimeout(() => {
-        internalUpdate = true;
-        overlayWrapper.classList.remove("overlay-hiding");
-        overlayWrapper.classList.add("overlay-hidden");
-        internalUpdate = false;
-      }, HIDE_DURATION);
-
-      internalUpdate = false;
-    }
-
-    function requestedHidden(){
-      const inlineDisplay = overlayWrapper.style.display;
-      return overlayWrapper.hidden || inlineDisplay === "none";
-    }
-
-    function syncRequestedVisibility(){
-      if(internalUpdate) return;
-
-      const shouldHide = requestedHidden();
-
-      if(shouldHide && currentVisible){
-        setOverlayVisible(false);
-      } else if(!shouldHide && !currentVisible){
-        setOverlayVisible(true);
-      }
-
-      /* καθαρίζουμε το display:none που βάζει το engine
-         ώστε να αφήσουμε το animation να δουλέψει */
-      if(overlayWrapper.style.display === "none"){
-        internalUpdate = true;
-        overlayWrapper.style.display = "";
-        internalUpdate = false;
-      }
-
-      if(overlayWrapper.hidden){
-        internalUpdate = true;
-        overlayWrapper.hidden = false;
-        internalUpdate = false;
-      }
-    }
-
-    const visibilityObserver = new MutationObserver(syncRequestedVisibility);
-    visibilityObserver.observe(overlayWrapper, {
-      attributes:true,
-      attributeFilter:["style","hidden","class"]
-    });
-
-    /* initial state */
-    forceVisibleBox();
-    overlayWrapper.classList.add("overlay-visible");
-    currentVisible = true;
   })();
   </script>
 
