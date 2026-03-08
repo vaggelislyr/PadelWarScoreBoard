@@ -1,277 +1,142 @@
 <!DOCTYPE html>
 <html lang="el">
 <head>
-  <meta charset="UTF-8">
-  <title>Padel OBS Overlay</title>
-  <style>
-    body{
-      margin:0;
-      background:transparent;
-      font-family:Orbitron, Arial, sans-serif;
-      color:#fff;
-      overflow:hidden;
-    }
+<meta charset="UTF-8">
+<title>Padel Scoreboard Controller</title>
 
-    #overlayWrapper{
-      position:absolute;
-      top:40px;
-      left:40px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
+<style>
 
-    #scoreboard{
-      position:relative;
-      padding:14px 16px;
-      border-radius:16px;
-      background:linear-gradient(180deg,#0c1628 0%,#040a16 100%);
-      border:1px solid rgba(0,180,255,0.25);
-      box-shadow:
-        0 0 30px rgba(0,140,255,0.15),
-        inset 0 0 12px rgba(0,140,255,0.08);
-      overflow:visible;
-    }
+body{
+font-family:Arial,Helvetica,sans-serif;
+background:#0b1220;
+color:white;
+margin:0;
+padding:20px;
+}
 
-    #scoreboardGrid{
-      display:grid;
-      grid-template-columns:30px auto 60px 60px 60px 90px;
-      grid-template-rows:46px 46px;
-      column-gap:12px;
-      row-gap:6px;
-      align-items:center;
-    }
+h1{
+margin-top:0;
+font-size:24px;
+}
 
-    .serveTrackCell{
-      grid-column:1;
-      grid-row:1 / span 2;
-      position:relative;
-      width:30px;
-      height:98px;
-      display:flex;
-      align-items:flex-start;
-      justify-content:center;
-    }
+.section{
+background:#141d33;
+padding:15px;
+border-radius:10px;
+margin-bottom:15px;
+}
 
-    #serveTrack{
-      position:relative;
-      width:30px;
-      height:98px;
-    }
+label{
+display:block;
+margin-bottom:6px;
+font-size:14px;
+}
 
-    #serveBall{
-      position:absolute;
-      left:50%;
-      transform:translateX(-50%);
-      top:8px;
-      font-size:22px;
-      filter:
-        drop-shadow(0 0 6px #fff)
-        drop-shadow(0 0 10px #00cfff);
-      transition:
-        top 0.34s cubic-bezier(.22,.8,.24,1),
-        transform 0.25s ease;
-      animation:servePulse 1.4s infinite;
-      z-index:3;
-    }
+input{
+width:100%;
+padding:8px;
+border-radius:6px;
+border:none;
+margin-bottom:10px;
+}
 
-    #serveBall.toBottom{
-      top:62px;
-    }
+button{
+padding:10px 14px;
+border:none;
+border-radius:8px;
+background:#1e6cff;
+color:white;
+font-weight:bold;
+cursor:pointer;
+margin:4px;
+}
 
-    @keyframes servePulse{
-      0%{ transform:translateX(-50%) scale(1); }
-      50%{ transform:translateX(-50%) scale(1.15); }
-      100%{ transform:translateX(-50%) scale(1); }
-    }
+button.secondary{
+background:#444;
+}
 
-    .nameCell{
-      font-size:18px;
-      font-weight:700;
-      padding:6px 10px;
-      border-radius:8px;
-      background:linear-gradient(180deg,#162a4a,#0c1b32);
-      box-shadow:inset 0 0 10px rgba(0,160,255,0.15);
-      white-space:nowrap;
-      width:max-content;
-      min-width:260px;
-      max-width:none;
-      transition:opacity 0.25s ease, color 0.25s ease, text-shadow 0.25s ease;
-    }
+button.red{
+background:#d63939;
+}
 
-    .winnerName{
-      color:#ffd86b;
-      text-shadow:
-        0 0 10px #ffd86b,
-        0 0 20px #ffd86b;
-    }
+.rowButtons{
+display:flex;
+flex-wrap:wrap;
+}
 
-    .loserName{
-      opacity:.55;
-    }
+</style>
 
-    .setCell,
-    .gamesCell{
-      font-size:26px;
-      font-weight:800;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      height:38px;
-      border-radius:8px;
-      background:linear-gradient(180deg,#0b1c35,#071428);
-      box-shadow:inset 0 0 10px rgba(0,200,255,0.1);
-    }
-
-    .pointsCell{
-      font-size:34px;
-      font-weight:900;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      height:44px;
-      min-width:90px;
-      border-radius:10px;
-      background:linear-gradient(180deg,#0b1c35,#061122);
-      box-shadow:
-        inset 0 0 12px rgba(0,200,255,0.15),
-        0 0 10px rgba(0,200,255,0.2);
-      transition:
-        transform 0.18s ease,
-        box-shadow 0.18s ease;
-    }
-
-    .pointsCell.scorePop{
-      transform:scale(1.12);
-      box-shadow:
-        inset 0 0 16px rgba(0,200,255,0.25),
-        0 0 18px rgba(0,200,255,0.38);
-    }
-
-    .hiddenSet{
-      display:none;
-    }
-
-    #goldenBanner,
-    #tiebreakBanner,
-    #winnerBanner{
-      position:absolute;
-      top:-28px;
-      left:50%;
-      transform:translateX(-50%) translateY(-10px);
-      padding:6px 14px;
-      font-size:14px;
-      font-weight:800;
-      border-radius:10px;
-      opacity:0;
-      transition:
-        opacity .25s ease,
-        transform .32s cubic-bezier(.22,.8,.24,1);
-      pointer-events:none;
-    }
-
-    #goldenBanner{
-      background:#e8c55b;
-      color:#000;
-      box-shadow:0 0 14px #e8c55b;
-    }
-
-    #tiebreakBanner{
-      background:#00c8ff;
-      color:#000;
-      box-shadow:0 0 14px #00c8ff;
-    }
-
-    #winnerBanner{
-      background:#ffd86b;
-      color:#000;
-      box-shadow:0 0 20px #ffd86b;
-    }
-
-    #goldenBanner.active,
-    #tiebreakBanner.active,
-    #winnerBanner.active{
-      opacity:1;
-      transform:translateX(-50%) translateY(0);
-    }
-
-    .goldenText{
-      color:#e8c55b;
-      text-shadow:
-        0 0 8px rgba(232,197,91,0.45),
-        0 0 16px rgba(232,197,91,0.35);
-    }
-
-    #bottomBar{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:6px 12px;
-      border-radius:12px;
-      background:linear-gradient(180deg,#0a1425,#050b17);
-      border:1px solid rgba(0,200,255,0.2);
-      box-shadow:0 0 16px rgba(0,200,255,0.12);
-    }
-
-    #organizer{
-      font-size:18px;
-      font-weight:700;
-      white-space:nowrap;
-      width:max-content;
-      max-width:none;
-    }
-
-    #timer{
-      font-size:20px;
-      font-weight:900;
-      letter-spacing:1px;
-      white-space:nowrap;
-    }
-  </style>
 </head>
 <body>
 
-  <div id="overlayWrapper">
-    <div id="scoreboard">
+<h1>Padel Scoreboard Controller</h1>
 
-      <div id="goldenBanner">GOLDEN POINT</div>
-      <div id="tiebreakBanner">TIEBREAK</div>
-      <div id="winnerBanner">🏆 MATCH WINNER</div>
+<div class="section">
 
-      <div id="scoreboardGrid">
+<label>Team A Players</label>
+<input id="nameAInput" placeholder="Player1 / Player2">
 
-        <div class="serveTrackCell">
-          <div id="serveTrack">
-            <span id="serveBall">🎾</span>
-          </div>
-        </div>
+<button onclick="updateNameA()">Update</button>
 
-        <div id="nameA" class="nameCell" style="grid-column:2; grid-row:1;">Player A1 / Player A2</div>
-        <div id="set2A" class="setCell hiddenSet" style="grid-column:3; grid-row:1;">0</div>
-        <div id="set1A" class="setCell hiddenSet" style="grid-column:4; grid-row:1;">0</div>
-        <div id="gamesA" class="gamesCell" style="grid-column:5; grid-row:1;">0</div>
-        <div id="pointsA" class="pointsCell" style="grid-column:6; grid-row:1;">0</div>
+<label>Team B Players</label>
+<input id="nameBInput" placeholder="Player1 / Player2">
 
-        <div id="nameB" class="nameCell" style="grid-column:2; grid-row:2;">Player B1 / Player B2</div>
-        <div id="set2B" class="setCell hiddenSet" style="grid-column:3; grid-row:2;">0</div>
-        <div id="set1B" class="setCell hiddenSet" style="grid-column:4; grid-row:2;">0</div>
-        <div id="gamesB" class="gamesCell" style="grid-column:5; grid-row:2;">0</div>
-        <div id="pointsB" class="pointsCell" style="grid-column:6; grid-row:2;">0</div>
+<button onclick="updateNameB()">Update</button>
 
-      </div>
-    </div>
+</div>
 
-    <div id="bottomBar">
-      <div id="organizer">@sponsor</div>
-      <div id="timer">00:00</div>
-    </div>
-  </div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<div class="section">
 
-  <script src="js/firebase.js"></script>
-  <script src="js/state.js"></script>
-  <script src="js/obs.js"></script>
+<label>Sponsor (@)</label>
+<input id="sponsorInput" placeholder="@sponsor">
+
+<button onclick="updateSponsor()">Update</button>
+
+</div>
+
+
+<div class="section">
+
+<div class="rowButtons">
+
+<button onclick="addPoint('A')">Point A</button>
+<button onclick="addPoint('B')">Point B</button>
+
+<button onclick="switchServe()">Switch Serve</button>
+
+<button onclick="undo()">Undo</button>
+
+<button onclick="toggleScoreboard()">Show / Hide</button>
+
+<button class="red" onclick="resetMatch()">Reset Match</button>
+
+</div>
+
+</div>
+
+
+<div class="section">
+
+<label>Timer</label>
+
+<div class="rowButtons">
+
+<button onclick="startTimer()">Start</button>
+<button onclick="stopTimer()">Stop</button>
+<button onclick="resetTimer()">Reset</button>
+
+</div>
+
+</div>
+
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script src="js/firebase.js"></script>
+<script src="js/state.js"></script>
+<script src="js/controller.js"></script>
+
 </body>
 </html>
