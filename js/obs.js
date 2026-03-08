@@ -31,6 +31,81 @@ let previousPointsB = null;
 let previousGamesA = null;
 let previousGamesB = null;
 
+/* =========================================
+   SAFE SHOW / HIDE ANIMATION
+========================================= */
+
+const OVERLAY_ANIM_MS = 420;
+
+let overlayIsVisible = true;
+let overlayHideTimer = null;
+
+function setupOverlayAnimationBase() {
+  overlayWrapper.style.display = "flex";
+  overlayWrapper.style.opacity = "1";
+  overlayWrapper.style.transform = "translateY(0px)";
+  overlayWrapper.style.filter = "blur(0px)";
+  overlayWrapper.style.pointerEvents = "none";
+  overlayWrapper.style.willChange = "opacity, transform, filter";
+  overlayWrapper.style.transition = [
+    `opacity ${OVERLAY_ANIM_MS}ms cubic-bezier(.22,.8,.24,1)`,
+    `transform ${OVERLAY_ANIM_MS}ms cubic-bezier(.22,.8,.24,1)`,
+    `filter ${OVERLAY_ANIM_MS}ms cubic-bezier(.22,.8,.24,1)`
+  ].join(", ");
+}
+
+function showOverlaySmooth() {
+  clearTimeout(overlayHideTimer);
+
+  if (overlayIsVisible && overlayWrapper.style.display !== "none") {
+    overlayWrapper.style.display = "flex";
+    overlayWrapper.style.opacity = "1";
+    overlayWrapper.style.transform = "translateY(0px)";
+    overlayWrapper.style.filter = "blur(0px)";
+    return;
+  }
+
+  overlayWrapper.style.display = "flex";
+  overlayWrapper.style.opacity = "0";
+  overlayWrapper.style.transform = "translateY(-18px)";
+  overlayWrapper.style.filter = "blur(2px)";
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      overlayWrapper.style.opacity = "1";
+      overlayWrapper.style.transform = "translateY(0px)";
+      overlayWrapper.style.filter = "blur(0px)";
+    });
+  });
+
+  overlayIsVisible = true;
+}
+
+function hideOverlaySmooth() {
+  clearTimeout(overlayHideTimer);
+
+  if (!overlayIsVisible && overlayWrapper.style.display === "none") {
+    return;
+  }
+
+  overlayWrapper.style.display = "flex";
+  overlayWrapper.style.opacity = "0";
+  overlayWrapper.style.transform = "translateY(-18px)";
+  overlayWrapper.style.filter = "blur(2px)";
+
+  overlayHideTimer = setTimeout(() => {
+    overlayWrapper.style.display = "none";
+  }, OVERLAY_ANIM_MS);
+
+  overlayIsVisible = false;
+}
+
+setupOverlayAnimationBase();
+
+/* =========================================
+   SCOREBOARD HELPERS
+========================================= */
+
 function tennisPoints(p) {
   const map = ["0", "15", "30", "40", "AD"];
   return map[p] ?? "0";
@@ -59,14 +134,18 @@ function popScore(el) {
   }, 180);
 }
 
+/* =========================================
+   STATE SYNC
+========================================= */
+
 onStateChange(function (state) {
   if (!state) return;
 
   if (state.visible === false) {
-    overlayWrapper.style.display = "none";
+    hideOverlaySmooth();
     return;
   } else {
-    overlayWrapper.style.display = "flex";
+    showOverlaySmooth();
   }
 
   // Serve ball smooth vertical move
