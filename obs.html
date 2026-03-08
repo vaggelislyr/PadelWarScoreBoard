@@ -91,6 +91,7 @@
 
   <script>
   (function(){
+    const overlayWrapper = document.getElementById("overlayWrapper");
     const scoreboard = document.getElementById("scoreboard");
 
     const goldenBanner = document.getElementById("goldenBanner");
@@ -168,6 +169,73 @@
     watchText(set2B, true);
 
     syncModes();
+
+    /* =========================================
+       SAFE SHOW / HIDE INTRO-OUTRO ANIMATION
+       Πιάνει display/class/hidden αλλαγές
+    ========================================= */
+
+    let hideTimer = null;
+    let lastVisible = true;
+
+    function isActuallyHidden(el){
+      const cs = window.getComputedStyle(el);
+      return cs.display === "none" || cs.visibility === "hidden" || el.hidden;
+    }
+
+    function playIntro(){
+      clearTimeout(hideTimer);
+      overlayWrapper.classList.remove("overlayOutro");
+      overlayWrapper.classList.add("overlayIntro");
+      setTimeout(() => {
+        overlayWrapper.classList.remove("overlayIntro");
+      }, 460);
+    }
+
+    function playOutro(){
+      clearTimeout(hideTimer);
+      overlayWrapper.classList.remove("overlayIntro");
+      overlayWrapper.classList.add("overlayOutro");
+      hideTimer = setTimeout(() => {
+        overlayWrapper.classList.remove("overlayOutro");
+      }, 340);
+    }
+
+    function syncOverlayVisibility(){
+      const hiddenNow = isActuallyHidden(overlayWrapper);
+
+      if(lastVisible && hiddenNow){
+        /* κάποιος το έκανε hide από έξω */
+        overlayWrapper.style.display = "flex";
+        playOutro();
+        hideTimer = setTimeout(() => {
+          overlayWrapper.style.display = "none";
+        }, 320);
+      }
+
+      if(!lastVisible && !hiddenNow){
+        overlayWrapper.style.display = "flex";
+        playIntro();
+      }
+
+      lastVisible = !hiddenNow;
+    }
+
+    /* αρχικό intro όταν φορτώσει */
+    requestAnimationFrame(() => {
+      overlayWrapper.classList.add("overlayIntro");
+      setTimeout(() => overlayWrapper.classList.remove("overlayIntro"), 460);
+      lastVisible = !isActuallyHidden(overlayWrapper);
+    });
+
+    const visibilityObserver = new MutationObserver(() => {
+      syncOverlayVisibility();
+    });
+
+    visibilityObserver.observe(overlayWrapper, {
+      attributes:true,
+      attributeFilter:["style","class","hidden"]
+    });
   })();
   </script>
 
