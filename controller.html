@@ -1,175 +1,142 @@
 <!DOCTYPE html>
 <html lang="el">
 <head>
-  <meta charset="UTF-8">
-  <title>Padel OBS Overlay</title>
-  <link rel="stylesheet" href="css/overlay.css">
+<meta charset="UTF-8">
+<title>Padel Scoreboard Controller</title>
+
+<style>
+
+body{
+font-family:Arial,Helvetica,sans-serif;
+background:#0b1220;
+color:white;
+margin:0;
+padding:20px;
+}
+
+h1{
+margin-top:0;
+font-size:24px;
+}
+
+.section{
+background:#141d33;
+padding:15px;
+border-radius:10px;
+margin-bottom:15px;
+}
+
+label{
+display:block;
+margin-bottom:6px;
+font-size:14px;
+}
+
+input{
+width:100%;
+padding:8px;
+border-radius:6px;
+border:none;
+margin-bottom:10px;
+}
+
+button{
+padding:10px 14px;
+border:none;
+border-radius:8px;
+background:#1e6cff;
+color:white;
+font-weight:bold;
+cursor:pointer;
+margin:4px;
+}
+
+button.secondary{
+background:#444;
+}
+
+button.red{
+background:#d63939;
+}
+
+.rowButtons{
+display:flex;
+flex-wrap:wrap;
+}
+
+</style>
+
 </head>
 <body>
 
-  <div id="overlayWrapper">
+<h1>Padel Scoreboard Controller</h1>
 
-    <div id="topBanners">
-      <div id="goldenBanner">GOLDEN POINT</div>
-      <div id="tiebreakBanner">TIEBREAK</div>
-      <div id="winnerBanner">🏆 MATCH WINNER</div>
-    </div>
+<div class="section">
 
-    <div id="scoreboard">
+<label>Team A Players</label>
+<input id="nameAInput" placeholder="Player1 / Player2">
 
-      <div class="frameLine" id="lineTopLeft"></div>
-      <div class="frameLine" id="lineTopCut"></div>
-      <div class="frameLine" id="lineBottomLeft"></div>
-      <div class="frameLine" id="lineBottomCut"></div>
-      <div class="frameLine" id="lineRightVert"></div>
-      <div class="frameLine" id="lineRightMini"></div>
+<button onclick="updateNameA()">Update</button>
 
-      <div class="techBars" id="techTop">
-        <span></span><span></span><span></span>
-      </div>
+<label>Team B Players</label>
+<input id="nameBInput" placeholder="Player1 / Player2">
 
-      <div class="techBars" id="techBottom">
-        <span></span><span></span><span></span>
-      </div>
+<button onclick="updateNameB()">Update</button>
 
-      <div id="rightStripes">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
+</div>
 
-      <div id="contentLayer">
-        <div id="scoreboardGrid">
 
-          <div class="serveTrackCell">
-            <div id="serveTrack">
-              <span id="serveBall">🎾</span>
-            </div>
-          </div>
+<div class="section">
 
-          <div id="nameA" class="nameCell" style="grid-column:2; grid-row:1;">Player A1 / Player A2</div>
-          <div id="set2A" class="setCell hiddenSet" style="grid-column:3; grid-row:1;">0</div>
-          <div id="set1A" class="setCell hiddenSet" style="grid-column:4; grid-row:1;">0</div>
-          <div id="gamesA" class="gamesCell" style="grid-column:5; grid-row:1;">0</div>
-          <div id="pointsA" class="pointsCell" style="grid-column:6; grid-row:1;">0</div>
+<label>Sponsor (@)</label>
+<input id="sponsorInput" placeholder="@sponsor">
 
-          <div id="nameB" class="nameCell" style="grid-column:2; grid-row:2;">Player B1 / Player B2</div>
-          <div id="set2B" class="setCell hiddenSet" style="grid-column:3; grid-row:2;">0</div>
-          <div id="set1B" class="setCell hiddenSet" style="grid-column:4; grid-row:2;">0</div>
-          <div id="gamesB" class="gamesCell" style="grid-column:5; grid-row:2;">0</div>
-          <div id="pointsB" class="pointsCell" style="grid-column:6; grid-row:2;">0</div>
+<button onclick="updateSponsor()">Update</button>
 
-        </div>
-      </div>
-    </div>
+</div>
 
-    <div id="barConnector"></div>
 
-    <div id="bottomBar">
-      <div class="bottomFrameLine" id="barLineLeft"></div>
-      <div class="bottomFrameLine" id="barLineRight"></div>
-      <div class="bottomFrameLine" id="barCutRight"></div>
+<div class="section">
 
-      <div id="barTech">
-        <span></span><span></span><span></span>
-      </div>
+<div class="rowButtons">
 
-      <div id="bottomBarContent">
-        <div id="organizer">@sponsor</div>
-        <div id="timer">00:00</div>
-      </div>
-    </div>
+<button onclick="addPoint('A')">Point A</button>
+<button onclick="addPoint('B')">Point B</button>
 
-  </div>
+<button onclick="switchServe()">Switch Serve</button>
 
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<button onclick="undo()">Undo</button>
 
-  <script src="js/firebase.js"></script>
-  <script src="js/state.js"></script>
-  <script src="js/obs.js"></script>
+<button onclick="toggleScoreboard()">Show / Hide</button>
 
-  <script>
-  (function(){
-    const scoreboard = document.getElementById("scoreboard");
+<button class="red" onclick="resetMatch()">Reset Match</button>
 
-    const goldenBanner = document.getElementById("goldenBanner");
-    const tiebreakBanner = document.getElementById("tiebreakBanner");
-    const winnerBanner = document.getElementById("winnerBanner");
+</div>
 
-    const nameA = document.getElementById("nameA");
-    const nameB = document.getElementById("nameB");
+</div>
 
-    const pointsA = document.getElementById("pointsA");
-    const pointsB = document.getElementById("pointsB");
-    const gamesA = document.getElementById("gamesA");
-    const gamesB = document.getElementById("gamesB");
-    const set1A = document.getElementById("set1A");
-    const set1B = document.getElementById("set1B");
-    const set2A = document.getElementById("set2A");
-    const set2B = document.getElementById("set2B");
 
-    function syncModes(){
-      scoreboard.classList.toggle("mode-golden", goldenBanner.classList.contains("active"));
-      scoreboard.classList.toggle("mode-tiebreak", tiebreakBanner.classList.contains("active"));
+<div class="section">
 
-      const hasWinner =
-        winnerBanner.classList.contains("active") ||
-        nameA.classList.contains("winnerName") ||
-        nameB.classList.contains("winnerName");
+<label>Timer</label>
 
-      scoreboard.classList.toggle("match-finished", hasWinner);
-    }
+<div class="rowButtons">
 
-    function pulse(el){
-      if(!el) return;
-      el.classList.remove("visualPulse");
-      void el.offsetWidth;
-      el.classList.add("visualPulse");
-      setTimeout(() => el.classList.remove("visualPulse"), 260);
-    }
+<button onclick="startTimer()">Start</button>
+<button onclick="stopTimer()">Stop</button>
+<button onclick="resetTimer()">Reset</button>
 
-    function watchText(el, doPulse){
-      if(!el) return;
-      let last = el.textContent;
-      const observer = new MutationObserver(() => {
-        const now = el.textContent;
-        if(now !== last){
-          last = now;
-          if(doPulse) pulse(el);
-        }
-      });
-      observer.observe(el, {
-        childList:true,
-        subtree:true,
-        characterData:true
-      });
-    }
+</div>
 
-    function watchClass(el){
-      if(!el) return;
-      const observer = new MutationObserver(syncModes);
-      observer.observe(el, { attributes:true, attributeFilter:["class"] });
-    }
+</div>
 
-    watchClass(goldenBanner);
-    watchClass(tiebreakBanner);
-    watchClass(winnerBanner);
-    watchClass(nameA);
-    watchClass(nameB);
 
-    watchText(pointsA, true);
-    watchText(pointsB, true);
-    watchText(gamesA, true);
-    watchText(gamesB, true);
-    watchText(set1A, true);
-    watchText(set1B, true);
-    watchText(set2A, true);
-    watchText(set2B, true);
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-    syncModes();
-  })();
-  </script>
+<script src="js/firebase.js"></script>
+<script src="js/state.js"></script>
+<script src="js/controller.js"></script>
 
 </body>
 </html>
