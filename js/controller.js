@@ -414,12 +414,57 @@ function resizeObsPreview() {
   }
 }
 
-window.addEventListener("resize", resizeObsPreview);
+/* ================= IOS SAFARI HARD LOCK ================= */
+
+function lockPreviewDockToViewport() {
+  const dock = document.getElementById("stickyPreviewDock");
+  if (!dock) return;
+
+  const vv = window.visualViewport;
+
+  if (!vv) {
+    dock.style.left = "50%";
+    dock.style.bottom = "6px";
+    dock.style.transform = "translateX(-50%)";
+    return;
+  }
+
+  const isMobile = window.innerWidth <= 640;
+  const sideGap = isMobile ? 8 : 20;
+  const bottomGap = isMobile ? 6 : 12;
+
+  const width = Math.min(980, vv.width - (sideGap * 2));
+  const centerX = vv.offsetLeft + (vv.width / 2);
+  const bottomInset = Math.max(window.innerHeight - (vv.height + vv.offsetTop), 0);
+
+  dock.style.width = `${width}px`;
+  dock.style.left = `${centerX}px`;
+  dock.style.bottom = `${bottomInset + bottomGap}px`;
+  dock.style.transform = "translateX(-50%)";
+}
+
+function updateFloatingPreviewLayout() {
+  resizeObsPreview();
+  lockPreviewDockToViewport();
+}
+
+window.addEventListener("resize", updateFloatingPreviewLayout);
 window.addEventListener("orientationchange", () => {
-  setTimeout(resizeObsPreview, 120);
+  setTimeout(updateFloatingPreviewLayout, 120);
 });
+window.addEventListener("scroll", () => {
+  requestAnimationFrame(lockPreviewDockToViewport);
+}, { passive: true });
+
+if (window.visualViewport) {
+  window.visualViewport.addEventListener("resize", updateFloatingPreviewLayout);
+  window.visualViewport.addEventListener("scroll", () => {
+    requestAnimationFrame(lockPreviewDockToViewport);
+  });
+}
+
 window.addEventListener("load", () => {
-  setTimeout(resizeObsPreview, 60);
+  setTimeout(updateFloatingPreviewLayout, 60);
 });
 
 /* ================= INIT INPUTS FROM STATE ================= */
@@ -443,7 +488,7 @@ onStateChange(state => {
 
   setBadgeText("visibleBadge", state.visible === false ? "Overlay Hidden" : "Overlay Visible");
 
-  resizeObsPreview();
+  updateFloatingPreviewLayout();
 });
 
 /* ================= GLOBAL EXPORTS FOR HTML onclick ================= */
