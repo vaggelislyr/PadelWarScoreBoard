@@ -45,6 +45,7 @@ html, body{
 
 body{
   min-height:100vh;
+  overflow-x:hidden;
 }
 
 .appShell{
@@ -228,6 +229,8 @@ input::placeholder{
 }
 
 .btn{
+  position:relative;
+  overflow:hidden;
   border:none;
   border-radius:14px;
   min-height:56px;
@@ -235,7 +238,11 @@ input::placeholder{
   cursor:pointer;
   padding:14px;
   font-size:16px;
-  transition:transform .12s ease, filter .12s ease, background .12s ease;
+  transition:
+    transform .12s ease,
+    filter .12s ease,
+    background .12s ease,
+    box-shadow .18s ease;
 }
 
 .btn:active{
@@ -274,22 +281,85 @@ input::placeholder{
 }
 
 /* =========================
+   FLASH FEEDBACK
+========================= */
+
+.btn.flashTap{
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.12) inset,
+    0 0 18px rgba(255,255,255,0.18);
+}
+
+.btn.flashTap::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(255,255,255,0.24) 45%,
+    rgba(255,255,255,0.10) 55%,
+    transparent 100%);
+  transform:translateX(-130%);
+  animation:buttonFlashSweep 360ms ease forwards;
+  pointer-events:none;
+}
+
+.btn.flashDanger{
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.08) inset,
+    0 0 20px rgba(220,74,74,0.34);
+}
+
+.btn.flashDanger::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(255,255,255,0.18) 45%,
+    rgba(255,255,255,0.08) 55%,
+    transparent 100%);
+  transform:translateX(-130%);
+  animation:buttonFlashSweep 420ms ease forwards;
+  pointer-events:none;
+}
+
+@keyframes buttonFlashSweep{
+  0%{
+    transform:translateX(-130%);
+    opacity:0;
+  }
+  20%{
+    opacity:1;
+  }
+  100%{
+    transform:translateX(130%);
+    opacity:0;
+  }
+}
+
+/* =========================
    STICKY PREVIEW
 ========================= */
 
 .stickyPreviewDock{
-  position:fixed;
+  position:fixed !important;
   left:0;
   right:0;
-  bottom:0;
-  z-index:999;
-  padding:0 12px 12px;
+  bottom:0 !important;
+  z-index:9999;
+  padding:0 12px calc(env(safe-area-inset-bottom, 0px) + 12px);
   background:none;
+  transform:translateZ(0);
+  -webkit-transform:translateZ(0);
+  will-change:transform;
+  pointer-events:none;
 }
 
 .stickyPreviewInner{
   max-width:980px;
   margin:auto;
+  pointer-events:auto;
 }
 
 .stickyPreviewTop{
@@ -301,6 +371,7 @@ input::placeholder{
   text-transform:uppercase;
   color:var(--textDim);
   margin-bottom:6px;
+  padding-left:2px;
 }
 
 .stickyPreviewTop::before{
@@ -344,6 +415,7 @@ input::placeholder{
   background:transparent;
 }
 
+/* desktop */
 @media (min-width:700px){
   .appShell{
     padding:22px 20px calc(var(--dockHeight) + 28px);
@@ -366,10 +438,11 @@ input::placeholder{
   }
 
   .stickyPreviewDock{
-    padding:0 20px 14px;
+    padding:0 20px calc(env(safe-area-inset-bottom, 0px) + 14px);
   }
 }
 
+/* mobile */
 @media (max-width:520px){
   :root{
     --dockHeight: 188px;
@@ -398,7 +471,7 @@ input::placeholder{
   }
 
   .stickyPreviewDock{
-    padding:0 8px 8px;
+    padding:0 8px calc(env(safe-area-inset-bottom, 0px) + 8px);
   }
 
   .previewViewport.stickyMode{
