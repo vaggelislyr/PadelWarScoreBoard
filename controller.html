@@ -27,6 +27,7 @@
     <section class="previewSection panel">
       <div class="sectionTop">
         <h2>OBS Preview</h2>
+
         <div class="miniBadges">
           <span id="visibleBadge" class="miniBadge">Overlay Visible</span>
           <span id="modeBadge" class="miniBadge">Normal Mode</span>
@@ -34,7 +35,7 @@
         </div>
       </div>
 
-      <div class="previewFrameWrap">
+      <div id="previewViewport" class="previewViewport">
         <iframe
           id="obsPreview"
           class="previewFrame"
@@ -115,7 +116,6 @@
     <section class="panel">
       <div class="sectionTop">
         <h2>Timer Controls</h2>
-        <div id="timerLivePreview" class="timerPreview">00:00</div>
       </div>
 
       <div class="actionGrid">
