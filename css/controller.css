@@ -58,6 +58,7 @@ body{
   display:flex;
   justify-content:space-between;
   align-items:flex-start;
+  gap:14px;
   margin-bottom:16px;
 }
 
@@ -72,22 +73,31 @@ body{
 h1{
   margin:0;
   font-size:28px;
+  line-height:1.05;
+  letter-spacing:-0.4px;
 }
 
 h2{
   margin:0;
   font-size:18px;
+  color:var(--text);
+}
+
+.headerStatus{
+  flex-shrink:0;
 }
 
 .statusChip{
   display:flex;
   align-items:center;
   gap:8px;
-  padding:8px 12px;
+  padding:10px 12px;
   border-radius:999px;
   background:#131923;
   border:1px solid var(--lineStrong);
   font-size:13px;
+  color:var(--textSoft);
+  white-space:nowrap;
 }
 
 .statusDot{
@@ -95,7 +105,7 @@ h2{
   height:10px;
   border-radius:50%;
   background:var(--success);
-  box-shadow:0 0 10px rgba(137,243,172,0.5);
+  box-shadow:0 0 12px rgba(137,243,172,0.5);
 }
 
 .panel{
@@ -110,6 +120,8 @@ h2{
 .sectionTop{
   display:flex;
   justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
   margin-bottom:12px;
 }
 
@@ -125,6 +137,7 @@ h2{
   border-radius:999px;
   background:#0f141b;
   border:1px solid var(--line);
+  color:var(--textSoft);
 }
 
 .fieldGrid{
@@ -139,9 +152,15 @@ h2{
   padding:14px;
 }
 
+.fieldBlock.fullSpan{
+  grid-column:1 / -1;
+}
+
 label{
+  display:block;
   font-size:13px;
   color:var(--textSoft);
+  margin-bottom:8px;
 }
 
 input{
@@ -151,7 +170,12 @@ input{
   border:1px solid rgba(255,255,255,0.08);
   background:#0c1117;
   color:white;
-  margin:8px 0 12px;
+  margin:0 0 12px;
+  outline:none;
+}
+
+input::placeholder{
+  color:#7f8997;
 }
 
 .teamGrid{
@@ -159,11 +183,33 @@ input{
   gap:14px;
 }
 
+.teamCard{
+  position:relative;
+  overflow:hidden;
+}
+
+.teamCard::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(135deg, rgba(255,255,255,0.04), transparent 40%);
+}
+
+.teamCardTop{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+  margin-bottom:14px;
+}
+
 .teamLabel{
   font-size:12px;
   letter-spacing:1.5px;
   text-transform:uppercase;
   color:var(--textDim);
+  margin-bottom:6px;
 }
 
 .teamNamePreview{
@@ -187,6 +233,17 @@ input{
   min-height:56px;
   font-weight:800;
   cursor:pointer;
+  padding:14px;
+  font-size:16px;
+  transition:transform .12s ease, filter .12s ease, background .12s ease;
+}
+
+.btn:active{
+  transform:scale(0.985);
+}
+
+.btnFull{
+  width:100%;
 }
 
 .btnPrimary{
@@ -227,6 +284,7 @@ input{
   bottom:0;
   z-index:999;
   padding:0 12px 12px;
+  background:none;
 }
 
 .stickyPreviewInner{
@@ -234,9 +292,10 @@ input{
   margin:auto;
 }
 
-/* TITLE */
-
 .stickyPreviewTop{
+  display:flex;
+  align-items:center;
+  gap:8px;
   font-size:11px;
   letter-spacing:1.6px;
   text-transform:uppercase;
@@ -244,19 +303,33 @@ input{
   margin-bottom:6px;
 }
 
-/* FRAME */
+.stickyPreviewTop::before{
+  content:"";
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#3cff7f;
+  box-shadow:0 0 8px rgba(60,255,127,0.8);
+  flex-shrink:0;
+}
+
+.stickyPreviewLabel{
+  display:inline-block;
+}
 
 .previewViewport{
   position:relative;
   width:100%;
-  height:170px;
   overflow:hidden;
+  background:#000;
   border:1px solid var(--lineStrong);
-  border-radius:14px;
-  background:black;
+  border-radius:12px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.28);
 }
 
-/* OBS iframe */
+.previewViewport.stickyMode{
+  height:170px;
+}
 
 .previewFrame{
   position:absolute;
@@ -267,9 +340,18 @@ input{
   border:none;
   transform-origin:top left;
   pointer-events:none;
+  display:block;
+  background:transparent;
 }
 
 @media (min-width:700px){
+  .appShell{
+    padding:22px 20px calc(var(--dockHeight) + 28px);
+  }
+
+  .fieldGrid{
+    grid-template-columns:1fr 1fr;
+  }
 
   .teamGrid{
     grid-template-columns:1fr 1fr;
@@ -279,24 +361,47 @@ input{
     grid-template-columns:repeat(4,1fr);
   }
 
-  .previewViewport{
+  .previewViewport.stickyMode{
     height:190px;
   }
 
+  .stickyPreviewDock{
+    padding:0 20px 14px;
+  }
 }
 
 @media (max-width:520px){
+  :root{
+    --dockHeight: 188px;
+  }
 
   h1{
     font-size:24px;
+  }
+
+  .appHeader{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .sectionTop{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .miniBadges{
+    justify-content:flex-start;
   }
 
   .actionGrid{
     grid-template-columns:1fr 1fr;
   }
 
-  .previewViewport{
-    height:150px;
+  .stickyPreviewDock{
+    padding:0 8px 8px;
   }
 
+  .previewViewport.stickyMode{
+    height:150px;
+  }
 }
