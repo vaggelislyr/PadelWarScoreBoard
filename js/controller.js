@@ -421,37 +421,41 @@ function lockPreviewDockToViewport() {
   if (!dock) return;
 
   const vv = window.visualViewport;
-
-  if (!vv) {
-    dock.style.left = "50%";
-    dock.style.bottom = "6px";
-    dock.style.transform = "translateX(-50%)";
-    return;
-  }
-
   const isMobile = window.innerWidth <= 640;
   const sideGap = isMobile ? 8 : 20;
   const bottomGap = isMobile ? 6 : 12;
 
+  if (!vv) {
+    dock.style.left = "50%";
+    dock.style.top = "";
+    dock.style.bottom = `${bottomGap}px`;
+    dock.style.transform = "translateX(-50%)";
+    return;
+  }
+
   const width = Math.min(980, vv.width - (sideGap * 2));
+  const dockHeight = dock.offsetHeight || (isMobile ? 174 : 214);
+
   const centerX = vv.offsetLeft + (vv.width / 2);
-  const bottomInset = Math.max(window.innerHeight - (vv.height + vv.offsetTop), 0);
+  const topY = vv.offsetTop + vv.height - dockHeight - bottomGap;
 
   dock.style.width = `${width}px`;
   dock.style.left = `${centerX}px`;
-  dock.style.bottom = `${bottomInset + bottomGap}px`;
+  dock.style.top = `${Math.max(topY, 0)}px`;
+  dock.style.bottom = "auto";
   dock.style.transform = "translateX(-50%)";
 }
 
 function updateFloatingPreviewLayout() {
   resizeObsPreview();
-  lockPreviewDockToViewport();
+  requestAnimationFrame(lockPreviewDockToViewport);
 }
 
 window.addEventListener("resize", updateFloatingPreviewLayout);
 window.addEventListener("orientationchange", () => {
   setTimeout(updateFloatingPreviewLayout, 120);
 });
+
 window.addEventListener("scroll", () => {
   requestAnimationFrame(lockPreviewDockToViewport);
 }, { passive: true });
@@ -464,7 +468,7 @@ if (window.visualViewport) {
 }
 
 window.addEventListener("load", () => {
-  setTimeout(updateFloatingPreviewLayout, 60);
+  setTimeout(updateFloatingPreviewLayout, 80);
 });
 
 /* ================= INIT INPUTS FROM STATE ================= */
