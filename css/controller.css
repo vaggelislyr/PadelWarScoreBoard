@@ -343,17 +343,16 @@ input::placeholder{
 }
 
 /* =========================
-   STICKY PREVIEW - HARD LOCKED
+   STICKY PREVIEW
 ========================= */
 
 .stickyPreviewDock{
   position:fixed;
   left:50%;
-  bottom:calc(env(safe-area-inset-bottom, 0px) + 8px);
+  bottom:0;
   transform:translateX(-50%);
   width:min(980px, calc(100vw - 16px));
   z-index:99999;
-  background:none;
   pointer-events:none;
 }
 
@@ -435,7 +434,6 @@ input::placeholder{
 
   .stickyPreviewDock{
     width:min(980px, calc(100vw - 40px));
-    bottom:calc(env(safe-area-inset-bottom, 0px) + 12px);
   }
 
   .previewViewport.stickyMode{
@@ -473,7 +471,6 @@ input::placeholder{
 
   .stickyPreviewDock{
     width:calc(100vw - 16px);
-    bottom:calc(env(safe-area-inset-bottom, 0px) + 6px);
   }
 
   .previewViewport.stickyMode{
