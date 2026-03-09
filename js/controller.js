@@ -16,9 +16,35 @@ function pushHistory(currentState) {
 }
 
 function undo() {
+  vibrateTap();
+
   if (historyStack.length === 0) return;
   const previous = historyStack.pop();
   writeState(previous);
+}
+
+/* ================= HAPTIC ================= */
+
+function vibrate(pattern) {
+  try {
+    if ("vibrate" in navigator) {
+      navigator.vibrate(pattern);
+    }
+  } catch (err) {
+    console.log("Vibration not supported", err);
+  }
+}
+
+function vibrateTap() {
+  vibrate(18);
+}
+
+function vibrateSuccess() {
+  vibrate([18, 24, 18]);
+}
+
+function vibrateDanger() {
+  vibrate([35, 30, 35]);
 }
 
 /* ================= TIMER ================= */
@@ -48,6 +74,8 @@ function updateTimerDisplay() {
 }
 
 function startTimer() {
+  vibrateTap();
+
   if (timerInterval) return;
 
   timerInterval = setInterval(() => {
@@ -57,11 +85,15 @@ function startTimer() {
 }
 
 function stopTimer() {
+  vibrateTap();
+
   clearInterval(timerInterval);
   timerInterval = null;
 }
 
 function resetTimer() {
+  vibrateTap();
+
   stopTimer();
   timerSeconds = 0;
   updateTimerDisplay();
@@ -218,6 +250,8 @@ function handleTieBreak(state, player) {
 }
 
 function addPoint(player) {
+  vibrateSuccess();
+
   readState(state => {
     pushHistory(state);
 
@@ -239,6 +273,8 @@ function addPoint(player) {
 /* ================= CONTROLLER ACTIONS ================= */
 
 function updateNameA() {
+  vibrateTap();
+
   const value = document.getElementById("nameAInput").value || "";
 
   readState(state => {
@@ -249,6 +285,8 @@ function updateNameA() {
 }
 
 function updateNameB() {
+  vibrateTap();
+
   const value = document.getElementById("nameBInput").value || "";
 
   readState(state => {
@@ -259,6 +297,8 @@ function updateNameB() {
 }
 
 function updateSponsor() {
+  vibrateTap();
+
   const value = document.getElementById("sponsorInput").value || "";
 
   readState(state => {
@@ -269,6 +309,8 @@ function updateSponsor() {
 }
 
 function switchServe() {
+  vibrateTap();
+
   readState(state => {
     pushHistory(state);
     state.serve = nextServe(state.serve);
@@ -277,6 +319,8 @@ function switchServe() {
 }
 
 function toggleScoreboard() {
+  vibrateTap();
+
   readState(state => {
     pushHistory(state);
     state.visible = !state.visible;
@@ -285,6 +329,8 @@ function toggleScoreboard() {
 }
 
 function resetMatch() {
+  vibrateDanger();
+
   readState(state => {
     pushHistory(state);
 
