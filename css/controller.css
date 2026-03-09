@@ -34,7 +34,7 @@
   --radiusMd: 14px;
   --radiusSm: 10px;
 
-  --dockHeight: 230px;
+  --dockHeight: 208px;
 }
 
 *{
@@ -60,7 +60,7 @@ body{
   width:100%;
   max-width:980px;
   margin:0 auto;
-  padding:16px 14px calc(var(--dockHeight) + 26px);
+  padding:16px 14px calc(var(--dockHeight) + 24px);
 }
 
 .appHeader{
@@ -161,53 +161,55 @@ h2{
   right:0;
   bottom:0;
   z-index:999;
-  padding:10px 10px calc(env(safe-area-inset-bottom, 0px) + 10px);
+  padding:0 10px calc(env(safe-area-inset-bottom, 0px) + 10px);
   pointer-events:none;
-  background:linear-gradient(180deg, rgba(7,9,13,0) 0%, rgba(7,9,13,0.92) 52%, rgba(7,9,13,0.98) 100%);
 }
 
 .stickyPreviewInner{
   width:min(980px, calc(100vw - 20px));
   margin:0 auto;
   pointer-events:auto;
-  background:linear-gradient(180deg, rgba(23,30,40,0.98), rgba(13,18,25,0.99));
-  border:1px solid var(--lineStrong);
-  border-radius:18px;
-  box-shadow:
-    0 18px 40px rgba(0,0,0,0.42),
-    inset 0 0 0 1px rgba(255,255,255,0.03);
-  padding:10px;
+  padding:0;
+  background:transparent;
+  border:none;
+  box-shadow:none;
 }
 
 .stickyPreviewTop{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:8px;
+  display:none;
 }
 
 .stickyPreviewLabel{
-  font-size:12px;
-  letter-spacing:1.4px;
-  text-transform:uppercase;
-  color:var(--textDim);
+  display:none;
 }
 
 .previewViewport{
   position:relative;
   width:100%;
   overflow:hidden;
-  border-radius:14px;
-  border:1px solid var(--lineStrong);
-  background:
-    linear-gradient(180deg, #05070a 0%, #090d13 100%);
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,0.03),
-    inset 0 20px 40px rgba(255,255,255,0.02);
+  background:transparent;
 }
 
 .previewViewport.stickyMode{
   height:170px;
+  border:none;
+  border-radius:0;
+  box-shadow:none;
+}
+
+.previewViewport.stickyMode::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:18px;
+  background:linear-gradient(180deg, rgba(8,11,16,0.34), rgba(8,11,16,0.16));
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  box-shadow:
+    0 12px 28px rgba(0,0,0,0.34),
+    inset 0 0 0 1px rgba(255,255,255,0.03);
+  pointer-events:none;
+  z-index:0;
 }
 
 .previewFrame{
@@ -221,6 +223,8 @@ h2{
   background:transparent;
   transform-origin:top left;
   pointer-events:none;
+  z-index:1;
+  filter:drop-shadow(0 4px 12px rgba(0,0,0,0.18));
 }
 
 /* =========================
@@ -381,11 +385,11 @@ input::placeholder{
 
 @media (min-width: 700px){
   :root{
-    --dockHeight: 260px;
+    --dockHeight: 226px;
   }
 
   .appShell{
-    padding:22px 20px calc(var(--dockHeight) + 30px);
+    padding:22px 20px calc(var(--dockHeight) + 28px);
   }
 
   .fieldGrid{
@@ -401,7 +405,7 @@ input::placeholder{
   }
 
   .previewViewport.stickyMode{
-    height:190px;
+    height:182px;
   }
 
   .stickyPreviewDock{
@@ -412,11 +416,15 @@ input::placeholder{
   .stickyPreviewInner{
     width:min(980px, calc(100vw - 40px));
   }
+
+  .previewViewport.stickyMode::before{
+    border-radius:22px;
+  }
 }
 
 @media (max-width: 520px){
   :root{
-    --dockHeight: 220px;
+    --dockHeight: 190px;
   }
 
   h1{
@@ -442,15 +450,18 @@ input::placeholder{
   }
 
   .stickyPreviewDock{
-    padding:8px 8px calc(env(safe-area-inset-bottom, 0px) + 8px);
+    padding:0 8px calc(env(safe-area-inset-bottom, 0px) + 8px);
   }
 
   .stickyPreviewInner{
     width:calc(100vw - 16px);
-    border-radius:16px;
   }
 
   .previewViewport.stickyMode{
-    height:155px;
+    height:145px;
+  }
+
+  .previewViewport.stickyMode::before{
+    border-radius:16px;
   }
 }
