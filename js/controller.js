@@ -16,36 +16,38 @@ function pushHistory(currentState) {
 }
 
 function undo() {
-  vibrateTap();
+  flashButton("normal");
 
   if (historyStack.length === 0) return;
   const previous = historyStack.pop();
   writeState(previous);
 }
 
-/* ================= HAPTIC ================= */
+/* ================= FLASH FEEDBACK ================= */
 
-function vibrate(pattern) {
-  try {
-    if ("vibrate" in navigator) {
-      navigator.vibrate(pattern);
-    }
-  } catch (err) {
-    console.log("Vibration not supported", err);
-  }
+let lastPressedButton = null;
+
+function rememberPressedButton(event) {
+  const btn = event.target.closest(".btn");
+  if (btn) lastPressedButton = btn;
 }
 
-function vibrateTap() {
-  vibrate(18);
+function flashButton(type = "normal") {
+  const btn = lastPressedButton;
+  if (!btn) return;
+
+  btn.classList.remove("flashTap", "flashDanger");
+  void btn.offsetWidth;
+  btn.classList.add(type === "danger" ? "flashDanger" : "flashTap");
+
+  setTimeout(() => {
+    btn.classList.remove("flashTap", "flashDanger");
+  }, type === "danger" ? 460 : 400);
 }
 
-function vibrateSuccess() {
-  vibrate([18, 24, 18]);
-}
-
-function vibrateDanger() {
-  vibrate([35, 30, 35]);
-}
+document.addEventListener("pointerdown", rememberPressedButton);
+document.addEventListener("touchstart", rememberPressedButton, { passive: true });
+document.addEventListener("mousedown", rememberPressedButton);
 
 /* ================= TIMER ================= */
 
@@ -74,7 +76,7 @@ function updateTimerDisplay() {
 }
 
 function startTimer() {
-  vibrateTap();
+  flashButton("normal");
 
   if (timerInterval) return;
 
@@ -85,14 +87,14 @@ function startTimer() {
 }
 
 function stopTimer() {
-  vibrateTap();
+  flashButton("normal");
 
   clearInterval(timerInterval);
   timerInterval = null;
 }
 
 function resetTimer() {
-  vibrateTap();
+  flashButton("normal");
 
   stopTimer();
   timerSeconds = 0;
@@ -250,7 +252,7 @@ function handleTieBreak(state, player) {
 }
 
 function addPoint(player) {
-  vibrateSuccess();
+  flashButton("normal");
 
   readState(state => {
     pushHistory(state);
@@ -273,7 +275,7 @@ function addPoint(player) {
 /* ================= CONTROLLER ACTIONS ================= */
 
 function updateNameA() {
-  vibrateTap();
+  flashButton("normal");
 
   const value = document.getElementById("nameAInput").value || "";
 
@@ -285,7 +287,7 @@ function updateNameA() {
 }
 
 function updateNameB() {
-  vibrateTap();
+  flashButton("normal");
 
   const value = document.getElementById("nameBInput").value || "";
 
@@ -297,7 +299,7 @@ function updateNameB() {
 }
 
 function updateSponsor() {
-  vibrateTap();
+  flashButton("normal");
 
   const value = document.getElementById("sponsorInput").value || "";
 
@@ -309,7 +311,7 @@ function updateSponsor() {
 }
 
 function switchServe() {
-  vibrateTap();
+  flashButton("normal");
 
   readState(state => {
     pushHistory(state);
@@ -319,7 +321,7 @@ function switchServe() {
 }
 
 function toggleScoreboard() {
-  vibrateTap();
+  flashButton("normal");
 
   readState(state => {
     pushHistory(state);
@@ -329,7 +331,7 @@ function toggleScoreboard() {
 }
 
 function resetMatch() {
-  vibrateDanger();
+  flashButton("danger");
 
   readState(state => {
     pushHistory(state);
