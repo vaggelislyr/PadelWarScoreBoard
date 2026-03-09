@@ -52,7 +52,7 @@ body{
   width:100%;
   max-width:980px;
   margin:0 auto;
-  padding:16px 14px calc(var(--dockHeight) + 26px);
+  padding:16px 14px calc(var(--dockHeight) + 34px);
 }
 
 .appHeader{
@@ -294,11 +294,13 @@ input::placeholder{
   content:"";
   position:absolute;
   inset:0;
-  background:linear-gradient(90deg,
+  background:linear-gradient(
+    90deg,
     transparent 0%,
     rgba(255,255,255,0.24) 45%,
     rgba(255,255,255,0.10) 55%,
-    transparent 100%);
+    transparent 100%
+  );
   transform:translateX(-130%);
   animation:buttonFlashSweep 360ms ease forwards;
   pointer-events:none;
@@ -314,11 +316,13 @@ input::placeholder{
   content:"";
   position:absolute;
   inset:0;
-  background:linear-gradient(90deg,
+  background:linear-gradient(
+    90deg,
     transparent 0%,
     rgba(255,255,255,0.18) 45%,
     rgba(255,255,255,0.08) 55%,
-    transparent 100%);
+    transparent 100%
+  );
   transform:translateX(-130%);
   animation:buttonFlashSweep 420ms ease forwards;
   pointer-events:none;
@@ -339,26 +343,22 @@ input::placeholder{
 }
 
 /* =========================
-   STICKY PREVIEW
+   STICKY PREVIEW - HARD LOCKED
 ========================= */
 
 .stickyPreviewDock{
-  position:fixed !important;
-  left:0;
-  right:0;
-  bottom:0 !important;
-  z-index:9999;
-  padding:0 12px calc(env(safe-area-inset-bottom, 0px) + 12px);
+  position:fixed;
+  left:50%;
+  bottom:calc(env(safe-area-inset-bottom, 0px) + 8px);
+  transform:translateX(-50%);
+  width:min(980px, calc(100vw - 16px));
+  z-index:99999;
   background:none;
-  transform:translateZ(0);
-  -webkit-transform:translateZ(0);
-  will-change:transform;
   pointer-events:none;
 }
 
 .stickyPreviewInner{
-  max-width:980px;
-  margin:auto;
+  width:100%;
   pointer-events:auto;
 }
 
@@ -418,7 +418,7 @@ input::placeholder{
 /* desktop */
 @media (min-width:700px){
   .appShell{
-    padding:22px 20px calc(var(--dockHeight) + 28px);
+    padding:22px 20px calc(var(--dockHeight) + 36px);
   }
 
   .fieldGrid{
@@ -433,12 +433,13 @@ input::placeholder{
     grid-template-columns:repeat(4,1fr);
   }
 
-  .previewViewport.stickyMode{
-    height:190px;
+  .stickyPreviewDock{
+    width:min(980px, calc(100vw - 40px));
+    bottom:calc(env(safe-area-inset-bottom, 0px) + 12px);
   }
 
-  .stickyPreviewDock{
-    padding:0 20px calc(env(safe-area-inset-bottom, 0px) + 14px);
+  .previewViewport.stickyMode{
+    height:190px;
   }
 }
 
@@ -471,7 +472,8 @@ input::placeholder{
   }
 
   .stickyPreviewDock{
-    padding:0 8px calc(env(safe-area-inset-bottom, 0px) + 8px);
+    width:calc(100vw - 16px);
+    bottom:calc(env(safe-area-inset-bottom, 0px) + 6px);
   }
 
   .previewViewport.stickyMode{
