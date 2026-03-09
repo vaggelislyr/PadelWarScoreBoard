@@ -333,6 +333,35 @@ function setText(id, text) {
   if (el) el.textContent = text;
 }
 
+/* ================= PREVIEW SCALE ================= */
+
+function resizeObsPreview() {
+  const viewport = document.getElementById("previewViewport");
+  const iframe = document.getElementById("obsPreview");
+
+  if (!viewport || !iframe) return;
+
+  const viewportWidth = viewport.clientWidth;
+  const baseWidth = 1920;
+  const baseHeight = 1080;
+
+  if (!viewportWidth) return;
+
+  const scale = viewportWidth / baseWidth;
+
+  iframe.style.width = `${baseWidth}px`;
+  iframe.style.height = `${baseHeight}px`;
+  iframe.style.transform = `scale(${scale})`;
+}
+
+window.addEventListener("resize", resizeObsPreview);
+window.addEventListener("orientationchange", () => {
+  setTimeout(resizeObsPreview, 120);
+});
+window.addEventListener("load", () => {
+  setTimeout(resizeObsPreview, 60);
+});
+
 /* ================= INIT INPUTS FROM STATE ================= */
 
 onStateChange(state => {
@@ -344,7 +373,6 @@ onStateChange(state => {
 
   setText("teamANamePreview", state.nameA || "Player1 / Player2");
   setText("teamBNamePreview", state.nameB || "Player1 / Player2");
-  setText("timerLivePreview", state.timerText || "00:00");
 
   setBadgeText("serveBadge", `Serve: ${state.serve || "A"}`);
 
@@ -354,6 +382,8 @@ onStateChange(state => {
   setBadgeText("modeBadge", modeText);
 
   setBadgeText("visibleBadge", state.visible === false ? "Overlay Hidden" : "Overlay Visible");
+
+  resizeObsPreview();
 });
 
 /* ================= GLOBAL EXPORTS FOR HTML onclick ================= */
