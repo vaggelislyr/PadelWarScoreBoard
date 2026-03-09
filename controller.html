@@ -24,31 +24,15 @@
       </div>
     </header>
 
-    <section class="previewSection panel">
+    <section class="panel infoPanel">
       <div class="sectionTop">
-        <h2>OBS Preview</h2>
+        <h2>Match Info</h2>
 
         <div class="miniBadges">
           <span id="visibleBadge" class="miniBadge">Overlay Visible</span>
           <span id="modeBadge" class="miniBadge">Normal Mode</span>
           <span id="serveBadge" class="miniBadge">Serve: A</span>
         </div>
-      </div>
-
-      <div id="previewViewport" class="previewViewport">
-        <iframe
-          id="obsPreview"
-          class="previewFrame"
-          src="obs.html"
-          title="OBS Scoreboard Preview"
-          loading="lazy">
-        </iframe>
-      </div>
-    </section>
-
-    <section class="panel infoPanel">
-      <div class="sectionTop">
-        <h2>Match Info</h2>
       </div>
 
       <div class="fieldGrid">
@@ -125,6 +109,24 @@
       </div>
     </section>
 
+  </div>
+
+  <div class="stickyPreviewDock">
+    <div class="stickyPreviewInner">
+      <div class="stickyPreviewTop">
+        <span class="stickyPreviewLabel">OBS Preview</span>
+      </div>
+
+      <div id="previewViewport" class="previewViewport stickyMode">
+        <iframe
+          id="obsPreview"
+          class="previewFrame"
+          src="obs.html"
+          title="OBS Scoreboard Preview"
+          loading="lazy">
+        </iframe>
+      </div>
+    </div>
   </div>
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
