@@ -342,16 +342,37 @@ function resizeObsPreview() {
   if (!viewport || !iframe) return;
 
   const viewportWidth = viewport.clientWidth;
+  const viewportHeight = viewport.clientHeight;
+
   const baseWidth = 1920;
   const baseHeight = 1080;
 
-  if (!viewportWidth) return;
+  if (!viewportWidth || !viewportHeight) return;
 
-  const scale = viewportWidth / baseWidth;
+  const isMobile = window.innerWidth <= 640;
 
-  iframe.style.width = `${baseWidth}px`;
-  iframe.style.height = `${baseHeight}px`;
-  iframe.style.transform = `scale(${scale})`;
+  if (isMobile) {
+    /* mobile: zoom στο πάνω αριστερό κομμάτι */
+    const cropWidth = 980;
+    const scale = viewportWidth / cropWidth;
+
+    iframe.style.width = `${baseWidth}px`;
+    iframe.style.height = `${baseHeight}px`;
+    iframe.style.transformOrigin = "top left";
+    iframe.style.transform = `scale(${scale}) translateZ(0)`;
+    iframe.style.left = "0px";
+    iframe.style.top = "0px";
+  } else {
+    /* desktop/tablet: πιο κανονικό fit */
+    const scale = viewportWidth / baseWidth;
+
+    iframe.style.width = `${baseWidth}px`;
+    iframe.style.height = `${baseHeight}px`;
+    iframe.style.transformOrigin = "top left";
+    iframe.style.transform = `scale(${scale}) translateZ(0)`;
+    iframe.style.left = "0px";
+    iframe.style.top = "0px";
+  }
 }
 
 window.addEventListener("resize", resizeObsPreview);
