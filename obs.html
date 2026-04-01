@@ -15,69 +15,126 @@
       <div id="winnerBanner">🏆 MATCH WINNER</div>
     </div>
 
-    <div id="scoreboard">
+    <!-- =========================
+         LAYOUT 1: FUTURISTIC (OLD)
+    ========================== -->
+    <div id="layout-futuristic" class="scoreLayout activeLayout">
 
-      <div class="frameLine" id="lineTopLeft"></div>
-      <div class="frameLine" id="lineTopCut"></div>
-      <div class="frameLine" id="lineBottomLeft"></div>
-      <div class="frameLine" id="lineBottomCut"></div>
-      <div class="frameLine" id="lineRightVert"></div>
-      <div class="frameLine" id="lineRightMini"></div>
+      <div id="scoreboard">
 
-      <div class="techBars" id="techTop">
-        <span></span><span></span><span></span>
-      </div>
+        <div class="frameLine" id="lineTopLeft"></div>
+        <div class="frameLine" id="lineTopCut"></div>
+        <div class="frameLine" id="lineBottomLeft"></div>
+        <div class="frameLine" id="lineBottomCut"></div>
+        <div class="frameLine" id="lineRightVert"></div>
+        <div class="frameLine" id="lineRightMini"></div>
 
-      <div class="techBars" id="techBottom">
-        <span></span><span></span><span></span>
-      </div>
+        <div class="techBars" id="techTop">
+          <span></span><span></span><span></span>
+        </div>
 
-      <div id="rightStripes">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
+        <div class="techBars" id="techBottom">
+          <span></span><span></span><span></span>
+        </div>
 
-      <div id="contentLayer">
-        <div id="scoreboardGrid">
+        <div id="rightStripes">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
 
-          <div class="serveTrackCell">
-            <div id="serveTrack">
-              <span id="serveBall">🎾</span>
+        <div id="contentLayer">
+          <div id="scoreboardGrid">
+
+            <div class="serveTrackCell">
+              <div id="serveTrack">
+                <span id="serveBall">🎾</span>
+              </div>
             </div>
+
+            <div id="nameA" class="nameCell" style="grid-column:2; grid-row:1;">Player A1 / Player A2</div>
+            <div id="set2A" class="setCell hiddenSet" style="grid-column:3; grid-row:1;">0</div>
+            <div id="set1A" class="setCell hiddenSet" style="grid-column:4; grid-row:1;">0</div>
+            <div id="gamesA" class="gamesCell" style="grid-column:5; grid-row:1;">0</div>
+            <div id="pointsA" class="pointsCell" style="grid-column:6; grid-row:1;">0</div>
+
+            <div id="nameB" class="nameCell" style="grid-column:2; grid-row:2;">Player B1 / Player B2</div>
+            <div id="set2B" class="setCell hiddenSet" style="grid-column:3; grid-row:2;">0</div>
+            <div id="set1B" class="setCell hiddenSet" style="grid-column:4; grid-row:2;">0</div>
+            <div id="gamesB" class="gamesCell" style="grid-column:5; grid-row:2;">0</div>
+            <div id="pointsB" class="pointsCell" style="grid-column:6; grid-row:2;">0</div>
+
+          </div>
+        </div>
+      </div>
+
+      <div id="barConnector"></div>
+
+      <div id="bottomBar">
+        <div class="bottomFrameLine" id="barLineLeft"></div>
+        <div class="bottomFrameLine" id="barLineRight"></div>
+        <div class="bottomFrameLine" id="barCutRight"></div>
+
+        <div id="barTech">
+          <span></span><span></span><span></span>
+        </div>
+
+        <div id="bottomBarContent">
+          <div id="organizer">@sponsor</div>
+          <div id="timer">00:00</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- =========================
+         LAYOUT 2: MODERN (NEW)
+         Hidden for now until JS switch
+    ========================== -->
+    <div id="layout-modern" class="scoreLayout">
+
+      <div id="modernTopInfo">
+        <div id="modernSponsor">@sponsor</div>
+        <div id="modernTimer">00:00</div>
+      </div>
+
+      <div id="modernBoard">
+
+        <div id="modernLogoBox">
+          <img id="modernLogoImage" src="logo.png" alt="PadelWars Logo">
+        </div>
+
+        <div id="modernScorePanel">
+
+          <div class="modernRow">
+            <div class="modernServeCell">
+              <span id="modernServeBall">🎾</span>
+            </div>
+
+            <div id="modernNameA" class="modernNameCell">Player A1 / Player A2</div>
+
+            <div id="modernSet2A" class="modernSmallScoreCell hiddenSet">0</div>
+            <div id="modernSet1A" class="modernSmallScoreCell hiddenSet">0</div>
+            <div id="modernGamesA" class="modernSmallScoreCell">0</div>
+
+            <div id="modernPointsA" class="modernPointsCell">0</div>
           </div>
 
-          <div id="nameA" class="nameCell" style="grid-column:2; grid-row:1;">Player A1 / Player A2</div>
-          <div id="set2A" class="setCell hiddenSet" style="grid-column:3; grid-row:1;">0</div>
-          <div id="set1A" class="setCell hiddenSet" style="grid-column:4; grid-row:1;">0</div>
-          <div id="gamesA" class="gamesCell" style="grid-column:5; grid-row:1;">0</div>
-          <div id="pointsA" class="pointsCell" style="grid-column:6; grid-row:1;">0</div>
+          <div class="modernRow">
+            <div class="modernServeCell modernServeSpacer"></div>
 
-          <div id="nameB" class="nameCell" style="grid-column:2; grid-row:2;">Player B1 / Player B2</div>
-          <div id="set2B" class="setCell hiddenSet" style="grid-column:3; grid-row:2;">0</div>
-          <div id="set1B" class="setCell hiddenSet" style="grid-column:4; grid-row:2;">0</div>
-          <div id="gamesB" class="gamesCell" style="grid-column:5; grid-row:2;">0</div>
-          <div id="pointsB" class="pointsCell" style="grid-column:6; grid-row:2;">0</div>
+            <div id="modernNameB" class="modernNameCell">Player B1 / Player B2</div>
+
+            <div id="modernSet2B" class="modernSmallScoreCell hiddenSet">0</div>
+            <div id="modernSet1B" class="modernSmallScoreCell hiddenSet">0</div>
+            <div id="modernGamesB" class="modernSmallScoreCell">0</div>
+
+            <div id="modernPointsB" class="modernPointsCell">0</div>
+          </div>
 
         </div>
       </div>
-    </div>
 
-    <div id="barConnector"></div>
-
-    <div id="bottomBar">
-      <div class="bottomFrameLine" id="barLineLeft"></div>
-      <div class="bottomFrameLine" id="barLineRight"></div>
-      <div class="bottomFrameLine" id="barCutRight"></div>
-
-      <div id="barTech">
-        <span></span><span></span><span></span>
-      </div>
-
-      <div id="bottomBarContent">
-        <div id="organizer">@sponsor</div>
-        <div id="timer">00:00</div>
-      </div>
     </div>
 
   </div>
@@ -110,6 +167,8 @@
     const set2B = document.getElementById("set2B");
 
     function syncModes(){
+      if (!scoreboard) return;
+
       scoreboard.classList.toggle("mode-golden", goldenBanner.classList.contains("active"));
       scoreboard.classList.toggle("mode-tiebreak", tiebreakBanner.classList.contains("active"));
 
