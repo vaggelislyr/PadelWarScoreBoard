@@ -362,9 +362,31 @@ function resetMatch() {
     state.organizer = state.organizer || "@sponsor";
 
     state.timerText = "00:00";
+    state.design = state.design || "futuristic";
+
     timerSeconds = 0;
     stopTimer();
 
+    writeState(state);
+  });
+}
+
+/* ================= DESIGN SWITCH ================= */
+
+function getSafeDesignName(design) {
+  return design === "modern" ? "modern" : "futuristic";
+}
+
+function getDesignLabel(design) {
+  return getSafeDesignName(design) === "modern" ? "Design: Modern" : "Design: Futuristic";
+}
+
+function setOverlayDesign(design) {
+  flashButton("normal");
+
+  readState(state => {
+    pushHistory(state);
+    state.design = getSafeDesignName(design);
     writeState(state);
   });
 }
@@ -491,6 +513,7 @@ onStateChange(state => {
   setBadgeText("modeBadge", modeText);
 
   setBadgeText("visibleBadge", state.visible === false ? "Overlay Hidden" : "Overlay Visible");
+  setBadgeText("designBadge", getDesignLabel(state.design));
 
   updateFloatingPreviewLayout();
 });
@@ -508,3 +531,4 @@ window.resetMatch = resetMatch;
 window.startTimer = startTimer;
 window.stopTimer = stopTimer;
 window.resetTimer = resetTimer;
+window.setOverlayDesign = setOverlayDesign;
