@@ -89,6 +89,7 @@
 
     <!-- =========================
          LAYOUT 2: MODERN (NEW)
+         Hidden for now until JS switch
     ========================== -->
     <div id="layout-modern" class="scoreLayout">
 
@@ -105,32 +106,30 @@
 
         <div id="modernScorePanel">
 
-          <div id="modernServeColumn">
-            <span id="modernServeBall">🎾</span>
+          <div class="modernRow">
+            <div class="modernServeCell">
+              <span id="modernServeBall">🎾</span>
+            </div>
+
+            <div id="modernNameA" class="modernNameCell">Player A1 / Player A2</div>
+
+            <div id="modernSet2A" class="modernSmallScoreCell hiddenSet">0</div>
+            <div id="modernSet1A" class="modernSmallScoreCell hiddenSet">0</div>
+            <div id="modernGamesA" class="modernSmallScoreCell">0</div>
+
+            <div id="modernPointsA" class="modernPointsCell">0</div>
           </div>
 
-          <div class="modernRowsWrap">
+          <div class="modernRow">
+            <div class="modernServeCell modernServeSpacer"></div>
 
-            <div class="modernRow">
-              <div id="modernNameA" class="modernNameCell">Player A1 / Player A2</div>
+            <div id="modernNameB" class="modernNameCell">Player B1 / Player B2</div>
 
-              <div id="modernSet2A" class="modernSmallScoreCell hiddenSet">0</div>
-              <div id="modernSet1A" class="modernSmallScoreCell hiddenSet">0</div>
-              <div id="modernGamesA" class="modernSmallScoreCell">0</div>
+            <div id="modernSet2B" class="modernSmallScoreCell hiddenSet">0</div>
+            <div id="modernSet1B" class="modernSmallScoreCell hiddenSet">0</div>
+            <div id="modernGamesB" class="modernSmallScoreCell">0</div>
 
-              <div id="modernPointsA" class="modernPointsCell">0</div>
-            </div>
-
-            <div class="modernRow">
-              <div id="modernNameB" class="modernNameCell">Player B1 / Player B2</div>
-
-              <div id="modernSet2B" class="modernSmallScoreCell hiddenSet">0</div>
-              <div id="modernSet1B" class="modernSmallScoreCell hiddenSet">0</div>
-              <div id="modernGamesB" class="modernSmallScoreCell">0</div>
-
-              <div id="modernPointsB" class="modernPointsCell">0</div>
-            </div>
-
+            <div id="modernPointsB" class="modernPointsCell">0</div>
           </div>
 
         </div>
