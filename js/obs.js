@@ -37,7 +37,8 @@ const timerEl = document.getElementById("timer");
    MODERN ELEMENTS
 ========================= */
 
-const modernServeBallEl = document.getElementById("modernServeBall");
+const modernServeBallTopEl = document.getElementById("modernServeBallTop");
+const modernServeBallBottomEl = document.getElementById("modernServeBallBottom");
 
 const modernNameAEl = document.getElementById("modernNameA");
 const modernNameBEl = document.getElementById("modernNameB");
@@ -250,23 +251,15 @@ function renderFuturisticLayout(state) {
     set2BEl.textContent = "0";
   }
 
-  if (previousGamesA !== null && previousGamesA !== state.gamesA) {
-    popScore(gamesAEl);
-  }
-  if (previousGamesB !== null && previousGamesB !== state.gamesB) {
-    popScore(gamesBEl);
-  }
+  if (previousGamesA !== null && previousGamesA !== state.gamesA) popScore(gamesAEl);
+  if (previousGamesB !== null && previousGamesB !== state.gamesB) popScore(gamesBEl);
 
   gamesAEl.textContent = safeText(state.gamesA, "0");
   gamesBEl.textContent = safeText(state.gamesB, "0");
 
   if (state.mode === "tiebreak") {
-    if (previousPointsA !== null && previousPointsA !== state.pointsA) {
-      popScore(pointsAEl);
-    }
-    if (previousPointsB !== null && previousPointsB !== state.pointsB) {
-      popScore(pointsBEl);
-    }
+    if (previousPointsA !== null && previousPointsA !== state.pointsA) popScore(pointsAEl);
+    if (previousPointsB !== null && previousPointsB !== state.pointsB) popScore(pointsBEl);
 
     pointsAEl.textContent = safeText(state.pointsA, "0");
     pointsBEl.textContent = safeText(state.pointsB, "0");
@@ -274,12 +267,8 @@ function renderFuturisticLayout(state) {
     pointsAEl.textContent = "-";
     pointsBEl.textContent = "-";
   } else {
-    if (previousPointsA !== null && previousPointsA !== state.pointsA) {
-      popScore(pointsAEl);
-    }
-    if (previousPointsB !== null && previousPointsB !== state.pointsB) {
-      popScore(pointsBEl);
-    }
+    if (previousPointsA !== null && previousPointsA !== state.pointsA) popScore(pointsAEl);
+    if (previousPointsB !== null && previousPointsB !== state.pointsB) popScore(pointsBEl);
 
     pointsAEl.textContent = tennisPoints(state.pointsA ?? 0);
     pointsBEl.textContent = tennisPoints(state.pointsB ?? 0);
@@ -294,11 +283,18 @@ function renderFuturisticLayout(state) {
 ========================================= */
 
 function renderModernLayout(state) {
-  if (modernServeBallEl) {
-    modernServeBallEl.style.opacity = "1";
-    modernServeBallEl.style.display = "inline-block";
-    modernServeBallEl.style.transition = "transform .35s cubic-bezier(.22,.8,.24,1), filter .25s ease";
-    modernServeBallEl.style.transform = state.serve === "B" ? "translateY(55px)" : "translateY(0px)";
+  if (modernServeBallTopEl && modernServeBallBottomEl) {
+    if (state.serve === "B") {
+      modernServeBallTopEl.style.opacity = "0";
+      modernServeBallTopEl.style.visibility = "hidden";
+      modernServeBallBottomEl.style.opacity = "1";
+      modernServeBallBottomEl.style.visibility = "visible";
+    } else {
+      modernServeBallTopEl.style.opacity = "1";
+      modernServeBallTopEl.style.visibility = "visible";
+      modernServeBallBottomEl.style.opacity = "0";
+      modernServeBallBottomEl.style.visibility = "hidden";
+    }
   }
 
   modernNameAEl.textContent = safeText(state.nameA, "Player A1 / Player A2");
@@ -331,23 +327,15 @@ function renderModernLayout(state) {
     modernSet2BEl.textContent = "0";
   }
 
-  if (previousGamesA !== null && previousGamesA !== state.gamesA) {
-    popScore(modernGamesAEl);
-  }
-  if (previousGamesB !== null && previousGamesB !== state.gamesB) {
-    popScore(modernGamesBEl);
-  }
+  if (previousGamesA !== null && previousGamesA !== state.gamesA) popScore(modernGamesAEl);
+  if (previousGamesB !== null && previousGamesB !== state.gamesB) popScore(modernGamesBEl);
 
   modernGamesAEl.textContent = safeText(state.gamesA, "0");
   modernGamesBEl.textContent = safeText(state.gamesB, "0");
 
   if (state.mode === "tiebreak") {
-    if (previousPointsA !== null && previousPointsA !== state.pointsA) {
-      popScore(modernPointsAEl);
-    }
-    if (previousPointsB !== null && previousPointsB !== state.pointsB) {
-      popScore(modernPointsBEl);
-    }
+    if (previousPointsA !== null && previousPointsA !== state.pointsA) popScore(modernPointsAEl);
+    if (previousPointsB !== null && previousPointsB !== state.pointsB) popScore(modernPointsBEl);
 
     modernPointsAEl.textContent = safeText(state.pointsA, "0");
     modernPointsBEl.textContent = safeText(state.pointsB, "0");
@@ -355,12 +343,8 @@ function renderModernLayout(state) {
     modernPointsAEl.textContent = "-";
     modernPointsBEl.textContent = "-";
   } else {
-    if (previousPointsA !== null && previousPointsA !== state.pointsA) {
-      popScore(modernPointsAEl);
-    }
-    if (previousPointsB !== null && previousPointsB !== state.pointsB) {
-      popScore(modernPointsBEl);
-    }
+    if (previousPointsA !== null && previousPointsA !== state.pointsA) popScore(modernPointsAEl);
+    if (previousPointsB !== null && previousPointsB !== state.pointsB) popScore(modernPointsBEl);
 
     modernPointsAEl.textContent = tennisPoints(state.pointsA ?? 0);
     modernPointsBEl.textContent = tennisPoints(state.pointsB ?? 0);
