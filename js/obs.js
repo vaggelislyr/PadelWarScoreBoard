@@ -295,13 +295,10 @@ function renderFuturisticLayout(state) {
 
 function renderModernLayout(state) {
   if (modernServeBallEl) {
-    if (state.serve === "A") {
-      modernServeBallEl.style.opacity = "1";
-      modernServeBallEl.style.transform = "translateY(0px)";
-    } else {
-      modernServeBallEl.style.opacity = "0";
-      modernServeBallEl.style.transform = "translateY(0px)";
-    }
+    modernServeBallEl.style.opacity = "1";
+    modernServeBallEl.style.display = "inline-block";
+    modernServeBallEl.style.transition = "transform .35s cubic-bezier(.22,.8,.24,1), filter .25s ease";
+    modernServeBallEl.style.transform = state.serve === "B" ? "translateY(55px)" : "translateY(0px)";
   }
 
   modernNameAEl.textContent = safeText(state.nameA, "Player A1 / Player A2");
