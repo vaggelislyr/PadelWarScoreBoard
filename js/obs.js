@@ -2,6 +2,17 @@ console.log("Obs loaded");
 
 const overlayWrapper = document.getElementById("overlayWrapper");
 
+/* =========================
+   LAYOUT ROOTS
+========================= */
+
+const layoutFuturisticEl = document.getElementById("layout-futuristic");
+const layoutModernEl = document.getElementById("layout-modern");
+
+/* =========================
+   FUTURISTIC ELEMENTS
+========================= */
+
 const serveBallEl = document.getElementById("serveBall");
 
 const nameAEl = document.getElementById("nameA");
@@ -19,12 +30,40 @@ const gamesBEl = document.getElementById("gamesB");
 const pointsAEl = document.getElementById("pointsA");
 const pointsBEl = document.getElementById("pointsB");
 
+const organizerEl = document.getElementById("organizer");
+const timerEl = document.getElementById("timer");
+
+/* =========================
+   MODERN ELEMENTS
+========================= */
+
+const modernServeBallEl = document.getElementById("modernServeBall");
+
+const modernNameAEl = document.getElementById("modernNameA");
+const modernNameBEl = document.getElementById("modernNameB");
+
+const modernSet1AEl = document.getElementById("modernSet1A");
+const modernSet1BEl = document.getElementById("modernSet1B");
+
+const modernSet2AEl = document.getElementById("modernSet2A");
+const modernSet2BEl = document.getElementById("modernSet2B");
+
+const modernGamesAEl = document.getElementById("modernGamesA");
+const modernGamesBEl = document.getElementById("modernGamesB");
+
+const modernPointsAEl = document.getElementById("modernPointsA");
+const modernPointsBEl = document.getElementById("modernPointsB");
+
+const modernSponsorEl = document.getElementById("modernSponsor");
+const modernTimerEl = document.getElementById("modernTimer");
+
+/* =========================
+   SHARED BANNERS
+========================= */
+
 const goldenBannerEl = document.getElementById("goldenBanner");
 const tiebreakBannerEl = document.getElementById("tiebreakBanner");
 const winnerBannerEl = document.getElementById("winnerBanner");
-
-const organizerEl = document.getElementById("organizer");
-const timerEl = document.getElementById("timer");
 
 let previousPointsA = null;
 let previousPointsB = null;
@@ -115,7 +154,7 @@ function hideOverlaySmooth() {
 setupOverlayAnimationBase();
 
 /* =========================================
-   SCOREBOARD HELPERS
+   HELPERS
 ========================================= */
 
 function tennisPoints(p) {
@@ -130,36 +169,51 @@ function safeText(value, fallback = "") {
   return String(value);
 }
 
-function clearWinnerStyles() {
-  nameAEl.classList.remove("winnerName", "loserName");
-  nameBEl.classList.remove("winnerName", "loserName");
-  winnerBannerEl.classList.remove("active");
-}
-
 function popScore(el) {
-  el.classList.remove("scorePop");
+  if (!el) return;
+
+  el.classList.remove("scorePop", "visualPulse");
   void el.offsetWidth;
-  el.classList.add("scorePop");
+  el.classList.add("scorePop", "visualPulse");
 
   setTimeout(() => {
-    el.classList.remove("scorePop");
+    el.classList.remove("scorePop", "visualPulse");
   }, 180);
 }
 
-/* =========================================
-   STATE SYNC
-========================================= */
+function clearWinnerStyles() {
+  if (nameAEl) nameAEl.classList.remove("winnerName", "loserName");
+  if (nameBEl) nameBEl.classList.remove("winnerName", "loserName");
+  if (modernNameAEl) modernNameAEl.classList.remove("winnerName", "loserName");
+  if (modernNameBEl) modernNameBEl.classList.remove("winnerName", "loserName");
 
-onStateChange(function (state) {
-  if (!state) return;
+  winnerBannerEl.classList.remove("active");
+}
 
-  if (state.visible === false) {
-    hideOverlaySmooth();
-    return;
-  } else {
-    showOverlaySmooth();
+function clearGoldenStyles() {
+  if (pointsAEl) pointsAEl.classList.remove("goldenText");
+  if (pointsBEl) pointsBEl.classList.remove("goldenText");
+  if (modernPointsAEl) modernPointsAEl.classList.remove("goldenText");
+  if (modernPointsBEl) modernPointsBEl.classList.remove("goldenText");
+}
+
+function setLayout(design) {
+  const safeDesign = design === "modern" ? "modern" : "futuristic";
+
+  if (layoutFuturisticEl) {
+    layoutFuturisticEl.classList.toggle("activeLayout", safeDesign === "futuristic");
   }
 
+  if (layoutModernEl) {
+    layoutModernEl.classList.toggle("activeLayout", safeDesign === "modern");
+  }
+}
+
+/* =========================================
+   RENDER FUTURISTIC LAYOUT
+========================================= */
+
+function renderFuturisticLayout(state) {
   if (state.serve === "B") {
     serveBallEl.classList.add("toBottom");
   } else {
@@ -231,20 +285,113 @@ onStateChange(function (state) {
     pointsBEl.textContent = tennisPoints(state.pointsB ?? 0);
   }
 
+  organizerEl.textContent = safeText(state.organizer, "@sponsor");
+  timerEl.textContent = safeText(state.timerText, "00:00");
+}
+
+/* =========================================
+   RENDER MODERN LAYOUT
+========================================= */
+
+function renderModernLayout(state) {
+  if (modernServeBallEl) {
+    if (state.serve === "A") {
+      modernServeBallEl.style.opacity = "1";
+      modernServeBallEl.style.transform = "translateY(0px)";
+    } else {
+      modernServeBallEl.style.opacity = "0";
+      modernServeBallEl.style.transform = "translateY(0px)";
+    }
+  }
+
+  modernNameAEl.textContent = safeText(state.nameA, "Player A1 / Player A2");
+  modernNameBEl.textContent = safeText(state.nameB, "Player B1 / Player B2");
+
+  const historyA = Array.isArray(state.setHistoryA) ? state.setHistoryA : [];
+  const historyB = Array.isArray(state.setHistoryB) ? state.setHistoryB : [];
+
+  if (historyA.length >= 1 && historyB.length >= 1) {
+    modernSet1AEl.classList.remove("hiddenSet");
+    modernSet1BEl.classList.remove("hiddenSet");
+    modernSet1AEl.textContent = safeText(historyA[0], "0");
+    modernSet1BEl.textContent = safeText(historyB[0], "0");
+  } else {
+    modernSet1AEl.classList.add("hiddenSet");
+    modernSet1BEl.classList.add("hiddenSet");
+    modernSet1AEl.textContent = "0";
+    modernSet1BEl.textContent = "0";
+  }
+
+  if (historyA.length >= 2 && historyB.length >= 2) {
+    modernSet2AEl.classList.remove("hiddenSet");
+    modernSet2BEl.classList.remove("hiddenSet");
+    modernSet2AEl.textContent = safeText(historyA[1], "0");
+    modernSet2BEl.textContent = safeText(historyB[1], "0");
+  } else {
+    modernSet2AEl.classList.add("hiddenSet");
+    modernSet2BEl.classList.add("hiddenSet");
+    modernSet2AEl.textContent = "0";
+    modernSet2BEl.textContent = "0";
+  }
+
+  if (previousGamesA !== null && previousGamesA !== state.gamesA) {
+    popScore(modernGamesAEl);
+  }
+  if (previousGamesB !== null && previousGamesB !== state.gamesB) {
+    popScore(modernGamesBEl);
+  }
+
+  modernGamesAEl.textContent = safeText(state.gamesA, "0");
+  modernGamesBEl.textContent = safeText(state.gamesB, "0");
+
+  if (state.mode === "tiebreak") {
+    if (previousPointsA !== null && previousPointsA !== state.pointsA) {
+      popScore(modernPointsAEl);
+    }
+    if (previousPointsB !== null && previousPointsB !== state.pointsB) {
+      popScore(modernPointsBEl);
+    }
+
+    modernPointsAEl.textContent = safeText(state.pointsA, "0");
+    modernPointsBEl.textContent = safeText(state.pointsB, "0");
+  } else if (state.mode === "finished") {
+    modernPointsAEl.textContent = "-";
+    modernPointsBEl.textContent = "-";
+  } else {
+    if (previousPointsA !== null && previousPointsA !== state.pointsA) {
+      popScore(modernPointsAEl);
+    }
+    if (previousPointsB !== null && previousPointsB !== state.pointsB) {
+      popScore(modernPointsBEl);
+    }
+
+    modernPointsAEl.textContent = tennisPoints(state.pointsA ?? 0);
+    modernPointsBEl.textContent = tennisPoints(state.pointsB ?? 0);
+  }
+
+  modernSponsorEl.textContent = safeText(state.organizer, "@sponsor");
+  modernTimerEl.textContent = safeText(state.timerText, "00:00");
+}
+
+/* =========================================
+   SHARED STATE VISUALS
+========================================= */
+
+function applySharedSpecialStates(state) {
   if (state.goldenActive && state.mode === "normal") {
     goldenBannerEl.classList.add("active");
 
     if ((state.pointsA ?? 0) === 3 && (state.pointsB ?? 0) === 3) {
-      pointsAEl.classList.add("goldenText");
-      pointsBEl.classList.add("goldenText");
+      if (pointsAEl) pointsAEl.classList.add("goldenText");
+      if (pointsBEl) pointsBEl.classList.add("goldenText");
+      if (modernPointsAEl) modernPointsAEl.classList.add("goldenText");
+      if (modernPointsBEl) modernPointsBEl.classList.add("goldenText");
     } else {
-      pointsAEl.classList.remove("goldenText");
-      pointsBEl.classList.remove("goldenText");
+      clearGoldenStyles();
     }
   } else {
     goldenBannerEl.classList.remove("active");
-    pointsAEl.classList.remove("goldenText");
-    pointsBEl.classList.remove("goldenText");
+    clearGoldenStyles();
   }
 
   if (state.mode === "tiebreak") {
@@ -255,20 +402,43 @@ onStateChange(function (state) {
 
   clearWinnerStyles();
 
-  if (state.matchOver === true) {
+  if (state.matchOver === true || state.mode === "finished") {
     winnerBannerEl.classList.add("active");
 
     if ((state.setsA ?? 0) > (state.setsB ?? 0)) {
-      nameAEl.classList.add("winnerName");
-      nameBEl.classList.add("loserName");
+      if (nameAEl) nameAEl.classList.add("winnerName");
+      if (nameBEl) nameBEl.classList.add("loserName");
+      if (modernNameAEl) modernNameAEl.classList.add("winnerName");
+      if (modernNameBEl) modernNameBEl.classList.add("loserName");
     } else if ((state.setsB ?? 0) > (state.setsA ?? 0)) {
-      nameBEl.classList.add("winnerName");
-      nameAEl.classList.add("loserName");
+      if (nameBEl) nameBEl.classList.add("winnerName");
+      if (nameAEl) nameAEl.classList.add("loserName");
+      if (modernNameBEl) modernNameBEl.classList.add("winnerName");
+      if (modernNameAEl) modernNameAEl.classList.add("loserName");
     }
   }
+}
 
-  organizerEl.textContent = safeText(state.organizer, "@sponsor");
-  timerEl.textContent = safeText(state.timerText, "00:00");
+/* =========================================
+   STATE SYNC
+========================================= */
+
+onStateChange(function (state) {
+  if (!state) return;
+
+  const design = state.design === "modern" ? "modern" : "futuristic";
+  setLayout(design);
+
+  if (state.visible === false) {
+    hideOverlaySmooth();
+    return;
+  } else {
+    showOverlaySmooth();
+  }
+
+  renderFuturisticLayout(state);
+  renderModernLayout(state);
+  applySharedSpecialStates(state);
 
   previousPointsA = state.pointsA;
   previousPointsB = state.pointsB;
