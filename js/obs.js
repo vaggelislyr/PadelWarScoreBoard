@@ -72,6 +72,48 @@ let previousGamesA = null;
 let previousGamesB = null;
 
 /* =========================================
+   AD DISPLAY TRACKER
+   AD -> D1 / D2 only visually
+========================================= */
+
+let adDisplayStage = 1;
+let lastAdvantageOwner = null;
+
+function updateAdDisplayTracker(state) {
+  const pA = state.pointsA ?? 0;
+  const pB = state.pointsB ?? 0;
+
+  const isFinished = state.matchOver === true || state.mode === "finished";
+  const isTiebreak = state.mode === "tiebreak";
+  const isGolden = state.goldenActive === true;
+
+  if (isFinished || isTiebreak || isGolden) {
+    adDisplayStage = 1;
+    lastAdvantageOwner = null;
+    return;
+  }
+
+  const isDeuce = pA === 3 && pB === 3;
+  const advantageOwner = pA === 4 ? "A" : pB === 4 ? "B" : null;
+
+  if (isDeuce && lastAdvantageOwner) {
+    adDisplayStage = 2;
+    lastAdvantageOwner = null;
+    return;
+  }
+
+  if (advantageOwner) {
+    lastAdvantageOwner = advantageOwner;
+    return;
+  }
+
+  if (pA < 3 || pB < 3) {
+    adDisplayStage = 1;
+    lastAdvantageOwner = null;
+  }
+}
+
+/* =========================================
    SAFE SHOW / HIDE ANIMATION
 ========================================= */
 
@@ -159,7 +201,11 @@ setupOverlayAnimationBase();
 ========================================= */
 
 function tennisPoints(p) {
-  const map = ["0", "15", "30", "40", "AD"];
+  if (p === 4) {
+    return adDisplayStage === 2 ? "D2" : "D1";
+  }
+
+  const map = ["0", "15", "30", "40"];
   return map[p] ?? "0";
 }
 
@@ -168,6 +214,36 @@ function safeText(value, fallback = "") {
     return fallback;
   }
   return String(value);
+}
+
+function getSetHistory(state) {
+  const historyA = Array.isArray(state.setHistoryA) ? state.setHistoryA : [];
+  const historyB = Array.isArray(state.setHistoryB) ? state.setHistoryB : [];
+  const totalFinishedSets = Math.min(historyA.length, historyB.length);
+
+  return {
+    historyA,
+    historyB,
+    totalFinishedSets
+  };
+}
+
+function isMatchFinished(state) {
+  return state.matchOver === true || state.mode === "finished";
+}
+
+function getDisplayedGames(state, team) {
+  const { historyA, historyB, totalFinishedSets } = getSetHistory(state);
+
+  if (isMatchFinished(state)) {
+    if (totalFinishedSets >= 3) {
+      return team === "A" ? historyA[2] : historyB[2];
+    }
+
+    return "";
+  }
+
+  return team === "A" ? state.gamesA : state.gamesB;
 }
 
 function popScore(el) {
@@ -224,8 +300,7 @@ function renderFuturisticLayout(state) {
   nameAEl.textContent = safeText(state.nameA, "Player A1 / Player A2");
   nameBEl.textContent = safeText(state.nameB, "Player B1 / Player B2");
 
-  const historyA = Array.isArray(state.setHistoryA) ? state.setHistoryA : [];
-  const historyB = Array.isArray(state.setHistoryB) ? state.setHistoryB : [];
+  const { historyA, historyB } = getSetHistory(state);
 
   if (historyA.length >= 1 && historyB.length >= 1) {
     set1AEl.classList.remove("hiddenSet");
@@ -251,11 +326,14 @@ function renderFuturisticLayout(state) {
     set2BEl.textContent = "0";
   }
 
-  if (previousGamesA !== null && previousGamesA !== state.gamesA) popScore(gamesAEl);
-  if (previousGamesB !== null && previousGamesB !== state.gamesB) popScore(gamesBEl);
+  const displayGamesA = getDisplayedGames(state, "A");
+  const displayGamesB = getDisplayedGames(state, "B");
 
-  gamesAEl.textContent = safeText(state.gamesA, "0");
-  gamesBEl.textContent = safeText(state.gamesB, "0");
+  if (previousGamesA !== null && previousGamesA !== displayGamesA) popScore(gamesAEl);
+  if (previousGamesB !== null && previousGamesB !== displayGamesB) popScore(gamesBEl);
+
+  gamesAEl.textContent = safeText(displayGamesA, "");
+  gamesBEl.textContent = safeText(displayGamesB, "");
 
   if (state.mode === "tiebreak") {
     if (previousPointsA !== null && previousPointsA !== state.pointsA) popScore(pointsAEl);
@@ -263,7 +341,7 @@ function renderFuturisticLayout(state) {
 
     pointsAEl.textContent = safeText(state.pointsA, "0");
     pointsBEl.textContent = safeText(state.pointsB, "0");
-  } else if (state.mode === "finished") {
+  } else if (isMatchFinished(state)) {
     pointsAEl.textContent = "-";
     pointsBEl.textContent = "-";
   } else {
@@ -300,8 +378,7 @@ function renderModernLayout(state) {
   modernNameAEl.textContent = safeText(state.nameA, "Player A1 / Player A2");
   modernNameBEl.textContent = safeText(state.nameB, "Player B1 / Player B2");
 
-  const historyA = Array.isArray(state.setHistoryA) ? state.setHistoryA : [];
-  const historyB = Array.isArray(state.setHistoryB) ? state.setHistoryB : [];
+  const { historyA, historyB } = getSetHistory(state);
 
   if (historyA.length >= 1 && historyB.length >= 1) {
     modernSet1AEl.classList.remove("hiddenSet");
@@ -327,11 +404,14 @@ function renderModernLayout(state) {
     modernSet2BEl.textContent = "0";
   }
 
-  if (previousGamesA !== null && previousGamesA !== state.gamesA) popScore(modernGamesAEl);
-  if (previousGamesB !== null && previousGamesB !== state.gamesB) popScore(modernGamesBEl);
+  const displayGamesA = getDisplayedGames(state, "A");
+  const displayGamesB = getDisplayedGames(state, "B");
 
-  modernGamesAEl.textContent = safeText(state.gamesA, "0");
-  modernGamesBEl.textContent = safeText(state.gamesB, "0");
+  if (previousGamesA !== null && previousGamesA !== displayGamesA) popScore(modernGamesAEl);
+  if (previousGamesB !== null && previousGamesB !== displayGamesB) popScore(modernGamesBEl);
+
+  modernGamesAEl.textContent = safeText(displayGamesA, "");
+  modernGamesBEl.textContent = safeText(displayGamesB, "");
 
   if (state.mode === "tiebreak") {
     if (previousPointsA !== null && previousPointsA !== state.pointsA) popScore(modernPointsAEl);
@@ -339,7 +419,7 @@ function renderModernLayout(state) {
 
     modernPointsAEl.textContent = safeText(state.pointsA, "0");
     modernPointsBEl.textContent = safeText(state.pointsB, "0");
-  } else if (state.mode === "finished") {
+  } else if (isMatchFinished(state)) {
     modernPointsAEl.textContent = "-";
     modernPointsBEl.textContent = "-";
   } else {
@@ -383,7 +463,7 @@ function applySharedSpecialStates(state) {
 
   clearWinnerStyles();
 
-  if (state.matchOver === true || state.mode === "finished") {
+  if (isMatchFinished(state)) {
     winnerBannerEl.classList.add("active");
 
     if ((state.setsA ?? 0) > (state.setsB ?? 0)) {
@@ -417,12 +497,14 @@ onStateChange(function (state) {
     showOverlaySmooth();
   }
 
+  updateAdDisplayTracker(state);
+
   renderFuturisticLayout(state);
   renderModernLayout(state);
   applySharedSpecialStates(state);
 
   previousPointsA = state.pointsA;
   previousPointsB = state.pointsB;
-  previousGamesA = state.gamesA;
-  previousGamesB = state.gamesB;
+  previousGamesA = getDisplayedGames(state, "A");
+  previousGamesB = getDisplayedGames(state, "B");
 });
