@@ -3,9 +3,9 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-<title>PadelWars ScoreBoard</title>
+<title>PadelWars Live Control</title>
 
 <!-- Browser favicon -->
 <link rel="icon" type="image/png" href="favicon.png">
@@ -22,180 +22,88 @@
 <!-- Status bar style -->
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-<link rel="stylesheet" href="css/controller.css?v=6">
+<link rel="stylesheet" href="css/controller.css?v=8">
 
 </head>
 <body>
 
-<div class="appShell">
-
+<main class="appShell">
+<p id="controlError" role="alert"></p>
 <header class="appHeader">
-
-<div>
-<div class="eyebrow">LIVE CONTROLLER</div>
-<h1>PadelWars ScoreBoard</h1>
-</div>
-
-<div class="headerStatus">
-<div class="statusChip">
-<span class="statusDot"></span>
-<span>Firebase Live</span>
-</div>
-</div>
-
+  <div><h1>PADEL<span>WARS</span></h1><div class="eyebrow">LIVE CONTROL</div></div>
+  <div class="headerStatus"><span id="modeBadge" class="miniBadge">Normal Mode</span><span id="visibleBadge" class="miniBadge">Overlay Visible</span></div>
 </header>
-
-<!-- NEW: DESIGN PANEL -->
-<section class="panel">
-
-<div class="sectionTop">
-<h2>Overlay Design</h2>
-
-<div class="miniBadges">
-<span id="designBadge" class="miniBadge">Design: Futuristic</span>
-</div>
-</div>
-
-<div class="actionGrid">
-<button class="btn btnSecondary" onclick="setOverlayDesign('futuristic')">
-Futuristic
-</button>
-
-<button class="btn btnSecondary" onclick="setOverlayDesign('modern')">
-Modern
-</button>
-</div>
-
+<section class="panel broadcastPanel" aria-label="Broadcast mode">
+  <div class="sectionTop"><h2>PROGRAM OUTPUT</h2><span class="consoleHint">SELECT MODE</span></div>
+  <div class="broadcastModeControls">
+    <button class="btn btnSecondary" data-overlay-mode="live" onclick="setBroadcastMode('live')">LIVE</button>
+    <button class="btn btnSecondary" data-overlay-mode="matchDetails" onclick="setBroadcastMode('matchDetails')">MATCH DETAILS</button>
+    <button class="btn btnSecondary" data-overlay-mode="matchEnd" onclick="setBroadcastMode('matchEnd')">MATCH END</button>
+  </div>
 </section>
-
-<section class="panel infoPanel">
-
-<div class="sectionTop">
-<h2>Match Info</h2>
-
-<div class="miniBadges">
-<span id="visibleBadge" class="miniBadge">Overlay Visible</span>
-<span id="modeBadge" class="miniBadge">Normal Mode</span>
-<span id="serveBadge" class="miniBadge">Serve: A</span>
-</div>
-</div>
-
-<div class="fieldGrid">
-
-<div class="fieldBlock">
-<label for="nameAInput">Team A Players</label>
-<input id="nameAInput" placeholder="Player1 / Player2">
-<button class="btn btnPrimary btnFull" onclick="updateNameA()">Update Team A</button>
-</div>
-
-<div class="fieldBlock">
-<label for="nameBInput">Team B Players</label>
-<input id="nameBInput" placeholder="Player1 / Player2">
-<button class="btn btnPrimary btnFull" onclick="updateNameB()">Update Team B</button>
-</div>
-
-<div class="fieldBlock fullSpan">
-<label for="sponsorInput">Sponsor (@)</label>
-<input id="sponsorInput" placeholder="@sponsor">
-<button class="btn btnPrimary btnFull" onclick="updateSponsor()">Update Sponsor</button>
-</div>
-
-</div>
-</section>
-
-<section class="teamGrid">
-
-<article class="panel teamCard teamA">
-
-<div class="teamCardTop">
-<div>
-<div class="teamLabel">TEAM A</div>
-<div id="teamANamePreview" class="teamNamePreview">Player1 / Player2</div>
-</div>
-</div>
-
-<div class="scoreActionGrid">
-<button class="btn btnScore" onclick="addPoint('A')">+ Point A</button>
-</div>
-
+<div class="sectionTop scoringHeading"><h2>MATCH CONTROL</h2><span id="serveBadge" class="miniBadge">Serve: A</span></div>
+<section class="teamGrid" aria-label="Live scoring">
+<article class="panel teamCard teamA" id="scoreTeamA">
+  <div class="teamLabel">TEAM A<span class="teamServe" aria-hidden="true">●</span></div>
+  <div id="teamANamePreview" class="teamNamePreview">Player1 / Player2</div>
+  <div class="currentScore"><span class="consoleHint">POINTS</span><output id="currentPointsA">0</output></div>
+  <div class="scoreSummary"><span>Games <strong id="currentGamesA">0</strong></span><span>Sets <strong id="currentSetsA">0</strong></span></div>
+  <button class="btn btnScore" onclick="addPoint('A')" aria-label="Add point to Team A">+ POINT</button>
 </article>
-
-<article class="panel teamCard teamB">
-
-<div class="teamCardTop">
-<div>
-<div class="teamLabel">TEAM B</div>
-<div id="teamBNamePreview" class="teamNamePreview">Player1 / Player2</div>
-</div>
-</div>
-
-<div class="scoreActionGrid">
-<button class="btn btnScore" onclick="addPoint('B')">+ Point B</button>
-</div>
-
+<article class="panel teamCard teamB" id="scoreTeamB">
+  <div class="teamLabel">TEAM B<span class="teamServe" aria-hidden="true">●</span></div>
+  <div id="teamBNamePreview" class="teamNamePreview">Player1 / Player2</div>
+  <div class="currentScore"><span class="consoleHint">POINTS</span><output id="currentPointsB">0</output></div>
+  <div class="scoreSummary"><span>Games <strong id="currentGamesB">0</strong></span><span>Sets <strong id="currentSetsB">0</strong></span></div>
+  <button class="btn btnScore" onclick="addPoint('B')" aria-label="Add point to Team B">+ POINT</button>
 </article>
-
 </section>
-
-<section class="panel">
-
-<div class="sectionTop">
-<h2>Quick Controls</h2>
-</div>
-
-<div class="actionGrid">
-
-<button class="btn btnSecondary" onclick="switchServe()">
-Switch Serve
-</button>
-
-<button class="btn btnSecondary" onclick="undo()">
-Undo
-</button>
-
-<button class="btn btnSecondary" onclick="toggleScoreboard()">
-Show / Hide
-</button>
-
-<button class="btn btnDanger" onclick="resetMatch()">
-Reset Match
-</button>
-
-</div>
+<section class="quickActions" aria-label="Quick match actions">
+  <button class="btn btnSecondary undoAction" onclick="undo()">UNDO</button>
+  <button class="btn btnSecondary" onclick="switchServe()">SWITCH SERVE</button>
+  <button class="btn btnSecondary" onclick="toggleScoreboard()">SHOW / HIDE</button>
 </section>
-
-<section class="panel">
-
-<div class="sectionTop">
-<h2>Timer Controls</h2>
-</div>
-
-<div class="actionGrid">
-
-<button class="btn btnPrimary" onclick="startTimer()">
-Start
-</button>
-
-<button class="btn btnSecondary" onclick="stopTimer()">
-Stop
-</button>
-
-<button class="btn btnDangerSoft" onclick="resetTimer()">
-Reset Timer
-</button>
-
-</div>
-
+<section class="panel timerPanel">
+  <div class="sectionTop"><h2>MATCH CLOCK</h2><output id="controllerTimer">00:00</output></div>
+  <div class="actionGrid"><button class="btn btnPrimary" onclick="startTimer()">START / RESUME</button><button class="btn btnSecondary" onclick="stopTimer()">PAUSE</button><button class="btn btnSecondary" onclick="resetTimer()">RESET</button></div>
 </section>
-
+<div class="secondaryControls">
+<details class="panel"><summary>MATCH / TEAM SETUP<span>Edit names</span></summary>
+  <div class="fieldGrid">
+    <div class="fieldBlock"><label for="nameAInput">TEAM A</label><input id="nameAInput" placeholder="Player 1 / Player 2"><button class="btn btnPrimary btnFull" onclick="updateNameA()">SAVE TEAM A</button></div>
+    <div class="fieldBlock"><label for="nameBInput">TEAM B</label><input id="nameBInput" placeholder="Player 1 / Player 2"><button class="btn btnPrimary btnFull" onclick="updateNameB()">SAVE TEAM B</button></div>
+  </div>
+</details>
+<details class="panel"><summary>MANUAL CORRECTION<span>Edit score</span></summary>
+  <p class="helperText">Stage multiple corrections, then apply them to live together.</p><button class="btn btnSecondary btnFull" onclick="openManualEdit()">EDIT SCORE</button>
+</details>
+<details class="panel"><summary>DISPLAY / OVERLAY SETTINGS<span id="designBadge" class="miniBadge">Design</span></summary>
+  <div class="actionGrid"><button class="btn btnSecondary" onclick="setOverlayDesign('futuristic')">Futuristic</button><button class="btn btnSecondary" onclick="setOverlayDesign('modern')">Modern</button><button class="btn btnSecondary" onclick="setOverlayDesign('design3')">Design 3</button></div>
+</details>
+<details class="panel dangerPanel"><summary>RESET MATCH<span>New match</span></summary>
+  <p class="helperText">Clear names, scores, history and clock. Undo can restore this match during the current Controller session.</p>
+  <button class="btn btnDanger btnFull" onclick="if(confirm('Reset this match, including names, scores and timer? You can restore it with Undo.')) resetMatch()">RESET MATCH</button>
+</details>
 </div>
+</main>
 
+<dialog id="manualEditDialog" aria-labelledby="manualEditTitle">
+  <h2 id="manualEditTitle">Manual Score Edit</h2>
+  <p>Draft only — the live score stays unchanged until you apply.</p>
+  <div id="manualEditFields"></div>
+  <p id="manualPending" aria-live="polite"></p>
+  <p id="manualEditError" role="alert"></p>
+  <div class="manualActions">
+    <button class="btn btnSecondary" id="manualCancel">CANCEL</button>
+    <button class="btn btnPrimary" id="manualApply">APPLY TO LIVE</button>
+  </div>
+</dialog>
 <div id="stickyPreviewDock" class="stickyPreviewDock">
 
 <div class="stickyPreviewInner">
 
 <div class="stickyPreviewTop">
-<span class="stickyPreviewLabel">OBS Preview</span>
+<span class="stickyPreviewLabel">PROGRAM <span class="monitorSubtitle">/ OBS PREVIEW</span></span>
 </div>
 
 <div id="previewViewport" class="previewViewport stickyMode">
@@ -216,8 +124,12 @@ loading="lazy">
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script src="js/firebase.js"></script>
-<script src="js/state.js"></script>
-<script src="js/controller.js"></script>
+<script src="js/state.js?v=2"></script>
+<script src="js/timer.js"></script>
+<script src="js/match-history.js"></script>
+<script src="js/controller.js?v=2"></script>
+<script src="js/mobile.js"></script>
+<script src="js/manual-edit.js"></script>
 
 </body>
 </html>

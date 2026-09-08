@@ -1,0 +1,190 @@
+/* Change this palette to retheme the new broadcast package. */
+:root { --broadcast-accent:#d8f36a; --broadcast-accent-soft:#d8f36a10; --broadcast-accent-glow:#d8f36a33; --broadcast-team-b:#73c8ee; --broadcast-surface:#183544fa; --broadcast-surface-deep:#0b202cf7; --broadcast-text:#f4f7f4; --broadcast-muted:#b2c5ce; }
+/* New mode layers occupy the same fixed transparent OBS design space. */
+.broadcastModeLayer { position:absolute; inset:0; width:1920px; height:1080px; background:transparent; pointer-events:none; opacity:0; visibility:hidden; transition:opacity 500ms ease,visibility 0s 500ms; }
+.broadcastModeLayer.isModeActive { opacity:1; visibility:visible; transition-delay:0s; }
+#liveModeLayer { z-index:1; }
+#matchDetailsLayer { z-index:20; perspective:1600px; }
+#matchEndLayer { z-index:30; }
+.detailsVeil { position:absolute; inset:0; background:rgba(5,24,40,.23); }
+.detailsCard { position:absolute; left:380px; top:190px; width:1160px; min-height:600px; padding:34px 40px 26px; box-sizing:border-box; background:linear-gradient(145deg,#183342f5,#10232ef8); border:1px solid #78929d66; border-top:4px solid var(--broadcast-accent); border-radius:18px; box-shadow:0 26px 60px #0005; color:var(--broadcast-text); font-family:Arial,Helvetica,sans-serif; opacity:0; transform:translateX(28px) translateY(12px) rotateY(-3deg); transition:opacity 500ms ease,transform 550ms cubic-bezier(.2,.7,.2,1); }
+.detailsCard.cardActive { opacity:1; transform:translateX(0) translateY(0) rotateY(0); }
+#journeyCard { top:150px; min-height:660px; }
+.detailsHeader { display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; font-size:17px; font-weight:800; letter-spacing:2px; }
+.detailsHeader>span:first-child { font-size:22px; }
+.detailsHeader>span:first-child span { color:var(--broadcast-accent); }
+.detailsHeader time { font-size:24px; font-variant-numeric:tabular-nums; color:var(--broadcast-accent); }
+.overviewTeam { display:grid; grid-template-columns:minmax(0,1fr) 110px 110px 125px 105px; align-items:center; gap:16px; min-height:112px; padding:14px 18px; background:#f2f6f2; color:#142b38; border-left:6px solid var(--team-color); border-bottom:1px solid #cdd8da; }
+.teamColorA { --team-color:var(--broadcast-accent); }
+.teamColorB { --team-color:var(--broadcast-team-b); }
+.broadcastPlayer { display:block; overflow-wrap:anywhere; white-space:normal; }
+.overviewNames,#endWinnerNames { font-weight:800; line-height:1.12; }
+.overviewValue { text-align:center; font-variant-numeric:tabular-nums; }
+.overviewValue small,.overviewStatGrid small { display:block; font-size:12px; letter-spacing:1px; margin-bottom:8px; }
+.overviewValue strong { font-size:40px; }
+.overviewServe { font-size:12px; font-weight:800; }
+.overviewSetSummary { font-size:22px; font-weight:700; padding-top:24px; text-align:center; }
+.overviewPhase { color:var(--broadcast-accent); font-size:14px; letter-spacing:1px; text-align:center; margin:12px 0 22px; }
+.overviewStatGrid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; text-align:center; }
+.overviewStatGrid>div { padding:16px 8px; border-top:1px solid #8ca1aa66; }
+.overviewStatGrid strong { font-size:30px; font-variant-numeric:tabular-nums; }
+.coverageNote { font-size:14px; color:var(--broadcast-muted); margin:20px 0 0; text-align:center; }
+#journeyTeams { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:20px; }
+.journeyLegend { border-left:5px solid var(--team-color); padding-left:14px; font-weight:700; }
+.journeySet { margin-top:22px; }
+.journeySet h3 { margin:0 0 12px; color:#e8f0f4; font-size:16px; letter-spacing:1px; }
+.journeyRail { display:flex; align-items:center; flex-wrap:wrap; gap:8px; padding:12px 0; border-top:1px solid #92aab444; }
+.journeyOrigin { font-size:15px; color:#b5c8d0; }
+.journeyGame { display:flex; align-items:center; gap:7px; border-bottom:3px solid var(--team-color); padding:8px 7px; background:#ffffff08; border-radius:4px; }
+.journeyGame strong { font-size:20px; font-variant-numeric:tabular-nums; }
+.journeyArrow { color:#90a7b1; }.journeyStar { color:#f3cc71; }
+.endBanner { position:absolute; bottom:100px; left:380px; width:1160px; display:flex; align-items:center; gap:30px; padding:24px 32px; box-sizing:border-box; background:linear-gradient(125deg,#102733f7,#23404bf7); border:1px solid #77949e77; border-bottom:4px solid var(--broadcast-accent); border-radius:12px; color:#f5f8ee; box-shadow:0 16px 45px #0005; font-family:Arial,Helvetica,sans-serif; transform:translateY(25px); opacity:0; transition:opacity 500ms,transform 550ms cubic-bezier(.2,.7,.2,1); }
+.isModeActive .endBanner.winnerAvailable { transform:translateY(0); opacity:1; }
+.endBanner>img { width:85px; height:80px; object-fit:contain; flex-shrink:0; }
+.endBanner>div { flex:1; min-width:0; text-align:center; }
+.endEyebrow { color:var(--broadcast-accent); font-size:15px; font-weight:800; letter-spacing:4px; margin-bottom:10px; }
+#endWinnerNames { font-size:42px; }
+@media(prefers-reduced-motion:reduce) { .broadcastModeLayer,.detailsCard,.endBanner { transition-duration:1ms; transform:none; } }
+
+/* Broadcast surfaces and staged reveals: all delays are local presentation only. */
+.detailsCard { top:155px; min-height:690px; border-radius:3px; padding:30px 40px; border-left:4px solid #496572; background:linear-gradient(120deg,var(--broadcast-surface),var(--broadcast-surface-deep)); transform:translateY(16px) translateZ(-65px) scale(.98); transition:opacity 500ms ease,transform 550ms cubic-bezier(.2,.7,.2,1); }
+.detailsCard::before { content:""; position:absolute; top:0; bottom:0; left:-12px; width:5px; background:var(--broadcast-accent); box-shadow:0 8px 22px #0004; }
+.detailsCard.cardActive { transform:translateY(0) translateZ(0) scale(1); }
+.detailsHeader { border-bottom:1px solid #a0bbc333; padding-bottom:20px; margin-bottom:24px; }
+#overviewTeams { display:grid; grid-template-columns:1fr 1fr; gap:28px; }
+.overviewTeam { position:relative; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px 10px; padding:20px 22px; min-height:220px; border:0; border-top:4px solid var(--team-color); background:linear-gradient(130deg,#fff,#dde7e7); box-shadow:8px 10px 0 #03141c55; align-content:start; }
+.overviewNames { grid-column:1/-1; min-height:82px; align-content:center; }
+.overviewValue { background:#102c3b0c; padding:10px 4px; border-bottom:2px solid #16344222; }
+.overviewValue strong { font-size:38px; }
+.overviewServe { grid-column:1/-1; min-height:15px; color:#244652; letter-spacing:1px; }
+.overviewSetSummary { display:flex; justify-content:center; gap:18px; padding-top:25px; min-height:63px; align-items:center; }
+.completedSet { display:flex; align-items:center; gap:18px; padding:12px 20px; border-left:3px solid var(--broadcast-accent); background:#fff0; box-shadow:inset 0 -1px #78929d66; }
+.completedSet small { font-size:14px; letter-spacing:1px; color:#b9cbd3; }
+.completedSet strong { font-size:28px; }
+.overviewPhase { margin:16px 0 20px; font-size:16px; }
+.overviewStatGrid { gap:22px; }
+.overviewStatGrid>div { border-top:2px solid #577682; background:linear-gradient(#ffffff0a,transparent); padding:17px 8px 8px; }
+.overviewStatGrid small { font-size:13px; }
+.overviewStatGrid strong { font-size:32px; }
+.coverageNote { line-height:1.4; }
+/* Delays replay when a card becomes active; no extra JS animation loops. */
+@keyframes broadcastReveal { from { opacity:0; transform:translateY(14px) scale(.985); } to { opacity:1; transform:none; } }
+@keyframes nameFromLeft { from { opacity:0; transform:translateX(-24px); } to { opacity:1; transform:none; } }
+@keyframes nameFromRight { from { opacity:0; transform:translateX(24px); } to { opacity:1; transform:none; } }
+@keyframes drawLane { from { transform:scaleX(0); } to { transform:scaleX(1); } }
+#matchDetailsLayer.isModeActive .cardActive .overviewNames { animation:nameFromLeft 450ms both 400ms; }
+#matchDetailsLayer.isModeActive .cardActive .teamColorB .overviewNames { animation-name:nameFromRight; animation-delay:525ms; }
+#matchDetailsLayer.isModeActive .cardActive .completedSet { animation:broadcastReveal 350ms both var(--reveal-delay); }
+#matchDetailsLayer.isModeActive .cardActive .overviewValue,
+#matchDetailsLayer.isModeActive .cardActive .overviewPhase { animation:broadcastReveal 400ms both 1300ms; }
+#matchDetailsLayer.isModeActive .cardActive .overviewValue:nth-child(3) { animation-delay:1400ms; }
+#matchDetailsLayer.isModeActive .cardActive .overviewValue:nth-child(4) { animation-delay:1500ms; }
+#matchDetailsLayer.isModeActive .cardActive .overviewStatGrid>div { animation:broadcastReveal 400ms both 1650ms; }
+#matchDetailsLayer.isModeActive .cardActive .overviewStatGrid>div:nth-child(2) { animation-delay:1800ms; }
+#matchDetailsLayer.isModeActive .cardActive .overviewStatGrid>div:nth-child(3) { animation-delay:1950ms; }
+#matchDetailsLayer.isModeActive .cardActive .overviewStatGrid>div:nth-child(4) { animation-delay:2100ms; }
+#matchDetailsLayer.isModeActive .cardActive .overviewServe,
+#matchDetailsLayer.isModeActive .cardActive #overviewTimer { animation:broadcastReveal 400ms both 2250ms; }
+#journeyCard { top:145px; min-height:700px; }
+#journeyTeams { margin-bottom:25px; }
+.journeyLegend { font-size:28px; }
+.journeySet { position:relative; margin-top:18px; padding:17px 20px 22px; background:linear-gradient(90deg,#ffffff08,transparent); border-left:3px solid #657f8b; }
+.journeySet h3 { display:flex; justify-content:space-between; align-items:center; font-size:19px; margin:0 0 18px; }
+.setStatus { font-size:15px; color:#adc0ca; }
+.journeyLive { border-left-color:var(--broadcast-accent); background:linear-gradient(90deg,var(--broadcast-accent-soft),transparent); }
+.journeyLive .setStatus { color:var(--broadcast-accent); }
+.journeyRail { position:relative; display:grid; grid-template-columns:repeat(var(--node-count),minmax(0,1fr)); gap:clamp(2px,calc(90px / var(--node-count)),10px); padding:6px 0; border:0; align-items:stretch; }
+.journeyRail::before { content:""; position:absolute; left:0; right:0; top:50%; height:2px; background:#597884; transform-origin:left; }
+.journeyOrigin,.journeyGame { position:relative; min-width:0; display:flex; justify-content:center; align-items:center; text-align:center; background:#16313f; border-radius:2px; padding:11px 2px; overflow-wrap:anywhere; }
+.journeyOrigin { font-size:13px; line-height:1.25; border:1px solid #5a737f; }
+.journeyGame { border:1px solid #567380; border-bottom:4px solid var(--team-color); }
+.journeyGame::before { content:""; position:absolute; width:6px; height:6px; background:var(--team-color); border-radius:50%; top:-4px; }
+.journeyGame strong { font-size:22px; white-space:nowrap; }
+.journeyStar { position:absolute; right:2px; top:-13px; font-size:18px; text-shadow:0 2px 5px #000; }
+#matchDetailsLayer.isModeActive .cardActive .journeySet { animation:broadcastReveal 400ms both var(--lane-delay); }
+#matchDetailsLayer.isModeActive .cardActive .journeyRail::before { animation:drawLane 750ms both var(--lane-delay); }
+#matchDetailsLayer.isModeActive .cardActive .journeyGame { animation:broadcastReveal 300ms both var(--reveal-delay); }
+.endBanner { border-radius:2px; border-left:6px solid var(--broadcast-accent); border-right:6px solid var(--broadcast-accent); padding:28px 32px; background:linear-gradient(115deg,#102733fa,#234551fa 50%,#102733fa); transform:translateY(24px) scale(.97); box-shadow:0 20px 50px #0005,0 -7px 0 #8ba6b322; }
+.endBanner>img { width:96px; height:96px; }
+.isModeActive .endBanner.winnerAvailable { transform:translateY(0) scale(1); }
+.endEyebrow { font-size:18px; margin-bottom:14px; }
+#endWinnerNames { line-height:1.18; }
+.winnerPending #endWinnerNames { color:#cedbe0; }
+@media(prefers-reduced-motion:reduce) {
+ .broadcastModeLayer,.detailsCard,.endBanner { transition-duration:1ms; transform:none; }
+ #matchDetailsLayer.isModeActive .cardActive * ,#matchDetailsLayer.isModeActive .cardActive ::before { animation:none !important; }
+}
+
+/* Three restrained depth planes: shell, identity surface, floating scores. */
+.detailsCard { box-shadow:0 35px 65px #0005,inset 0 1px #ffffff25,8px 8px 0 #06192570; }
+.detailsCard::after { content:""; position:absolute; left:0; right:35%; top:-4px; height:4px; background:var(--broadcast-accent); transform-origin:left; }
+#matchDetailsLayer.isModeActive .cardActive::after { animation:drawLane 650ms both 100ms; }
+#overviewCard { min-height:690px; }
+#overviewTeams { grid-template-columns:minmax(0,1fr) 245px minmax(0,1fr); gap:24px; align-items:center; min-height:270px; }
+.overviewTeam { display:flex; flex-direction:column; justify-content:center; padding:20px 8px; min-height:225px; border:0; background:transparent; box-shadow:none; color:var(--broadcast-text); gap:18px; }
+.overviewTeam.teamColorA { text-align:left; align-items:flex-start; }
+.overviewTeam.teamColorB { text-align:right; align-items:flex-end; }
+.overviewNames { width:100%; min-height:86px; border-top:2px solid var(--team-color); padding-top:18px; text-shadow:0 5px 12px #0005; }
+.overviewPlay { display:flex; gap:24px; align-items:center; }
+.overviewValue { background:none; border:0; padding:0; text-align:inherit; display:flex; align-items:baseline; gap:9px; }
+.overviewValue small { color:var(--broadcast-muted); font-size:13px; margin:0; }
+.overviewValue strong { font-size:34px; }
+.overviewServe { color:var(--team-color); min-height:15px; }
+.overviewScoreCore { position:relative; text-align:center; padding:30px 8px; background:radial-gradient(ellipse,#ffffff0e,transparent 72%); border-top:1px solid #ffffff30; border-bottom:1px solid #ffffff30; text-shadow:0 10px 20px #0006; }
+.overviewScoreCore small { display:block; color:var(--broadcast-muted); font-size:17px; font-weight:800; letter-spacing:6px; margin-bottom:14px; }
+.overviewScoreCore strong { font-size:65px; white-space:nowrap; font-variant-numeric:tabular-nums; letter-spacing:-2px; }
+.overviewSetSummary { padding:15px 0; gap:30px; border-top:1px solid #6e8c9933; }
+.completedSet { background:none; border:0; padding:8px 10px; gap:15px; box-shadow:none; }
+.completedSet strong { font-size:30px; }
+.currentSetResult { border-bottom:2px solid var(--broadcast-accent); }
+.currentSetResult small { color:var(--broadcast-accent); }
+.overviewPhase { font-size:14px; margin:8px 0 25px; }
+.overviewStatGrid { display:flex; align-items:center; justify-content:space-between; gap:25px; padding:16px 0; border-top:1px solid #708e9b66; }
+.overviewStatGrid>div { display:flex; flex-direction:column-reverse; align-items:flex-start; background:none; border:0; padding:0 0 0 18px; border-left:2px solid #638390; }
+.overviewStatGrid>div:first-child { border-color:var(--broadcast-accent); padding-left:0; border-left:0; }
+.overviewStatGrid>div:first-child strong { font-size:42px; }
+.overviewStatGrid small { font-size:13px; color:var(--broadcast-muted); margin:9px 0 0; }
+.overviewStatGrid strong { font-size:31px; }
+#matchDetailsLayer.isModeActive .cardActive .overviewScoreCore { animation:broadcastReveal 450ms both 700ms; }
+#matchDetailsLayer.isModeActive .cardActive .overviewValue { animation-delay:1650ms; }
+#matchDetailsLayer.isModeActive .cardActive .overviewValue:nth-child(2) { animation-delay:1750ms; }
+#matchDetailsLayer.isModeActive .cardActive .overviewServe { animation-delay:1850ms; }
+#matchDetailsLayer.isModeActive .cardActive .overviewStatGrid>div { animation-delay:1950ms; }
+#matchDetailsLayer.isModeActive .cardActive .overviewStatGrid>div:nth-child(2) { animation-delay:2100ms; }
+#matchDetailsLayer.isModeActive .cardActive .overviewStatGrid>div:nth-child(3) { animation-delay:2250ms; }
+#matchDetailsLayer.isModeActive .cardActive .overviewStatGrid>div:nth-child(4) { animation-delay:2400ms; }
+#matchDetailsLayer.isModeActive .cardActive .overviewStatGrid strong { animation:broadcastReveal 450ms both 2450ms; }
+/* Approved lanes and timing stay intact; each node draws its incoming path. */
+.journeyLegend { border-left:0; border-top:3px solid var(--team-color); padding:12px 0 0; }
+.journeyLegend.teamColorB { text-align:right; }
+.journeySet { box-shadow:inset 0 1px #ffffff12; }
+.journeyRail { gap:clamp(3px,calc(90px / var(--node-count)),10px); }
+.journeyRail::before { opacity:.2; }
+.journeyGame { box-shadow:0 6px 10px #0003,inset 0 1px #ffffff24; background:linear-gradient(145deg,#294653,#142e3c); }
+.journeyGame::before { width:9px; height:5px; border-radius:0; top:-3px; box-shadow:0 0 8px #ffffff20; }
+.journeyGame::after { content:""; position:absolute; right:100%; width:12px; top:50%; height:2px; background:var(--team-color); transform-origin:left; }
+.journeyGame.teamColorB { border-bottom:1px solid #567380; border-top:4px solid var(--team-color); }
+.journeyGame.teamColorB::before { top:auto; bottom:-3px; }
+.journeyUnavailable { display:block; font-size:12px; color:var(--broadcast-muted); margin:-10px 0 8px; }
+.starGame { border-right:2px solid #f3cc71; }
+.journeyStar { padding:0 2px; background:var(--broadcast-surface-deep); }
+@keyframes nodeEnergy { from { box-shadow:0 0 0 1px var(--team-color),0 0 12px #ffffff22; } to { box-shadow:0 6px 10px #0003,inset 0 1px #ffffff24; } }
+@keyframes liveSetResolve { from { opacity:.4; } to { opacity:1; } }
+#matchDetailsLayer.isModeActive .cardActive .journeyGame { animation:broadcastReveal 300ms both var(--reveal-delay),nodeEnergy 550ms var(--reveal-delay); }
+#matchDetailsLayer.isModeActive .cardActive .journeyGame::after { animation:drawLane 200ms both var(--reveal-delay); }
+#matchDetailsLayer.isModeActive .cardActive .journeyStar { animation:broadcastReveal 450ms both var(--reveal-delay); }
+#matchDetailsLayer.isModeActive .cardActive .journeyLive .setStatus { animation:liveSetResolve 700ms 2 alternate; }
+/* Compact physical lower third, with stronger heading and preserved name size. */
+.endBanner { left:480px; width:960px; padding:18px 24px; gap:20px; }
+.endBanner>img { width:72px; height:72px; }
+.endEyebrow { font-size:32px; font-weight:900; letter-spacing:4px; margin-bottom:8px; }
+@media(prefers-reduced-motion:reduce) {
+ #matchDetailsLayer.isModeActive .cardActive::after,
+ #matchDetailsLayer.isModeActive .cardActive *,
+ #matchDetailsLayer.isModeActive .cardActive ::before,
+ #matchDetailsLayer.isModeActive .cardActive ::after { animation:none !important; }
+}
+
+/* Shared master visibility; mode selection and card animation state stay intact. */
+.broadcastModeLayer.programHidden { opacity:0; visibility:hidden; transition-delay:0s,500ms; }
+@media(prefers-reduced-motion:reduce) { .broadcastModeLayer.programHidden { transition-delay:0s; } }

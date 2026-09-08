@@ -8,19 +8,42 @@ function clone(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 
-function pushHistory(currentState) {
-  historyStack.push(clone(currentState));
-  if (historyStack.length > 100) {
-    historyStack.shift();
-  }
+function pushHistory(currentState, reset = false, elapsedMs = 0) {
+  const snapshot = clone(currentState);
+  Object.defineProperty(snapshot, "_restoreReset", {value: reset});
+  Object.defineProperty(snapshot, "_resetElapsedMs", {value: elapsedMs});
+  historyStack.push(snapshot);
+  if (historyStack.length > 30) historyStack.shift();
 }
-
+function commitControllerAction(state, before, reset = false) {
+  const elapsedMs = reset ? matchElapsedMs(before) : 0;
+  return writeState(state).then(result => { if (result) pushHistory(before, reset, elapsedMs); return result; });
+}
+let undoBusy = false;
 function undo() {
   flashButton("normal");
-
-  if (historyStack.length === 0) return;
-  const previous = historyStack.pop();
-  writeState(previous);
+  if (!historyStack.length || undoBusy) return;
+  undoBusy = true;
+  const previous = historyStack[historyStack.length - 1];
+  readState(current => {
+    if ((current.correctionRevision || 0) !== (previous.correctionRevision || 0)) {
+      historyStack = [];
+      throw new Error("Undo history was cleared by a manual correction.");
+    }
+    if (previous._restoreReset) {
+      // Restore every saved field, removing fields introduced after the reset.
+      for (const key of Object.keys(current)) if (!(key in previous)) current[key] = null;
+      Object.assign(current, clone(previous));
+      current.timer = {elapsedMs: previous._resetElapsedMs, running: !!previous.timer?.running,
+        startedAt: previous.timer?.running ? timerServerTimestamp() : null};
+    } else {
+      for (const key of [...SCORE_KEYS, "nameA", "nameB", "organizer", "visible", "design", "overlayMode", "matchHistory"]) {
+        if (previous[key] !== undefined) current[key] = clone(previous[key]);
+        else if (key === "matchHistory") current[key] = null;
+      }
+    }
+    return writeState(current).then(result => { if (result) historyStack.pop(); });
+  }).finally(() => { undoBusy = false; });
 }
 
 /* ================= FLASH FEEDBACK ================= */
@@ -49,57 +72,10 @@ document.addEventListener("pointerdown", rememberPressedButton);
 document.addEventListener("touchstart", rememberPressedButton, { passive: true });
 document.addEventListener("mousedown", rememberPressedButton);
 
-/* ================= TIMER ================= */
-
-let timerInterval = null;
-let timerSeconds = 0;
-
-function parseTimerText(text) {
-  if (!text || typeof text !== "string") return 0;
-  const parts = text.split(":");
-  if (parts.length !== 2) return 0;
-  const mm = parseInt(parts[0], 10) || 0;
-  const ss = parseInt(parts[1], 10) || 0;
-  return (mm * 60) + ss;
-}
-
-function formatTimerText(totalSeconds) {
-  const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, "0");
-  const seconds = (totalSeconds % 60).toString().padStart(2, "0");
-  return `${minutes}:${seconds}`;
-}
-
-function updateTimerDisplay() {
-  updateState(state => {
-    state.timerText = formatTimerText(timerSeconds);
-  });
-}
-
-function startTimer() {
-  flashButton("normal");
-
-  if (timerInterval) return;
-
-  timerInterval = setInterval(() => {
-    timerSeconds++;
-    updateTimerDisplay();
-  }, 1000);
-}
-
-function stopTimer() {
-  flashButton("normal");
-
-  clearInterval(timerInterval);
-  timerInterval = null;
-}
-
-function resetTimer() {
-  flashButton("normal");
-
-  stopTimer();
-  timerSeconds = 0;
-  updateTimerDisplay();
-}
+/* ================= TIMER COMMANDS ================= */
+function startTimer() { flashButton(); changeMatchTimer("start").catch(reportStateError); }
+function stopTimer() { flashButton(); changeMatchTimer("pause").catch(reportStateError); }
+function resetTimer() { flashButton(); changeMatchTimer("reset").catch(reportStateError); }
 
 /* ================= HELPERS ================= */
 
@@ -255,7 +231,8 @@ function addPoint(player) {
   flashButton("normal");
 
   readState(state => {
-    pushHistory(state);
+    if (state.matchOver || state.mode === "finished") return;
+    const before = clone(state);
 
     if (!state.mode) state.mode = "normal";
     if (state.deuceCount === undefined) state.deuceCount = 0;
@@ -268,7 +245,8 @@ function addPoint(player) {
       handleTieBreak(state, player);
     }
 
-    writeState(state);
+    recordMatchPoint(before, state, player);
+    return commitControllerAction(state, before);
   });
 }
 
@@ -280,9 +258,10 @@ function updateNameA() {
   const value = document.getElementById("nameAInput").value || "";
 
   readState(state => {
-    pushHistory(state);
+    const before = clone(state);
     state.nameA = value;
-    writeState(state);
+    document.getElementById("nameAInput").dataset.dirty = "false";
+    return commitControllerAction(state, before);
   });
 }
 
@@ -292,21 +271,10 @@ function updateNameB() {
   const value = document.getElementById("nameBInput").value || "";
 
   readState(state => {
-    pushHistory(state);
+    const before = clone(state);
     state.nameB = value;
-    writeState(state);
-  });
-}
-
-function updateSponsor() {
-  flashButton("normal");
-
-  const value = document.getElementById("sponsorInput").value || "";
-
-  readState(state => {
-    pushHistory(state);
-    state.organizer = value;
-    writeState(state);
+    document.getElementById("nameBInput").dataset.dirty = "false";
+    return commitControllerAction(state, before);
   });
 }
 
@@ -314,9 +282,9 @@ function switchServe() {
   flashButton("normal");
 
   readState(state => {
-    pushHistory(state);
+    const before = clone(state);
     state.serve = nextServe(state.serve);
-    writeState(state);
+    return commitControllerAction(state, before);
   });
 }
 
@@ -324,9 +292,9 @@ function toggleScoreboard() {
   flashButton("normal");
 
   readState(state => {
-    pushHistory(state);
+    const before = clone(state);
     state.visible = !state.visible;
-    writeState(state);
+    return commitControllerAction(state, before);
   });
 }
 
@@ -334,7 +302,7 @@ function resetMatch() {
   flashButton("danger");
 
   readState(state => {
-    pushHistory(state);
+    const before = clone(state);
 
     state.nameA = "";
     state.nameB = "";
@@ -364,30 +332,31 @@ function resetMatch() {
     state.timerText = "00:00";
     state.design = state.design || "futuristic";
 
-    timerSeconds = 0;
-    stopTimer();
+    state.matchHistory = null;
+    state.overlayMode = "live";
+    state.timer = { elapsedMs: 0, startedAt: null, running: false };
 
-    writeState(state);
+    return commitControllerAction(state, before, true);
   });
 }
 
 /* ================= DESIGN SWITCH ================= */
 
 function getSafeDesignName(design) {
-  return design === "modern" ? "modern" : "futuristic";
+  return ["modern", "design3"].includes(design) ? design : "futuristic";
 }
 
 function getDesignLabel(design) {
-  return getSafeDesignName(design) === "modern" ? "Design: Modern" : "Design: Futuristic";
+  return { futuristic: "Design: Futuristic", modern: "Design: Modern", design3: "Design: Design 3" }[getSafeDesignName(design)];
 }
 
 function setOverlayDesign(design) {
   flashButton("normal");
 
   readState(state => {
-    pushHistory(state);
+    const before = clone(state);
     state.design = getSafeDesignName(design);
-    writeState(state);
+    return commitControllerAction(state, before);
   });
 }
 
@@ -405,6 +374,7 @@ function setText(id, text) {
 
 /* ================= PREVIEW SCALE ================= */
 
+let obsPreviewCrop = { x: 40, y: 24, width: 880, height: 260 };
 function resizeObsPreview() {
   const viewport = document.getElementById("previewViewport");
   const iframe = document.getElementById("obsPreview");
@@ -417,23 +387,38 @@ function resizeObsPreview() {
 
   if (!viewportWidth) return;
 
-  const isMobile = window.innerWidth <= 640;
-
+  // Crop only this iframe presentation. OBS retains its full design canvas.
+  const doc = iframe.contentDocument;
+  const design3 = doc?.getElementById("layout-design3")?.classList.contains("activeLayout");
+  const region = doc?.getElementById(design3 ? "d3-scoreboard-region" : "legacyScoreboardRegion");
+  if (region?.offsetWidth > 0) {
+    const paddingTop = design3 ? 10 : 36;
+    obsPreviewCrop = {
+      x: Math.max(0, region.offsetLeft - 10),
+      y: Math.max(0, region.offsetTop - paddingTop),
+      width: Math.max(region.offsetWidth, region.scrollWidth) + 20,
+      height: region.offsetHeight + paddingTop + (design3 ? 42 : 12)
+    };
+  }
+  let crop = obsPreviewCrop;
+  const details = doc?.getElementById("matchDetailsLayer")?.classList.contains("isModeActive");
+  const end = doc?.getElementById("matchEndLayer")?.classList.contains("isModeActive");
+  const graphics = details ? [...doc.querySelectorAll(".detailsCard")] : end ? [doc.querySelector(".endBanner")] : [];
+  if(graphics.length && graphics.every(el=>el?.offsetWidth)) {
+    // Use untransformed design coordinates, so entrance animation never moves the crop.
+    const left=Math.min(...graphics.map(el=>el.offsetLeft));
+    const top=Math.min(...graphics.map(el=>el.offsetTop));
+    const right=Math.max(...graphics.map(el=>el.offsetLeft+el.offsetWidth));
+    const bottom=Math.max(...graphics.map(el=>el.offsetTop+el.offsetHeight));
+    crop={x:left-18,y:top-18,width:right-left+36,height:bottom-top+36};
+  }
+  const scale = Math.min(viewportWidth / crop.width, viewport.clientHeight / crop.height);
   iframe.style.width = `${baseWidth}px`;
   iframe.style.height = `${baseHeight}px`;
   iframe.style.transformOrigin = "top left";
-  iframe.style.left = "0px";
-  iframe.style.top = "0px";
-
-  if (isMobile) {
-    const cropWidth = 880;
-    const scale = viewportWidth / cropWidth;
-    iframe.style.transform = `scale(${scale}) translateZ(0)`;
-  } else {
-    const cropWidth = 1180;
-    const scale = viewportWidth / cropWidth;
-    iframe.style.transform = `scale(${scale}) translateZ(0)`;
-  }
+  iframe.style.left = `${(viewportWidth - crop.width * scale) / 2 - crop.x * scale}px`;
+  iframe.style.top = `${(viewport.clientHeight - crop.height * scale) / 2 - crop.y * scale}px`;
+  iframe.style.transform = `scale(${scale}) translateZ(0)`;
 }
 
 /* ================= IOS SAFARI HARD LOCK ================= */
@@ -473,6 +458,12 @@ function updateFloatingPreviewLayout() {
   requestAnimationFrame(lockPreviewDockToViewport);
 }
 
+window.addEventListener("message", event => {
+  const iframe = document.getElementById("obsPreview");
+  if (event.origin === location.origin && event.source === iframe?.contentWindow && event.data?.type === "padelwars:layout") {
+    updateFloatingPreviewLayout();
+  }
+});
 window.addEventListener("resize", updateFloatingPreviewLayout);
 window.addEventListener("orientationchange", () => {
   setTimeout(updateFloatingPreviewLayout, 120);
@@ -496,15 +487,27 @@ window.addEventListener("load", () => {
 /* ================= INIT INPUTS FROM STATE ================= */
 
 onStateChange(state => {
-  document.getElementById("nameAInput").value = state.nameA || "";
-  document.getElementById("nameBInput").value = state.nameB || "";
-  document.getElementById("sponsorInput").value = state.organizer || "";
-
-  timerSeconds = parseTimerText(state.timerText || "00:00");
+  for (const team of ["A", "B"]) {
+    const input = document.getElementById(`name${team}Input`);
+    if (document.activeElement !== input && input.dataset.dirty !== "true") input.value = state[`name${team}`] || "";
+  }
 
   setText("teamANamePreview", state.nameA || "Player1 / Player2");
   setText("teamBNamePreview", state.nameB || "Player1 / Player2");
 
+  // Read-only Controller score presentation; canonical scoring is unchanged.
+  for (const team of ["A", "B"]) {
+    const points = state[`points${team}`];
+    const text = state.matchOver || state.mode === "finished" ? "–" : state.mode === "tiebreak" ? String(points) : points === 4 ? (state.deuceCount >= 1 ? "AD2" : "AD1") : ["0", "15", "30", "40"][points] || "0";
+    const output = document.getElementById(`currentPoints${team}`);
+    if (output.textContent !== text) {
+      output.textContent = text;
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) output.animate([{opacity:.5,transform:"translateY(3px)"},{opacity:1,transform:"none"}],{duration:180});
+    }
+    setText(`currentGames${team}`, state[`games${team}`] || 0);
+    setText(`currentSets${team}`, state[`sets${team}`] || 0);
+    document.getElementById(`scoreTeam${team}`).classList.toggle("isServing", state.serve === team && !state.matchOver);
+  }
   setBadgeText("serveBadge", `Serve: ${state.serve || "A"}`);
 
   let modeText = "Normal Mode";
@@ -522,7 +525,6 @@ onStateChange(state => {
 
 window.updateNameA = updateNameA;
 window.updateNameB = updateNameB;
-window.updateSponsor = updateSponsor;
 window.addPoint = addPoint;
 window.switchServe = switchServe;
 window.undo = undo;
@@ -532,3 +534,19 @@ window.startTimer = startTimer;
 window.stopTimer = stopTimer;
 window.resetTimer = resetTimer;
 window.setOverlayDesign = setOverlayDesign;
+
+function setBroadcastMode(mode) {
+  if (!["live", "matchDetails", "matchEnd"].includes(mode)) return;
+  readState(state => {
+    const before = clone(state);
+    state.overlayMode = mode;
+    return commitControllerAction(state, before);
+  });
+}
+onStateChange(state => {
+  document.querySelectorAll("[data-overlay-mode]").forEach(button => {
+    const active = button.dataset.overlayMode === state.overlayMode;
+    button.classList.toggle("modeSelected", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
+});

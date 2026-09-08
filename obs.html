@@ -4,10 +4,15 @@
   <meta charset="UTF-8">
   <title>Padel OBS Overlay</title>
   <link rel="stylesheet" href="css/overlay.css?v=7">
+  <link rel="stylesheet" href="css/design3.css?v=2">
+  <link rel="stylesheet" href="css/broadcast-modes.css">
 </head>
 <body>
 
+  <div id="broadcastCanvas" data-design="futuristic">
+  <div id="liveModeLayer" class="broadcastModeLayer isModeActive">
   <div id="overlayWrapper">
+    <div id="legacyScoreboardRegion">
 
     <div id="topBanners">
       <div id="goldenBanner">GOLDEN POINT</div>
@@ -138,14 +143,62 @@
 
     </div>
 
-  </div>
+    </div><!-- legacyScoreboardRegion -->
+
+    <!-- Design 3 owns its columns and banners; legacy layouts remain intact. -->
+    <div id="layout-design3" class="scoreLayout">
+      <section id="d3-scoreboard-region" aria-label="Scoreboard region">
+      <div id="d3-board" class="d3-board" aria-label="Match scoreboard"></div>
+      </section>
+      <aside id="broadcastInfoRegion" class="d3-info" aria-label="Broadcast information"><div class="d3-wordmark"><img src="logo.png" alt=""><span>PADEL<span class="d3-brand-accent">WARS</span></span></div><span id="d3-timer">00:00</span></aside>
+      <div id="broadcastAlertsRegion" aria-label="Broadcast alerts">
+      <div id="d3-status" class="d3-status" aria-live="polite">
+        <span data-status="deuce1">DEUCE 1</span>
+        <span data-status="deuce2">DEUCE 2</span>
+        <span data-status="deuce3">DEUCE 3</span>
+        <span data-status="star">STAR POINT</span>
+        <span data-status="tiebreak">TIEBREAK</span>
+        <span data-status="winner">MATCH WINNER</span>
+      </div>
+      </div><!-- broadcastAlertsRegion -->
+    </div>
+
+  </div><!-- overlayWrapper: current graphics visibility group -->
+  </div><!-- liveModeLayer -->
+  <!-- Reserved layers only; no overlay-mode behavior is implemented yet. -->
+  <section id="matchDetailsLayer" class="broadcastModeLayer" aria-label="Match details" aria-hidden="true">
+    <div class="detailsVeil"></div>
+    <article id="overviewCard" class="detailsCard">
+      <header class="detailsHeader"><span>PADEL<span>WARS</span></span><span>MATCH OVERVIEW</span><time id="overviewTimer">00:00</time></header>
+      <div id="overviewTeams"></div>
+      <div id="overviewStats"></div>
+      <p id="historyCoverage" class="coverageNote"></p>
+    </article>
+    <article id="journeyCard" class="detailsCard">
+      <header class="detailsHeader"><span>PADEL<span>WARS</span></span><span>MATCH JOURNEY</span></header>
+      <div id="journeyTeams"></div>
+      <div id="journeySets"></div>
+      <p class="coverageNote">Game winners follow team colors · ★ Star Point game</p>
+    </article>
+  </section>
+  <section id="matchEndLayer" class="broadcastModeLayer" aria-label="Match winner" aria-hidden="true">
+    <div class="endBanner"><img src="logo.png" alt="PadelWars"><div><div class="endEyebrow">MATCH WINNER</div><div id="endWinnerNames"></div></div><img src="logo.png" alt=""></div>
+  </section>
+  <section id="intermissionRegion" class="broadcastFutureRegion" hidden aria-label="Intermission"></section>
+  <section id="nextMatchRegion" class="broadcastFutureRegion" hidden aria-label="Next match"></section>
+  <section id="fullScreenGraphicsRegion" class="broadcastFutureRegion" hidden aria-label="Full-screen graphics"></section>
+  </div><!-- broadcastCanvas -->
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <script src="js/firebase.js"></script>
-  <script src="js/state.js"></script>
-  <script src="js/obs.js?v=9"></script>
+  <script src="js/state.js?v=2"></script>
+<script src="js/timer.js"></script>
+<script src="js/match-history.js"></script>
+  <script src="js/design3.js?v=2"></script>
+  <script src="js/broadcast-modes.js"></script>
+  <script src="js/obs.js?v=11"></script>
 
   <script>
   (function(){

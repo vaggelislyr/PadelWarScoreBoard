@@ -477,3 +477,147 @@ input::placeholder{
     height:150px;
   }
 }
+
+/* Focused mobile/editor additions; preserve the existing Controller layout. */
+input, select, textarea { font-size:16px; }
+.appShell { padding-top:max(16px, env(safe-area-inset-top)); padding-left:max(14px, env(safe-area-inset-left)); padding-right:max(14px, env(safe-area-inset-right)); }
+.stickyPreviewInner { padding-bottom:env(safe-area-inset-bottom); }
+body.textEditing .stickyPreviewDock, body.manualEditing .stickyPreviewDock { visibility:hidden; pointer-events:none; }
+#controlError, #manualEditError { color:#ffb5a8; }
+#controlError:empty { display:none; }
+#controllerTimer { font-size:20px; font-weight:800; font-variant-numeric:tabular-nums; }
+#manualEditDialog { color:#fff; background:#121821; border:1px solid #506071; border-radius:18px; width:min(560px,calc(100% - 20px)); max-height:calc(100dvh - 24px); padding:20px; overflow:auto; }
+#manualEditDialog::backdrop { background:#000b; }
+.manualActions { position:sticky; bottom:-20px; display:grid; gap:10px; background:#121821; padding:12px 0; }
+
+.manualScoreGrid { display:grid; grid-template-columns:48px minmax(0,1fr) minmax(0,1fr); gap:12px 8px; align-items:center; }
+.manualTeamNames { font-size:15px; font-weight:800; line-height:1.3; overflow-wrap:anywhere; }
+.manualRowLabel { font-size:11px; font-weight:800; color:#bac8d7; }
+.manualStepper { display:grid; grid-template-columns:36px minmax(0,1fr) 36px; align-items:center; text-align:center; }
+.manualStepper button,.manualServe { min-height:44px; border:1px solid #516273; background:#273442; color:white; border-radius:8px; font-size:22px; touch-action:manipulation; }
+.manualStepper output { font-size:20px; font-weight:800; font-variant-numeric:tabular-nums; }
+.manualScoreGrid button:disabled { opacity:.3; }
+.manualServe[aria-pressed="true"] { color:var(--control-accent); border-color:var(--control-accent); background:#263d30; }
+.manualSetTools { display:flex; flex-wrap:wrap; gap:10px; margin:18px 0; }
+.manualSetTools button { padding:10px; min-height:44px; border:1px solid #516273; background:transparent; color:#d0dce7; border-radius:8px; }
+#manualPending { font-size:14px; color:#c3cfdb; }
+.manualActions { grid-template-columns:1fr 2fr; padding-bottom:max(12px,env(safe-area-inset-bottom)); }
+#manualApply { background:var(--control-accent); color:#17271c; }
+#manualApply:disabled { opacity:.4; }
+@media(max-width:380px) { #manualEditDialog { padding:14px; } .manualScoreGrid { grid-template-columns:40px minmax(0,1fr) minmax(0,1fr); gap:10px 5px; } .manualStepper { grid-template-columns:32px minmax(0,1fr) 32px; } .manualStepper output { font-size:18px; } }
+.broadcastModeControls { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+.broadcastModeControls .btn { font-size:13px; padding:12px 6px; }
+.broadcastModeControls .modeSelected { background:var(--control-accent); color:#142b21; box-shadow:inset 0 0 0 2px #efffa6; }
+
+/* Framing affects only the embedded Controller preview. */
+.previewFrame { transition: left 300ms ease, top 300ms ease, transform 300ms ease; }
+@media(prefers-reduced-motion:reduce) { .previewFrame { transition:none; } }
+
+/* Live Control console. Broadcast palette fallback keeps OBS styles isolated. */
+:root {
+  --broadcast-accent:#d8f36a;
+  --control-accent:var(--broadcast-accent);
+  --control-team-b:#73c8ee;
+  --control-surface:#121a21;
+  --control-muted:#9aadb9;
+  --radiusLg:8px;
+  --radiusMd:6px;
+  --secondary:#202d37;
+  --dockHeight:230px;
+}
+html,body { background:#090e13; }
+body { color:#edf2f4; }
+.appShell { max-width:980px; padding-bottom:calc(var(--dockHeight) + env(safe-area-inset-bottom) + 32px); }
+.appHeader { flex-direction:row; align-items:center; margin-bottom:16px; gap:8px; }
+h1 { font-size:25px; letter-spacing:-1px; font-weight:900; }
+h1 span { color:var(--control-accent); }
+.eyebrow { margin:5px 0 0; color:var(--control-muted); font-size:10px; letter-spacing:3px; }
+.headerStatus { display:flex; flex-direction:column; align-items:flex-end; gap:5px; }
+.miniBadge { padding:3px 6px; border:0; border-radius:3px; font-size:10px; color:var(--control-muted); background:#17222b; white-space:normal; }
+.panel { background:var(--control-surface); border-radius:8px; padding:12px; margin-bottom:10px; box-shadow:0 5px 14px #0002; }
+h2 { font-size:11px; letter-spacing:1.5px; font-weight:800; color:var(--control-muted); }
+.sectionTop { flex-direction:row; align-items:center; gap:8px; margin-bottom:10px; }
+.consoleHint { color:var(--control-muted); font-size:9px; font-weight:700; letter-spacing:1px; }
+.btn { min-width:0; min-height:46px; padding:10px 8px; border-radius:5px; font-size:12px; letter-spacing:.3px; touch-action:manipulation; }
+.btn:focus-visible,summary:focus-visible,input:focus-visible { outline:2px solid var(--control-accent); outline-offset:3px; }
+.btnPrimary { background:var(--control-accent); color:#142119; }
+.btnSecondary { border:1px solid #354651; }
+.btn:active { transform:translateY(1px); filter:brightness(.88); }
+.broadcastPanel { border:0; padding:0 0 12px; background:none; box-shadow:none; }
+.broadcastModeControls { gap:5px; background:#080c10; padding:4px; border:1px solid #2d3d47; border-radius:7px; }
+.broadcastModeControls .btn { min-height:62px; padding:10px 4px 22px; font-size:11px; border-color:transparent; background:#16212a; }
+.broadcastModeControls .modeSelected { color:var(--control-accent); background:#223029; border-color:var(--control-accent); box-shadow:inset 0 -2px var(--control-accent); }
+.broadcastModeControls .modeSelected::before { content:"● ON AIR"; position:absolute; bottom:7px; left:0; right:0; font-size:8px; letter-spacing:1px; }
+.scoringHeading { margin:2px 0 8px; }
+.teamGrid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.teamCard { --team-accent:var(--control-accent); display:flex; flex-direction:column; min-width:0; overflow:visible; padding:12px 10px 10px; border-top:3px solid #34444e; transition:border-color 180ms,box-shadow 180ms; }
+.teamCard.teamB { --team-accent:var(--control-team-b); }
+.teamCard.isServing { border-top-color:var(--team-accent); box-shadow:inset 0 1px var(--team-accent),0 5px 14px #0002; }
+.teamCard::before { display:none; }
+.teamLabel { display:flex; align-items:center; justify-content:space-between; color:var(--team-accent); font-size:10px; margin:0 0 8px; }
+.teamServe { opacity:0; transition:opacity 180ms; font-size:14px; }
+.isServing .teamServe { opacity:1; }
+.teamNamePreview { min-height:40px; font-size:15px; line-height:1.3; margin:0 0 10px; overflow-wrap:anywhere; white-space:normal; }
+.currentScore { margin-top:auto; display:flex; flex-direction:column; gap:3px; }
+.currentScore output { display:block; font-size:48px; font-weight:900; line-height:1.1; font-variant-numeric:tabular-nums; letter-spacing:-1px; }
+.scoreSummary { display:flex; justify-content:space-between; gap:6px; padding:10px 0 12px; font-size:11px; color:var(--control-muted); }
+.scoreSummary strong { margin-left:4px; color:#fff; font-size:17px; font-variant-numeric:tabular-nums; }
+.btnScore { width:100%; min-height:68px; font-size:18px; color:#10212a; background:var(--team-accent); border:1px solid #ffffff22; }
+.quickActions { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:7px; margin:0 0 14px; }
+.quickActions .btn { font-size:10px; min-height:48px; }
+.undoAction { border-color:#80929a; color:var(--control-accent); }
+.timerPanel { padding:12px; }
+#controllerTimer { font-size:28px; line-height:1; }
+.actionGrid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:7px; }
+.timerPanel .actionGrid .btn { font-size:10px; }
+.secondaryControls { margin-top:18px; border-top:1px solid #2b3842; padding-top:12px; }
+details.panel { padding:0 12px; background:#10171e; box-shadow:none; }
+summary { display:flex; align-items:center; justify-content:space-between; min-height:54px; gap:10px; cursor:pointer; font-size:11px; font-weight:800; letter-spacing:.5px; list-style:none; }
+summary::-webkit-details-marker { display:none; }
+summary::after { content:"+"; font-size:20px; color:var(--control-muted); }
+details[open]>summary::after { content:"−"; }
+summary>span { margin-left:auto; color:var(--control-muted); font-size:10px; font-weight:400; letter-spacing:0; }
+details[open] { padding-bottom:12px; }
+details[open]>summary { border-bottom:1px solid #2c3a44; margin-bottom:12px; }
+details[open]>*:not(summary) { animation:controlExpand 180ms ease; }
+@keyframes controlExpand { from { opacity:.4; transform:translateY(-3px); } to { opacity:1; transform:none; } }
+.helperText { color:var(--control-muted); font-size:13px; line-height:1.5; margin:0 0 12px; }
+.fieldGrid { gap:10px; }
+.fieldBlock { border:0; background:none; padding:0; border-radius:0; }
+.fieldBlock label { font-size:10px; letter-spacing:1px; color:var(--control-muted); }
+input { font-size:16px; border-radius:5px; padding:12px; border:1px solid #394b58; margin-bottom:8px; }
+.fieldBlock .btn { min-height:44px; }
+.dangerPanel { border-color:#673b3b; }
+.dangerPanel summary { color:#f6a3a3; }
+.stickyPreviewInner { background:#090e13; border:1px solid #3a4a55; border-radius:7px; padding:7px 7px env(safe-area-inset-bottom); box-shadow:0 -8px 28px #0009; }
+.stickyPreviewTop { margin:0 0 6px; font-size:10px; color:#e6eff0; font-weight:800; }
+.stickyPreviewTop::before { background:var(--control-accent); box-shadow:none; width:6px; height:6px; }
+.monitorSubtitle { color:var(--control-muted); font-weight:400; }
+.previewViewport { border-radius:3px; border-color:#253540; }
+#manualEditDialog { border-radius:8px; background:var(--control-surface); }
+#manualEditDialog h2 { font-size:17px; color:#fff; }
+#manualEditDialog>p { font-size:13px; line-height:1.45; color:var(--control-muted); }
+.manualActions { background:var(--control-surface); }
+.manualServe[aria-pressed="true"] { color:var(--control-accent); border-color:var(--control-accent); }
+#manualApply { background:var(--control-accent); }
+.flashTap::after,.flashDanger::after { display:none; }
+@media(max-width:380px) {
+ .appShell { padding-left:10px; padding-right:10px; }
+ .teamGrid { gap:9px; }
+ .teamCard { padding:10px 8px 8px; }
+ .teamNamePreview { font-size:14px; }
+ .scoreSummary { font-size:10px; }
+ .broadcastModeControls .btn { font-size:10px; }
+ summary { font-size:10px; }
+}
+@media(min-width:700px) {
+ .teamCard { padding:18px; }
+ .teamNamePreview { font-size:21px; }
+ .currentScore output { font-size:60px; }
+ .btnScore { min-height:76px; }
+ .quickActions .btn { font-size:13px; }
+}
+@media(prefers-reduced-motion:reduce) {
+ .btn,.teamCard,.teamServe { transition:none; }
+ details[open]>*:not(summary) { animation:none; }
+}

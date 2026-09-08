@@ -275,7 +275,11 @@ function clearGoldenStyles() {
 }
 
 function setLayout(design) {
-  const safeDesign = design === "modern" ? "modern" : "futuristic";
+  document.getElementById("broadcastCanvas").dataset.design = design;
+  document.getElementById("layout-design3").classList.toggle("activeLayout", design === "design3");
+  // Design 3 has its own banner rail; legacy banners keep their existing behavior.
+  document.getElementById("topBanners").style.display = design === "design3" ? "none" : "flex";
+  const safeDesign = ["modern", "design3"].includes(design) ? design : "futuristic";
 
   if (layoutFuturisticEl) {
     layoutFuturisticEl.classList.toggle("activeLayout", safeDesign === "futuristic");
@@ -353,7 +357,7 @@ function renderFuturisticLayout(state) {
   }
 
   organizerEl.textContent = safeText(state.organizer, "@sponsor");
-  timerEl.textContent = safeText(state.timerText, "00:00");
+  timerEl.textContent = matchTimerText(state);
 }
 
 /* =========================================
@@ -431,7 +435,7 @@ function renderModernLayout(state) {
   }
 
   modernSponsorEl.textContent = safeText(state.organizer, "@sponsor");
-  modernTimerEl.textContent = safeText(state.timerText, "00:00");
+  modernTimerEl.textContent = matchTimerText(state);
 }
 
 /* =========================================
@@ -487,8 +491,13 @@ function applySharedSpecialStates(state) {
 onStateChange(function (state) {
   if (!state) return;
 
-  const design = state.design === "modern" ? "modern" : "futuristic";
+  const design = ["modern", "design3"].includes(state.design) ? state.design : "futuristic";
   setLayout(design);
+  updateBroadcastMode(state);
+  const liveMode = (state.overlayMode || "live") === "live";
+  updateDesign3Presentation(liveMode ? state : {...state, visible: false});
+  // The separate mode gate owns transitions; preserve LIVE show/hide internally.
+  if (!liveMode) return;
 
   if (state.visible === false) {
     hideOverlaySmooth();
@@ -502,6 +511,8 @@ onStateChange(function (state) {
   renderFuturisticLayout(state);
   renderModernLayout(state);
   applySharedSpecialStates(state);
+  renderDesign3(state);
+  if (window.parent !== window) window.parent.postMessage({type: "padelwars:layout"}, location.origin);
 
   previousPointsA = state.pointsA;
   previousPointsB = state.pointsB;
