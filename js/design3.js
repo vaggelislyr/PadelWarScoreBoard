@@ -52,12 +52,14 @@ function d3SetText(el, value) {
 }
 
 function renderDesign3(state) {
-  // Quantized bounded widths avoid large shifts between ordinary player names.
+  // Measure complete teams at the unchanged name size; slash is ordinary text.
   const textMeasure = document.createElement("canvas").getContext("2d");
-  textMeasure.font = "800 28px Arial";
-  const players = [state.nameA || "Player A1 / Player A2", state.nameB || "Player B1 / Player B2"].flatMap(name => String(name).split(/\s*\/\s*/));
-  const longest = Math.max(...players.map(name => textMeasure.measureText(name).width));
-  const nameWidth = Math.max(140, Math.min(340, Math.ceil((longest + 48) / 12) * 12));
+  textMeasure.font = "900 28px Arial";
+  const teams = [state.nameA || "Player A1 - Player A2", state.nameB || "Player B1 - Player B2"].map(String);
+  const longest = Math.max(...teams.map(name => textMeasure.measureText(name).width));
+  // Compact 8px steps; full single-line names take precedence over a hard width cap.
+  const requiredWidth = Math.ceil((longest + 30) / 8) * 8;
+  const nameWidth = Math.max(104, requiredWidth);
   design3Root.style.setProperty("--d3-name-width", `${nameWidth}px`);
   const model = design3Model(state);
   const structure = model.columns.map(c => c.key).join("|");
@@ -112,23 +114,15 @@ function renderDesign3(state) {
     row.classList.toggle("d3-winner", model.winner === team);
     row.classList.toggle("d3-loser", Boolean(model.winner) && model.winner !== team);
     const name = document.getElementById(`d3-name${team}`);
-    const rawName = String(state[`name${team}`] || `Player ${team}1 / Player ${team}2`);
-    const teamWidth = Math.max(...rawName.split(/\s*\/\s*/).map(part => textMeasure.measureText(part).width));
-    name.style.fontSize = `${Math.max(22, Math.min(28, Math.floor(28 * (nameWidth - 48) / Math.max(1, teamWidth))))}px`;
+    const rawName = String(state[`name${team}`] || `Player ${team}1 - Player ${team}2`);
     if (name.dataset.value !== rawName) {
-      // One player per line gives names a stable, generous width without overflow.
-      name.replaceChildren(...rawName.split(/\s*\/\s*/).map(part => d3Cell("d3-player", part)));
+      name.textContent = rawName;
       name.dataset.value = rawName;
       name.title = rawName;
     }
   }
   for (const column of model.columns) {
     column.values.forEach((value, i) => d3SetText(document.getElementById(`d3-${column.key}${i ? "B" : "A"}`), value));
-  }
-  // Unusually long names can grow rows rather than lose any text.
-  if (design3Root.classList.contains("activeLayout")) {
-    const nameHeight = Math.max(...Array.from(design3Board.querySelectorAll(".d3-name"), el => el.scrollHeight));
-    design3Root.style.setProperty("--d3-row-height", `${Math.max(64, nameHeight + 12)}px`);
   }
   d3SetText(document.getElementById("d3-timer"), matchTimerText(state));
 }
