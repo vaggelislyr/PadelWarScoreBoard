@@ -51,6 +51,28 @@ function d3SetText(el, value) {
   }
 }
 
+function renderDesign3PreviewServe(state, finished) {
+  // Only the Controller's same-origin embedded page takes this path.
+  // Standalone OBS keeps its existing serve rendering and transitions.
+  if (window.parent === window || window.frameElement?.id !== "obsPreview") return false;
+  const rows = [...design3Board.querySelectorAll(".d3-team")];
+  for (const row of rows) {
+    row.classList.remove("d3-serving");
+    const dot = row.querySelector(".d3-serve");
+    dot.style.visibility = "hidden";
+    dot.setAttribute("aria-hidden", "true");
+  }
+  const selected = !finished && ["A", "B"].includes(state.serve)
+    ? rows.find(row => row.dataset.team === state.serve) : null;
+  if (selected) {
+    selected.classList.add("d3-serving");
+    const dot = selected.querySelector(".d3-serve");
+    dot.style.visibility = "visible";
+    dot.setAttribute("aria-hidden", "false");
+  }
+  return true;
+}
+
 function renderDesign3(state) {
   // Measure complete teams at the unchanged name size; slash is ordinary text.
   const textMeasure = document.createElement("canvas").getContext("2d");
@@ -107,10 +129,13 @@ function renderDesign3(state) {
   if (design3Root.classList.contains("activeLayout") && design3ResizeAnimation?.playState !== "running") {
     design3LastWidth = design3Board.scrollWidth;
   }
+  const previewServeRendered = renderDesign3PreviewServe(state, model.finished);
   for (const team of ["A", "B"]) {
     const row = design3Board.querySelector(`.d3-team[data-team="${team}"]`);
-    row.classList.toggle("d3-serving", !model.finished && state.serve === team);
-    row.querySelector(".d3-serve").setAttribute("aria-hidden", String(model.finished || state.serve !== team));
+    if (!previewServeRendered) {
+      row.classList.toggle("d3-serving", !model.finished && state.serve === team);
+      row.querySelector(".d3-serve").setAttribute("aria-hidden", String(model.finished || state.serve !== team));
+    }
     row.classList.toggle("d3-winner", model.winner === team);
     row.classList.toggle("d3-loser", Boolean(model.winner) && model.winner !== team);
     const name = document.getElementById(`d3-name${team}`);
