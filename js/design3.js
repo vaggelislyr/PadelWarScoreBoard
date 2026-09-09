@@ -51,24 +51,31 @@ function d3SetText(el, value) {
   }
 }
 
+const previewServeNodes = new WeakMap();
 function renderDesign3PreviewServe(state, finished) {
-  // Only the Controller's same-origin embedded page takes this path.
-  // Standalone OBS keeps its existing serve rendering and transitions.
+  // Standalone OBS retains its existing renderer and transitions.
   if (window.parent === window || window.frameElement?.id !== "obsPreview") return false;
+  const serving = !finished && ["A", "B"].includes(state.serve) ? state.serve : null;
   const rows = [...design3Board.querySelectorAll(".d3-team")];
+  if (rows.every(row => previewServeNodes.get(row)?.serve === serving &&
+      previewServeNodes.get(row)?.dot === row.querySelector(".d3-serve"))) return true;
+  // Discard both old painted nodes before creating either replacement.
+  // This resets only the preview dots, without hiding/restarting the live package.
   for (const row of rows) {
     row.classList.remove("d3-serving");
-    const dot = row.querySelector(".d3-serve");
-    dot.style.visibility = "hidden";
-    dot.setAttribute("aria-hidden", "true");
+    row.querySelectorAll(".d3-serve").forEach(dot => {
+      dot.getAnimations?.().forEach(animation => animation.cancel());
+      dot.remove();
+    });
   }
-  const selected = !finished && ["A", "B"].includes(state.serve)
-    ? rows.find(row => row.dataset.team === state.serve) : null;
-  if (selected) {
-    selected.classList.add("d3-serving");
-    const dot = selected.querySelector(".d3-serve");
-    dot.style.visibility = "visible";
-    dot.setAttribute("aria-hidden", "false");
+  for (const row of rows) {
+    const active = row.dataset.team === serving;
+    const dot = d3Cell("d3-serve");
+    dot.setAttribute("aria-label", "Serving");
+    dot.setAttribute("aria-hidden", String(!active));
+    if (active) row.classList.add("d3-serving");
+    row.prepend(dot);
+    previewServeNodes.set(row, {serve: serving, dot});
   }
   return true;
 }
