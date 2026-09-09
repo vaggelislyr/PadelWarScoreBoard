@@ -374,6 +374,39 @@ function setText(id, text) {
 
 /* ================= PREVIEW SCALE ================= */
 
+// The Controller snapshot owns serve presentation in its embedded preview only.
+let controllerPreviewServeState = null;
+function renderControllerPreviewServe() {
+  const state = controllerPreviewServeState;
+  if (!state) return;
+  const serving = !state.matchOver && state.mode !== "finished" && ["A", "B"].includes(state.serve) ? state.serve : null;
+  const cards = ["A", "B"].map(team => document.getElementById(`scoreTeam${team}`));
+  cards.forEach(card => card?.classList.remove("isServing"));
+  if (serving) cards[serving === "A" ? 0 : 1]?.classList.add("isServing");
+  const doc = document.getElementById("obsPreview")?.contentDocument;
+  if (!doc) return;
+  const rows = [...doc.querySelectorAll("#d3-board .d3-team")];
+  // Clear both before setting one, including the accessibility state.
+  rows.forEach(row => {
+    row.classList.remove("d3-serving");
+    row.querySelector(".d3-serve")?.setAttribute("aria-hidden", "true");
+  });
+  const selected = rows.find(row => row.dataset.team === serving);
+  selected?.classList.add("d3-serving");
+  selected?.querySelector(".d3-serve")?.setAttribute("aria-hidden", "false");
+  // Finish only outgoing preview serve fades; a rapid A/B reversal must not
+  // leave the previous dot visible alongside the canonical serving team's dot.
+  rows.filter(row => row !== selected).forEach(row => {
+    const dot = row.querySelector(".d3-serve");
+    if (!dot) return;
+    doc.defaultView.getComputedStyle(dot).opacity;
+    dot.getAnimations?.().forEach(animation => {
+      if (animation.transitionProperty === "opacity") animation.finish();
+    });
+  });
+}
+document.getElementById("obsPreview")?.addEventListener("load", renderControllerPreviewServe);
+
 let obsPreviewCrop = { x: 40, y: 24, width: 880, height: 260 };
 function resizeObsPreview() {
   const viewport = document.getElementById("previewViewport");
@@ -461,6 +494,7 @@ function updateFloatingPreviewLayout() {
 window.addEventListener("message", event => {
   const iframe = document.getElementById("obsPreview");
   if (event.origin === location.origin && event.source === iframe?.contentWindow && event.data?.type === "padelwars:layout") {
+    renderControllerPreviewServe();
     updateFloatingPreviewLayout();
   }
 });
@@ -487,6 +521,8 @@ window.addEventListener("load", () => {
 /* ================= INIT INPUTS FROM STATE ================= */
 
 onStateChange(state => {
+  controllerPreviewServeState = {serve:state.serve, matchOver:state.matchOver, mode:state.mode};
+  renderControllerPreviewServe();
   for (const team of ["A", "B"]) {
     const input = document.getElementById(`name${team}Input`);
     if (document.activeElement !== input && input.dataset.dirty !== "true") input.value = state[`name${team}`] || "";
@@ -506,7 +542,6 @@ onStateChange(state => {
     }
     setText(`currentGames${team}`, state[`games${team}`] || 0);
     setText(`currentSets${team}`, state[`sets${team}`] || 0);
-    document.getElementById(`scoreTeam${team}`).classList.toggle("isServing", state.serve === team && !state.matchOver);
   }
   setBadgeText("serveBadge", `Serve: ${state.serve || "A"}`);
 
