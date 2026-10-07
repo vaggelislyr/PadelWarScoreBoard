@@ -27,11 +27,24 @@
 </head>
 <body>
 
-<main class="appShell">
+<section id="authGate" aria-labelledby="authTitle">
+  <form id="authForm">
+    <h1 id="authTitle">PadelWars Live Control</h1>
+    <p>Sign in to access the controller.</p>
+    <label for="authEmail">Email</label>
+    <input id="authEmail" type="email" autocomplete="username" required>
+    <label for="authPassword">Password</label>
+    <input id="authPassword" type="password" autocomplete="current-password" required>
+    <button type="submit">SIGN IN</button>
+    <p id="authError" role="alert" aria-live="polite"></p>
+  </form>
+</section>
+
+<main class="appShell" hidden>
 <p id="controlError" role="alert"></p>
 <header class="appHeader">
   <div><h1>PADEL<span>WARS</span></h1><div class="eyebrow">LIVE CONTROL</div></div>
-  <div class="headerStatus"><span id="modeBadge" class="miniBadge">Normal Mode</span><span id="visibleBadge" class="miniBadge">Overlay Visible</span></div>
+  <div class="headerStatus"><span id="modeBadge" class="miniBadge">Normal Mode</span><span id="visibleBadge" class="miniBadge">Overlay Visible</span><button id="logoutButton" type="button" class="btn btnSecondary">LOG OUT</button></div>
 </header>
 <section class="panel broadcastPanel" aria-label="Broadcast mode">
   <div class="sectionTop"><h2>PROGRAM OUTPUT</h2><span class="consoleHint">SELECT MODE</span></div>
@@ -124,12 +137,8 @@ loading="lazy">
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script src="js/firebase.js"></script>
-<script src="js/state.js?v=2"></script>
-<script src="js/timer.js"></script>
-<script src="js/match-history.js"></script>
-<script src="js/controller.js?v=2"></script>
-<script src="js/mobile.js"></script>
-<script src="js/manual-edit.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="js/controller-auth.js"></script>
 
 </body>
 </html>

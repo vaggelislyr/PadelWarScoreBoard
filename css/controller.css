@@ -525,6 +525,15 @@ body.textEditing .stickyPreviewDock, body.manualEditing .stickyPreviewDock { vis
   --secondary:#202d37;
   --dockHeight:230px;
 }
+#authGate { min-height:100vh; display:grid; place-items:center; padding:24px; box-sizing:border-box; background:#090e13; color:#edf2f4; }
+#authGate[hidden] { display:none; }
+#authForm { width:min(100%,360px); display:grid; gap:10px; padding:22px; box-sizing:border-box; background:#121a21; border:1px solid #2f404b; border-radius:8px; box-shadow:0 12px 30px #0007; }
+#authForm h1 { margin:0 0 4px; font-size:24px; }
+#authForm p { margin:0 0 8px; color:#9aadb9; font-size:13px; line-height:1.4; }
+#authForm label { color:#9aadb9; font-size:11px; letter-spacing:.6px; }
+#authForm input { width:100%; box-sizing:border-box; margin:0; font-size:16px; }
+#authForm button { min-height:46px; margin-top:6px; border:0; border-radius:5px; background:#d8f36a; color:#142119; font-weight:800; }
+#authError { min-height:18px; color:#f6a3a3 !important; }
 html,body { background:#090e13; }
 body { color:#edf2f4; }
 .appShell { max-width:980px; padding-bottom:calc(var(--dockHeight) + env(safe-area-inset-bottom) + 32px); }
