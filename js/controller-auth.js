@@ -28,6 +28,8 @@
   function showAuthenticatedController() {
     gate.hidden = true;
     shell.hidden = false;
+    const preview = document.getElementById("obsPreview");
+    if (preview) preview.src = preview.src;
   }
 
   function showLogin() {
