@@ -534,6 +534,7 @@ body.textEditing .stickyPreviewDock, body.manualEditing .stickyPreviewDock { vis
 #authForm input { width:100%; box-sizing:border-box; margin:0; font-size:16px; }
 #authForm button { min-height:46px; margin-top:6px; border:0; border-radius:5px; background:#d8f36a; color:#142119; font-weight:800; }
 #authError { min-height:18px; color:#f6a3a3 !important; }
+#authGate:not([hidden]) ~ #stickyPreviewDock { display:none; }
 html,body { background:#090e13; }
 body { color:#edf2f4; }
 .appShell { max-width:980px; padding-bottom:calc(var(--dockHeight) + env(safe-area-inset-bottom) + 32px); }
